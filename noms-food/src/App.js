@@ -76,6 +76,8 @@ const App = () => {
     event.preventDefault();
     try {
       await handleNewUser(profile);
+      alert("You have successfully created this user!");
+      setProfile({ email: "", name: "", username: "" }); // Reset profile to empty values
     } catch (error) {
       console.error("Error handling user profile:", error);
     }
