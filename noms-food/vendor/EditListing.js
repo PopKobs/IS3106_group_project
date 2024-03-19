@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 function EditListing({ listing }) {
     const [title, setTitle] = useState(listing.title);
@@ -20,6 +22,12 @@ function EditListing({ listing }) {
     const handleSubmit = (event) => {
         event.preventDefault();
         // Handle form submission - send updated listing data to the server or update in application state
+        const db = firebase.database();
+        db.ref('listings/' + listing.id).update({
+            title: title,
+            description: description,
+            price: price
+        });
     };
 
     return (
