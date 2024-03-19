@@ -1,6 +1,7 @@
 import db from "./firebase";
 import logo from './logo.svg';
 import './signup.css';
+import { useHistory } from "react-router-dom";
 
 import React, { useState, useEffect } from "react";
 import {
