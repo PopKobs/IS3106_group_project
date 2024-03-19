@@ -29,6 +29,8 @@ ReactDOM.render(
         <Route component={LandingPage} exact path="/" />
         <Route component={Signup} exact path="/signup" />
         <Route component={CreateListing} exact path="/createlisting" />
+        {/* Default Route */}
+        <Route render={() => <Redirect to="/" />} />
       </Switch>
     </Router>
   </React.StrictMode>,
