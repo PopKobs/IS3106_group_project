@@ -1,6 +1,6 @@
 import db from "./firebase";
 import logo from './logo.svg';
-import './App.css';
+import './signup.css';
 
 import React, { useState, useEffect } from "react";
 import {
@@ -14,7 +14,7 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-const App = () => {
+const Signup = () => {
   const [profile, setProfile] = useState({
     email: "",
     name: "",
@@ -126,4 +126,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Signup;
