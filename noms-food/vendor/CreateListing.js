@@ -1,12 +1,22 @@
+import firebase from "firebase/app";
 import React, { useState } from 'react';
 
-function CreateListing() {
+const firebase = require('firebase');
+require('firebase\firestore');
+
+const database = firebase.firestore();
+
+function CreateListing(/*front end input*/) {
   // State to store the form data
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    price: 0,
-    // Add more fields as needed
+  const {data} = useState({
+    listingName: '', //front end input
+    description: '', //front end input
+    photo: '', //front end input
+    price: 0, //front end input
+    quantity: 0, //front end input, consider adding function to notify vendor if quantity is running low
+    note: '',
+    avaliablilty: '', // period when its avaliable
+    vendorId: ''
   });
 
   // Function to handle form input changes
@@ -23,13 +33,20 @@ function CreateListing() {
     e.preventDefault();
     // Send formData to the server
     console.log('Submitting form:', formData);
-    // You can add code here to send the data to your backend API
-    // For simplicity, let's just reset the form data
+
     setFormData({
-      title: '',
-      description: '',
-      price: 0,
+      listingName: '', //front end input
+      description: '', //front end input
+      photo: '', //front end input
+      price: 0, //front end input
+      quantity: 0, //front end input, consider adding function to notify vendor if quantity is running low
+      note: '',
+      avaliablilty: '', // period when its avaliable
+      vendorId: ''
     });
+
+    collectionRef = collection(db, 'listingVendorA');
+    return db.addDoc(collectionRef, data);
   };
 
   return (
