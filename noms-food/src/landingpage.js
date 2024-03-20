@@ -30,7 +30,7 @@ const LandingPage = () => {
     <>
       <div>
         <button onClick={handleSignupLink}>
-            Sign up
+            Sign up now
         </button>
       </div>
 
