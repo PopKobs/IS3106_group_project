@@ -1,7 +1,7 @@
-import db from "./firebase";
+import db from "./firebase/firebase";
 import logo from './logo.svg';
 import './signup.css';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -16,15 +16,17 @@ import {
 } from "firebase/firestore";
 
 const LandingPage = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleSignupLink = () => {
-        history.push("/signup");
+        navigate("/signup");
     }
     const handleCreateListing = () => {
-        history.push("/createListing");
+        navigate("/createListing");
     }
-    
+    const handleAccountClick = () => {
+      navigate("/login"); // Redirects user to the login page
+    };
 
   return (
     <>
@@ -37,6 +39,12 @@ const LandingPage = () => {
       <div>
         <button onClick={handleCreateListing}>
             Create Listing Page
+        </button>
+      </div>
+
+      <div>
+        <button onClick={handleAccountClick}>
+            Account
         </button>
       </div>
      

@@ -1,32 +1,15 @@
+// index.js
 import React from 'react';
-import 'firebase/auth';
-import 'firebase/firestore';
-import ReactDOM from 'react-dom';
-import { 
-  BrowserRouter as Router, 
-  Route, 
-  Switch, 
-  Redirect 
-} from 'react-router-dom';
+import ReactDOM from 'react-dom/client'; // Update for React 18
 import './index.css';
-import Signup from './signup';
-import reportWebVitals from './reportWebVitals';
-import LandingPage from './landingpage'; // Import your components
-import CreateListing from './vendor/CreateListing';
+import App from './App'; // Main App component that includes routing
+import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
-    <Router>
-      <Switch>
-        <Route component={LandingPage} exact path="/" />
-        <Route component={Signup} exact path="/signup" />
-        <Route component={CreateListing} exact path="/createlisting" />
-        {/* Default Route */}
-        <Route render={() => <Redirect to="/" />} />
-      </Switch>
-    </Router>
-  </React.StrictMode>,
-  document.getElementById('root')
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 );
-
-reportWebVitals();

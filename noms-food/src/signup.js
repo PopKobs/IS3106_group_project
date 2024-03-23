@@ -1,71 +1,33 @@
-import db from "./firebase";
-import logo from './logo.svg';
-import './signup.css';
-
-import React, { useState, useEffect } from "react";
-import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  query,
-  where,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore";
+import React, { useState } from "react";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [profile, setProfile] = useState({
     email: "",
     name: "",
     username: "",
+    contact: "", // Added contact (phone number) field
   });
 
-  const currentUser = profile;
-
-
-
-  const fetchExistingProfile = async (email) => {
-    const db = getFirestore();
-
-    try {
-      const userCollectionRef = collection(db, "User");
-      const userQuery = query(userCollectionRef, where("email", "==", email));
-      const userSnapshot = await getDocs(userQuery);
-
-      if (!userSnapshot.empty) {
-        const existingProfile = userSnapshot.docs[0].data();
-        setProfile(existingProfile);
-      }
-    } catch (error) {
-      console.error("Error fetching existing user profile", error);
-    }
-  };
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    if (type === "checkbox") {
-      setProfile((prevProfile) => ({
-        ...prevProfile,
-        [name]: prevProfile[name].includes(value)
-          ? prevProfile[name].filter((i) => i !== value)
-          : [...prevProfile[name], value],
-      }));
-    } else {
-      setProfile((prevProfile) => ({
-        ...prevProfile,
-        [name]: value,
-      }));
-    }
+    const { name, value } = event.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
   };
 
   const handleNewUser = async (profile) => {
     const db = getFirestore();
-
     try {
       const userCollectionRef = collection(db, "Users");
       await addDoc(userCollectionRef, profile);
       console.log("User profile added to database!");
+      alert("You have successfully created this user!");
+      setProfile({ email: "", name: "", username: "", contact: "" }); // Reset profile
     } catch (error) {
       console.error("Error adding user", error);
       throw error;
@@ -76,53 +38,82 @@ const Signup = () => {
     event.preventDefault();
     try {
       await handleNewUser(profile);
-      alert("You have successfully created this user!");
-      setProfile({ email: "", name: "", username: "" }); // Reset profile to empty values
+      navigate('/home');
+      // Reset form handled in try block
     } catch (error) {
       console.error("Error handling user profile:", error);
     }
   };
 
   return (
-    <>
-      <div className="profile-page-container">
-        <form className="profile-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={profile.email}
-              onChange={handleInputChange}
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={profile.email}
+                onChange={handleInputChange}
+              />
             </div>
-          <div className="form-group">
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={profile.name}
-              onChange={handleInputChange}
-            />
+            <div>
+              <label htmlFor="name" className="sr-only">Name</label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Full name"
+                value={profile.name}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="username" className="sr-only">Username</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Username"
+                value={profile.username}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="contact" className="sr-only">Contact</label>
+              <input
+                type="tel"
+                name="contact"
+                id="contact"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Phone number"
+                value={profile.contact}
+                onChange={handleInputChange}
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={profile.username}
-              onChange={handleInputChange}
-            />
-            </div>
-         
-          <button type="submit">Set Up User. Sign up works</button>
+
+          <button
+            type="submit"
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Sign Up
+          </button>
         </form>
       </div>
-     
-    </>
+    </div>
   );
 };
 
