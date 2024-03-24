@@ -38,7 +38,7 @@ const Signup = () => {
     event.preventDefault();
     try {
       await handleNewUser(profile);
-      navigate('/home');
+      navigate("/home");
       // Reset form handled in try block
     } catch (error) {
       console.error("Error handling user profile:", error);

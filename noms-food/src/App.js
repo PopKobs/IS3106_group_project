@@ -8,6 +8,7 @@ import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import Home from "./components/home";
 import Header from "./components/header";
+import ProfilePage from './profilepage';
 import { AuthProvider } from "./contexts/authContext";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/home", element: <Home /> },
+    { path: "/profilepage", element: <ProfilePage /> },
     // Add more routes as needed
   ]);
 
