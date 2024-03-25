@@ -13,12 +13,12 @@ const AccountType = () => {
 
     const handleVendor = () => {
         setAccType('Vendor');
-        updateSessionStorage('accType', accType);
+        updateSessionStorage('accType', 'Vendor');
         register();
     }
     const handleCustomer = () => {
         setAccType('Customer');
-        updateSessionStorage('accType', accType);
+        updateSessionStorage('accType', 'Customer');
         register();
     }
     const register = () => {

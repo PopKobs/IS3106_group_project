@@ -1,9 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../contexts/authContext'
 import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
+import { collection, addDoc, getFirestore } from "firebase/firestore"
 
 const Register = () => {
+
+    const [profile, setProfile] = useState({
+        email: "",
+        name: "",
+        username: "",
+        contact: "", // Added contact (phone number) field
+        type: "", // Added account type field
+      });
+
+    const [accType, setAccType] = useState(''); // User account type
 
     const navigate = useNavigate()
 
@@ -15,12 +26,43 @@ const Register = () => {
 
     const { userLoggedIn } = useAuth()
 
+    // Load data from sessionStorage when component mounts
+    useEffect(() => {
+        const storedData = sessionStorage.getItem('accType');
+        if (storedData) {
+          setAccType(storedData);
+          setProfile(prevProfile => ({
+            ...prevProfile,
+            type: storedData // Set profile.type here
+          }));
+        }
+      }, []);
+
+  const handleNewUser = async () => {
+    const db = getFirestore();
+    try {
+      const userCollectionRef = collection(db, "Users");
+      await addDoc(userCollectionRef, profile);
+      console.log("User profile added to database!");
+      alert("You have successfully created this user!");
+      setProfile({ email: "", name: "", username: "", contact: "" }); // Reset profile
+    } catch (error) {
+      console.error("Error adding user", error);
+      throw error;
+    }
+  };
+
     const onSubmit = async (e) => {
         e.preventDefault()
         if(!isRegistering) {
             setIsRegistering(true);
+            console.log("The Account Type: ")
+            console.log(accType)
             try {
                 await doCreateUserWithEmailAndPassword(email, password);
+                await handleNewUser(profile);
+                setIsRegistering(false);
+                //navigate("/home");
             } catch (error) {
                 if (error.code === 'auth/email-already-in-use') {
                     setErrorMessage('Email address is already in use.');
@@ -38,7 +80,7 @@ const Register = () => {
 
     return (
         <>
-            {userLoggedIn && (<Navigate to={'/signup'} replace={true} />)}
+            {userLoggedIn && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl">
@@ -60,7 +102,52 @@ const Register = () => {
                                 type="email"
                                 autoComplete='email'
                                 required
-                                value={email} onChange={(e) => { setEmail(e.target.value) }}
+                                value={email} onChange={(e) => { setEmail(e.target.value); setProfile((prevState) => ({
+                                    ...prevState,
+                                    email: e.target.value
+                                })) }}
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold">
+                                Name
+                            </label>
+                            <input
+                                required
+                                value={profile.name} onChange={(e) => { setProfile((prevState) => ({
+                                    ...prevState,
+                                    name: e.target.value
+                                })) }}
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold">
+                                Username
+                            </label>
+                            <input
+                                required
+                                value={profile.username} onChange={(e) => { setProfile((prevState) => ({
+                                    ...prevState,
+                                    username: e.target.value
+                                })) }}
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold">
+                                Contact
+                            </label>
+                            <input
+                                required
+                                value={profile.contact} onChange={(e) => { setProfile((prevState) => ({
+                                    ...prevState,
+                                    contact: e.target.value
+                                })) }}
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
                             />
                         </div>
