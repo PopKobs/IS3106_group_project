@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase'; // Import your Firebase configuration
 import RecipeReviewCard from '../components/CardDisplay'; // Import the RecipeReviewCard component
 import { collection, getDocs } from "firebase/firestore";
+import { Container } from '@mui/material';
 
 function StoreListings() {
   const [storeListings, setStoreListings] = useState([]);
@@ -22,8 +23,9 @@ function StoreListings() {
 
   return (
     <div>
+      <Container>
       {storeListings.map(listing => (
-        <RecipeReviewCard
+          <RecipeReviewCard
           key={listing.id}
           title={listing.title}
           subheader={listing.description}
@@ -32,6 +34,7 @@ function StoreListings() {
           // Add other props as needed
         />
       ))}
+      </Container>
     </div>
   );
 }
