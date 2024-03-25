@@ -18,8 +18,21 @@ const Register = () => {
     const onSubmit = async (e) => {
         e.preventDefault()
         if(!isRegistering) {
-            setIsRegistering(true)
-            await doCreateUserWithEmailAndPassword(email, password)
+            setIsRegistering(true);
+            try {
+                await doCreateUserWithEmailAndPassword(email, password);
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    setErrorMessage('Email address is already in use.');
+                } else {
+                    // Handle other authentication errors
+                    console.error('Error creating user:', error);
+                    setErrorMessage('An error occurred. Please try again later.');
+                }
+                setIsRegistering(false);
+                return; // Exit early to prevent further execution
+            }
+            
         }
     }
 

@@ -17,11 +17,15 @@ const Header = () => {
                             className='p-1 rounded-full hover:bg-gray-300'>
                             <i className="fas fa-user-circle text-xl"></i> {/* Font Awesome User Icon */}
                     </button>
+                    <button onClick={() => { doSignOut().then(() => { navigate('/login') }) }} >
+                            LOGOUT
+                            
+                    </button>
                     </>
                     :
                     <>
                         <Link className='text-sm text-blue-600 underline' to={'/login'}>Login</Link>
-                        <Link className='text-sm text-blue-600 underline' to={'/register'}>Register New Account</Link>
+                        <Link className='text-sm text-blue-600 underline' to={'/type'}>Register New Account</Link>
                     </>
             }
 

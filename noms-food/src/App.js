@@ -9,6 +9,7 @@ import Register from "./components/auth/register";
 import Home from "./components/home";
 import Header from "./components/header";
 import ProfilePage from './profilepage';
+import AccountType from "./components/auth/register/type";
 import { AuthProvider } from "./contexts/authContext";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     { path: "/createlisting", element: <CreateListing /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
+    { path: "/type", element: <AccountType /> },
     { path: "/home", element: <Home /> },
     { path: "/profilepage", element: <ProfilePage /> },
     // Add more routes as needed

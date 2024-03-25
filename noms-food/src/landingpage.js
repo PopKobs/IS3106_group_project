@@ -15,6 +15,8 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
+/* TODO: Below buttons are only for testing, since login must occur first */
+
 const LandingPage = () => {
     const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ const LandingPage = () => {
     };
 
   return (
-    <>
+    <div className="container">
       <div>
         <button onClick={handleSignupLink}>
             Sign up now
@@ -48,7 +50,7 @@ const LandingPage = () => {
         </button>
       </div>
      
-    </>
+    </div>
   );
 };
 
