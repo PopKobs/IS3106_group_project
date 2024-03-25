@@ -1,22 +1,13 @@
 import React from 'react'
-import { useAuth } from '../../contexts/authContext'
-import { collection, addDoc } from "firebase/app";
+import { useAuth } from '../contexts/authContext'
+import { db } from '../firebase/firebase';
+import { collection, addDoc } from "firebase/firestore";
 
-const reportNewTicket = async () => {
+const reportNewTicket = async (ticketData) => {
     
     try{
-    const username = prompt("Enter Full Name");
-    const title = prompt("Enter a ticket title");
-    const description = prompt("Enter Ticket Description");
-    const status = "open";
-    const reportedDate = new Date();
-    const closingDate = null;
-    const ticketId = 1;
-    const reportedUser = currentUser;
-
     const collectionRef = collection(db, "ITTicket");
-    const payload = (ticketId, username, title, description, status, reportedDate, closingDate, reportedUser);
-    const docRef = addDoc(collectionRef, payload);
+    const docRef = addDoc(collectionRef, ticketData);
     console.log("Ticket reported Successfully. TicketID: ",docRef.ticketId);
     } catch (error) {
         console.error("Error in creating Ticket:", error)

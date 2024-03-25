@@ -8,6 +8,8 @@ import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import Home from "./components/home";
 import Header from "./components/header";
+import TicketForm from "./user/ReportIT";
+import StoreListings from "./customer/searchStores";
 import { AuthProvider } from "./contexts/authContext";
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/home", element: <Home /> },
+    { path: "/reportItTicket", element: <TicketForm /> },
+    { path: "/storeListing", element:<StoreListings />}
     // Add more routes as needed
   ]);
 
