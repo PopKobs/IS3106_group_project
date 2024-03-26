@@ -3,6 +3,7 @@ import { Navigate, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../contexts/authContext'
 import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
 import { collection, addDoc, getFirestore } from "firebase/firestore"
+import { getAuth } from 'firebase/auth';
 
 const Register = () => {
 
@@ -12,6 +13,7 @@ const Register = () => {
         username: "",
         contact: "", // Added contact (phone number) field
         type: "", // Added account type field
+        
       });
 
     const [accType, setAccType] = useState(''); // User account type
@@ -25,24 +27,29 @@ const Register = () => {
     const [errorMessage, setErrorMessage] = useState('')
 
     const { userLoggedIn } = useAuth()
+    const auth = getAuth();
 
     // Load data from sessionStorage when component mounts
     useEffect(() => {
         const storedData = sessionStorage.getItem('accType');
+        
         if (storedData) {
           setAccType(storedData);
           setProfile(prevProfile => ({
             ...prevProfile,
-            type: storedData // Set profile.type here
+            type: storedData, // Set profile.type here
+            
           }));
         }
       }, []);
 
-  const handleNewUser = async () => {
+  const handleNewUser = async (userId) => {
     const db = getFirestore();
+    
     try {
+
       const userCollectionRef = collection(db, "Users");
-      await addDoc(userCollectionRef, profile);
+      await addDoc(userCollectionRef, { ...profile, userId });
       console.log("User profile added to database!");
       alert("You have successfully created this user!");
       setProfile({ email: "", name: "", username: "", contact: "" }); // Reset profile
@@ -59,8 +66,9 @@ const Register = () => {
             console.log("The Account Type: ")
             console.log(accType)
             try {
-                await doCreateUserWithEmailAndPassword(email, password);
-                await handleNewUser(profile);
+                const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+                const userId = userCredential.user.uid;
+                await handleNewUser(userId);
                 setIsRegistering(false);
                 //navigate("/home");
             } catch (error) {
