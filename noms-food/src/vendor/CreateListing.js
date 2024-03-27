@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore } from "firebase/firestore";
 import './CreateListing.css'; // Import the CSS file for styling
+import { getAuth } from 'firebase/auth';
 
 function CreateListing() {
+
+  const auth = getAuth(); // Get Current User State
+
+  useEffect(() => {
+    const userIden = auth.currentUser?.uid; // UserId for association
+    if (userIden) {
+        setListing(prevListing => ({
+            ...prevListing,
+            userId: userIden // User Association
+        }));
+    }
+}, [auth.currentUser]);
+
   // State to store the form data and a state for displaying the success message
   const [listing, setListing] = useState({
     title: '',
