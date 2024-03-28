@@ -4,12 +4,36 @@ import ReactDOM from 'react-dom/client'; // Update for React 18
 import './index.css';
 import App from './App'; // Main App component that includes routing
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#169574', // Adjust primary color to your preference
+    },
+    secondary: {
+      main: '#da2c41', // Adjust secondary color to your preference
+    },
+  },
+  typography: {
+    fontFamily: [
+      'Roboto', // You can specify your preferred font family here
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+    ].join(','),
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ThemeProvider theme={theme}>
+        <div style={{ backgroundColor: theme.palette.primary.main }}>
+          <App />
+        </div>
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

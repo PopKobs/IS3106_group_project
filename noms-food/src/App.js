@@ -13,6 +13,7 @@ import StoreListings from "./customer/searchStores";
 import ProfilePage from './profilepage';
 import AccountType from "./components/auth/register/type";
 import { AuthProvider } from "./contexts/authContext";
+import { Container } from "@mui/material";
 
 function App() {
   const routes = useRoutes([
@@ -32,7 +33,9 @@ function App() {
   return (
     <AuthProvider>
       <Header />
-      <div>{routes}</div>
+      <Container>
+        <div>{routes}</div>
+      </Container>    
     </AuthProvider>
   );
 }

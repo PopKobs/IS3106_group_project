@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { Navigate, Link, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { Button, Container, Typography } from '@mui/material';
 
 
 const AccountType = () => {
@@ -25,25 +26,21 @@ const AccountType = () => {
       navigate("/register"); // Redirects user to register
     };
 
-  return (
-    <div className="container">
+    return (
+      <Container maxWidth="sm" sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}>
+        <Typography variant="h5" sx={{ marginBottom: '20px' }}>
+          Registering As:
+        </Typography>
         <div>
-            Registering As:
-        </div>
-      <div>
-        <button onClick={handleVendor}>
+          <Button variant="contained" color="primary" onClick={handleVendor} sx={{ marginRight: '10px' }}>
             Vendor
-        </button>
-      </div>
-
-      <div>
-        <button onClick={handleCustomer}>
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleCustomer}>
             Customer
-        </button>
-      </div>
-     
-    </div>
-  );
+          </Button>
+        </div>
+      </Container>
+    );
 };
 
 export default AccountType;
