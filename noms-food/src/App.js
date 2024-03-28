@@ -3,7 +3,9 @@ import React from "react";
 import { useRoutes } from "react-router-dom";
 import LandingPage from './landingpage';
 import Signup from './signup';
+import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
+import ViewStore from './vendor/ViewStore';
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import Home from "./components/home";
@@ -18,7 +20,9 @@ function App() {
   const routes = useRoutes([
     { path: "/", element: <LandingPage /> },
     { path: "/signup", element: <Signup /> },
+    { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
+    { path: "/viewstore", element: <ViewStore />},
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/type", element: <AccountType /> },
