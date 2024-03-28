@@ -27,18 +27,30 @@ const AccountType = () => {
     };
 
     return (
-      <Container maxWidth="sm" sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}>
-        <Typography variant="h5" sx={{ marginBottom: '20px' }}>
-          Registering As:
-        </Typography>
-        <div>
-          <Button variant="contained" color="primary" onClick={handleVendor} sx={{ marginRight: '10px' }}>
-            Vendor
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleCustomer}>
-            Customer
-          </Button>
-        </div>
+      <Container
+        maxWidth="sm" 
+        sx={{  
+          padding: '20px', 
+          height: '100vh' }}>
+        <Container
+          maxWidth="xs"
+          sx={{ 
+            backgroundColor: 'white', 
+            padding: '20px', 
+            borderRadius: '10px',
+            marginTop: '55px' }}>
+          <Typography variant="h5" sx={{textAlign: 'center', marginBottom: '20px' }}>
+            Registering As:
+          </Typography>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Button variant="contained" color="primary" onClick={handleVendor} sx={{ marginBottom: '10px' }}>
+              Vendor
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleCustomer}>
+              Customer
+            </Button>
+          </div>
+        </Container>
       </Container>
     );
 };
