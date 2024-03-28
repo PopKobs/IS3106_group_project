@@ -12,6 +12,7 @@ const Register = () => {
         name: "",
         username: "",
         contact: "", // Added contact (phone number) field
+        storeId: "",
         type: "", // Added account type field
         
       });

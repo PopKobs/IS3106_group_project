@@ -21,6 +21,10 @@ const Header = () => {
                             LOGOUT
                             
                     </button>
+                    <button
+                        onClick={() => navigate('/home')}>
+                            HOMEPAGE
+                    </button>
                     </>
                     :
                     <>
