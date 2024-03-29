@@ -46,7 +46,7 @@ function CreateListing() {
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault(); // It's a good practice to call this at the beginning
 
     // Validation rules
     const validationErrors = {};

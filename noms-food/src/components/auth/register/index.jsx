@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/authContext'
 import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
 import { collection, addDoc, getFirestore } from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
+import { Button, Container, Typography, TextField } from '@mui/material';
 
 const Register = () => {
 
@@ -90,8 +91,107 @@ const Register = () => {
     return (
         <>
             {userLoggedIn && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
+        <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div>
+          <Typography variant="h5" sx={{ textAlign: 'center', marginBottom: '1rem' }}>
+            Create a New Account
+          </Typography>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <TextField
+              label="Email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              label="Name"
+              type="name"
+              autoComplete="name"
+              required
+              value={profile.name}
+              onChange={(e) => setProfile(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              label="Username"
+              type="username"
+              autoComplete="username"
+              required
+              value={profile.username}
+              onChange={(e) => setProfile(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              label="Contact"
+              type="contact"
+              autoComplete="contact"
+              required
+              value={profile.contact}
+              onChange={(e) => setProfile(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              autoComplete="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              label="Confirm Password"
+              type="password"
+              autoComplete="password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setconfirmPassword(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <Button
+              type="submit"
+              disabled={isRegistering}
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+            >
+              {isRegistering ? 'Signing Up...' : 'Sign Up'}
+            </Button>
+            <Typography variant="body2" align="center">
+              Already have an account?{' '}
+              <Link to={'/login'} className="text-center text-sm hover:underline font-bold">
+                Continue
+              </Link>
+            </Typography>
+          </form>
+        </div>
+      </Container>
+            
+        </>
+    )
+}
 
-            <main className="w-full h-screen flex self-center place-content-center place-items-center">
+export default Register
+
+
+
+/*<main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl">
                     <div className="text-center mb-6">
                         <div className="mt-2">
@@ -206,9 +306,4 @@ const Register = () => {
                         </div>
                     </form>
                 </div>
-            </main>
-        </>
-    )
-}
-
-export default Register
+            </main>*/
