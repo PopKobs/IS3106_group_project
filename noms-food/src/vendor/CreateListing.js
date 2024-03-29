@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore } from "firebase/firestore";
-import './CreateListing.css'; // Import the CSS file for styling
 import { getAuth } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import storage related functions
+
+import './CreateListing.css'; 
 
 function CreateListing() {
-
-  const auth = getAuth(); // Get Current User State
-
-  useEffect(() => {
-    const userIden = auth.currentUser?.uid; // UserId for association
-    if (userIden) {
-        setListing(prevListing => ({
-            ...prevListing,
-            userId: userIden // User Association
-        }));
-    }
-}, [auth.currentUser]);
-
-  // State to store the form data and a state for displaying the success message
+  const auth = getAuth(); 
   const [listing, setListing] = useState({
     title: '',
     description: '',
     price: 0,
     stock: 0,
+    photo: null, 
   });
-  const [showSuccess, setShowSuccess] = useState(false); // State to handle success message visibility
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Function to handle form input changes
+  useEffect(() => {
+    const userIden = auth.currentUser?.uid;
+    if (userIden) {
+        setListing(prevListing => ({
+            ...prevListing,
+            userId: userIden 
+        }));
+    }
+}, [auth.currentUser]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setListing({
@@ -35,28 +34,42 @@ function CreateListing() {
     });
   };
 
-  // Function to handle form submission
-  const handleSubmit = async (e) => { // Add 'async' here
-    e.preventDefault(); // It's a good practice to call this at the beginning
+  const handlePhotoChange = (e) => {
+    const photo = e.target.files[0]; 
+    setListing({
+      ...listing,
+      photo: photo,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
 
     const db = getFirestore();
 
     try {
       const listingCollectionRef = collection(db, "Listing");
-      await addDoc(listingCollectionRef, listing); // Assuming 'formData' is your listing data
+
+      const storage = getStorage(); // Get storage instance
+      const storageRef = ref(storage, `listing_photos/${listing.photo.name}`); // Use 'ref' from Firebase Storage
+      await uploadBytes(storageRef, listing.photo); // Use 'uploadBytes' from Firebase Storage
+      const photoURL = await getDownloadURL(storageRef); // Use 'getDownloadURL' from Firebase Storage
+
+      await addDoc(listingCollectionRef, {
+        ...listing,
+        photoURL: photoURL, 
+      });
 
       console.log('Submitting form:', listing);
 
-      setShowSuccess(true); // Show success message upon submission
-      setListing({ title: '', description: '', price: 0, stock: 0 }); // Reset form data
-      setTimeout(() => setShowSuccess(false), 3000); // Hide success message after 3 seconds
+      setShowSuccess(true); 
+      setListing({ title: '', description: '', price: 0, stock: 0, photo: null }); 
+      setTimeout(() => setShowSuccess(false), 3000); 
 
     } catch (error) {
       console.error("Error adding listing", error);
-      // Handle the error appropriately
     }
   };
-
 
   return (
     <div className="createListingContainer">
@@ -77,6 +90,10 @@ function CreateListing() {
         <div className="formGroup">
           <label>Stock:</label>
           <input type="number" name="stock" value={listing.stock} onChange={handleInputChange} />
+        </div>
+        <div className="formGroup">
+          <label>Photo:</label>
+          <input type="file" accept="image/*" onChange={handlePhotoChange} />
         </div>
         <button type="submit" className="submitButton">Create Listing</button>
       </form>
