@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
+import { collection, query, where, getDocs, getFirestore, deleteDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { Grid, Card, CardContent, Typography, styled } from '@mui/material';
+import { Grid, Card, CardContent, Typography, styled, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -18,6 +19,8 @@ const Title = styled(Typography)({
 function ViewOwnListings() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState(null);
   const auth = getAuth();
 
   useEffect(() => {
@@ -42,6 +45,27 @@ function ViewOwnListings() {
     return auth.currentUser?.uid;
   };
 
+  const handleOpenConfirmation = (listingId) => {
+    setConfirmationOpen(true);
+    setListingToDelete(listingId);
+  };
+
+  const handleCloseConfirmation = () => {
+    setConfirmationOpen(false);
+    setListingToDelete(null);
+  };
+
+  const handleDeleteListing = async () => {
+    const db = getFirestore();
+    try {
+      await deleteDoc(doc(db, 'Listing', listingToDelete));
+      setListings(prevListings => prevListings.filter(listing => listing.id !== listingToDelete));
+      handleCloseConfirmation();
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -62,11 +86,32 @@ function ViewOwnListings() {
                   <Typography variant="body2" color="textSecondary" component="p">Price: ${listing.price}</Typography>
                   <Typography variant="body2" color="textSecondary" component="p">Stock: {listing.stock}</Typography>
                 </CardContent>
+                <Button
+                  variant="contained"
+                  color="error"
+                  startIcon={<Delete />}
+                  onClick={() => handleOpenConfirmation(listing.id)}
+                >
+                  Delete
+                </Button>
               </StyledCard>
             </Grid>
           ))}
         </Grid>
       )}
+      <Dialog
+        open={confirmationOpen}
+        onClose={handleCloseConfirmation}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this listing?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button onClick={handleDeleteListing} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
