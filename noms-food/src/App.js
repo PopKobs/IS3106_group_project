@@ -5,6 +5,7 @@ import LandingPage from './landingpage';
 import Signup from './signup';
 import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
+import ViewOwnListings from './vendor/ViewOwnListings';
 import ViewStore from './vendor/ViewStore';
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
@@ -23,6 +24,7 @@ function App() {
     { path: "/signup", element: <Signup /> },
     { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
+    { path: "/viewownlistings", element: <ViewOwnListings /> },
     { path: "/viewstore", element: <ViewStore />},
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },

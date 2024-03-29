@@ -27,6 +27,13 @@ const Home = () => {
                 Go to Create Store
         </button>
         <button
+                onClick={() => navigate('/viewownlistings')} // Use navigate to go to the Create Listing page
+                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Go to View Listings
+        </button>
+
+        <button
                 onClick={() => navigate('/viewstore')} // Use navigate to go to the Create Listing page
                 className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >

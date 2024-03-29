@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
-import './ViewListing.css'; // Import the CSS file for styling
+import { getAuth } from 'firebase/auth';
 
-function ViewListing() {
+function ViewOwnListings() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const auth = getAuth(); // Get Current User State
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -14,7 +16,8 @@ function ViewListing() {
       const querySnapshot = await getDocs(q);
       const fetchedListings = [];
       querySnapshot.forEach((doc) => {
-        fetchedListings.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        fetchedListings.push({ id: doc.id, ...data });
       });
       setListings(fetchedListings);
       setLoading(false);
@@ -24,7 +27,6 @@ function ViewListing() {
   }, []);
 
   const getCurrentUserId = () => {
-  
     return auth.currentUser?.uid; // UserId for association
   };
 
@@ -41,7 +43,6 @@ function ViewListing() {
         <div className="listingGrid">
           {listings.map((listing) => (
             <div key={listing.id} className="listingCard">
-              <img src={listing.photoURL} alt={listing.title} />
               <div className="listingDetails">
                 <h3>{listing.title}</h3>
                 <p>{listing.description}</p>
@@ -56,4 +57,4 @@ function ViewListing() {
   );
 }
 
-export default ViewListing;
+export default ViewOwnListings;
