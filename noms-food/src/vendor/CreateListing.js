@@ -1,31 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore } from "firebase/firestore";
+import './CreateListing.css'; // Import the CSS file for styling
 import { getAuth } from 'firebase/auth';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import storage related functions
-
-import './CreateListing.css'; 
 
 function CreateListing() {
-  const auth = getAuth(); 
+
+  const auth = getAuth(); // Get Current User State
+
+  useEffect(() => {
+    const userIden = auth.currentUser?.uid; // UserId for association
+    if (userIden) {
+      setListing(prevListing => ({
+        ...prevListing,
+        userId: userIden // User Association
+      }));
+    }
+  }, [auth.currentUser]);
+
+  // State to store the form data and a state for displaying the success message
   const [listing, setListing] = useState({
     title: '',
     description: '',
     price: 0,
     stock: 0,
-    photo: null, 
   });
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // State to handle success message visibility
+  const [errors, setErrors] = useState({}); // State to store form validation errors
 
-  useEffect(() => {
-    const userIden = auth.currentUser?.uid;
-    if (userIden) {
-        setListing(prevListing => ({
-            ...prevListing,
-            userId: userIden 
-        }));
-    }
-}, [auth.currentUser]);
-
+  // Function to handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setListing({
@@ -35,39 +37,54 @@ function CreateListing() {
   };
 
   const handlePhotoChange = (e) => {
-    const photo = e.target.files[0]; 
-    setListing({
-      ...listing,
-      photo: photo,
-    });
-  };
+  const photo = e.target.files[0]; // Get the first selected file
+  setListing({
+    ...listing,
+    photo: photo,
+  });
+};
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault(); // It's a good practice to call this at the beginning
 
+    // Validation rules
+    const validationErrors = {};
+    if (!listing.title.trim()) {
+      validationErrors.title = 'Title is required';
+    }
+    if (!listing.description.trim()) {
+      validationErrors.description = 'Description is required';
+    }
+    if (listing.price <= 0) {
+      validationErrors.price = 'Price must be greater than 0';
+    }
+    if (listing.stock <= 0) {
+      validationErrors.stock = 'Stock must be greater than 0';
+    }
+
+    // If there are validation errors, update the state and return early
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    // If no validation errors, proceed with adding the listing
     const db = getFirestore();
 
     try {
       const listingCollectionRef = collection(db, "Listing");
-
-      const storage = getStorage(); // Get storage instance
-      const storageRef = ref(storage, `listing_photos/${listing.photo.name}`); // Use 'ref' from Firebase Storage
-      await uploadBytes(storageRef, listing.photo); // Use 'uploadBytes' from Firebase Storage
-      const photoURL = await getDownloadURL(storageRef); // Use 'getDownloadURL' from Firebase Storage
-
-      await addDoc(listingCollectionRef, {
-        ...listing,
-        photoURL: photoURL, 
-      });
+      await addDoc(listingCollectionRef, listing); // Assuming 'formData' is your listing data
 
       console.log('Submitting form:', listing);
 
-      setShowSuccess(true); 
-      setListing({ title: '', description: '', price: 0, stock: 0, photo: null }); 
-      setTimeout(() => setShowSuccess(false), 3000); 
+      setShowSuccess(true); // Show success message upon submission
+      setListing({ title: '', description: '', price: 0, stock: 0 }); // Reset form data
+      setTimeout(() => setShowSuccess(false), 3000); // Hide success message after 3 seconds
 
     } catch (error) {
       console.error("Error adding listing", error);
+      // Handle the error appropriately
     }
   };
 
@@ -78,22 +95,22 @@ function CreateListing() {
         <div className="formGroup">
           <label>Title:</label>
           <input type="text" name="title" value={listing.title} onChange={handleInputChange} />
+          {errors.title && <div className="errorMessage">{errors.title}</div>}
         </div>
         <div className="formGroup">
           <label>Description:</label>
           <textarea name="description" value={listing.description} onChange={handleInputChange} />
+          {errors.description && <div className="errorMessage">{errors.description}</div>}
         </div>
         <div className="formGroup">
           <label>Price ($):</label>
           <input type="number" name="price" value={listing.price} onChange={handleInputChange} />
+          {errors.price && <div className="errorMessage">{errors.price}</div>}
         </div>
         <div className="formGroup">
           <label>Stock:</label>
           <input type="number" name="stock" value={listing.stock} onChange={handleInputChange} />
-        </div>
-        <div className="formGroup">
-          <label>Photo:</label>
-          <input type="file" accept="image/*" onChange={handlePhotoChange} />
+          {errors.stock && <div className="errorMessage">{errors.stock}</div>}
         </div>
         <button type="submit" className="submitButton">Create Listing</button>
       </form>
