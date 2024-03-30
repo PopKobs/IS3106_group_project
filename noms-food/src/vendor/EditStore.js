@@ -1,27 +1,48 @@
-import React, { useState } from 'react';
-import { LoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
-import './CreateStore.css';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/authContext'; 
-import { collection, addDoc, getFirestore, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { LoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
+import './CreateStore.css'; // Assuming CSS styles are appropriate for EditStore as well
+import { useAuth } from '../contexts/authContext';
+import { doc, getDoc, getFirestore, query, collection, where, getDocs, updateDoc } from "firebase/firestore";
 
-
-function CreateStore() {
+function EditStore() {
   const navigate = useNavigate();
   const { currentUserEmail } = useAuth();
+  const db = getFirestore();
   const [store, setStore] = useState({
     name: '',
     description: '',
     opening: '',
     closing: '',
-    location: '',
+    location: { lat: null, lng: null },
     isOpen: false,
-    creatorEmail: currentUserEmail || ''
   });
-  const [showSuccess, setShowSuccess] = useState(false);
   const [autocomplete, setAutocomplete] = useState(null);
   const [marker, setMarker] = useState({ lat: null, lng: null });
-  const [isApiLoaded, setIsApiLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchStore = async () => {
+      const q = query(collection(db, "Users"), where("email", "==", currentUserEmail));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        const storeId = userDoc.storeId;
+        const storeRef = doc(db, "Store", storeId);
+        const storeDoc = await getDoc(storeRef);
+        if (storeDoc.exists()) {
+          const storeData = storeDoc.data();
+          setStore({ ...storeData, id: storeId });
+          setMarker(storeData.location);
+        } else {
+          console.log("No store found.");
+        }
+      } else {
+        console.log("User not found.");
+      }
+    };
+
+    fetchStore();
+  }, [currentUserEmail, db]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,8 +55,8 @@ function CreateStore() {
   const handlePlaceSelect = () => {
     const address = autocomplete.getPlace();
     setStore({
-        ...store,
-        location: address.formatted_address,
+      ...store,
+      location: address.formatted_address,
     });
     setMarker({ lat: address.geometry.location.lat(), lng: address.geometry.location.lng() });
   };
@@ -44,44 +65,28 @@ function CreateStore() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const db = getFirestore();
+
     try {
-      const storeCollectionRef = collection(db, "Store");
-      const storeDocRef = await addDoc(storeCollectionRef, {
+      const storeRef = doc(db, "Store", store.id);
+      await updateDoc(storeRef, {
         ...store,
         location: marker,
-        creatorEmail: currentUserEmail,
       });
 
-    const usersCollectionRef = collection(db, "Users");
-    const q = query(usersCollectionRef, where("email", "==", currentUserEmail));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        // Assuming the email field is unique, there should only be one document
-        const userDocRef = querySnapshot.docs[0].ref;
-    
-        // Step 3: Update the user document with the store ID
-        await updateDoc(userDocRef, {
-          storeId: storeDocRef.id,
-        });
-    
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
-        navigate('/home'); // Navigate to home after successful store creation
-      } else {
-        console.log("User not found.");
-      }
-
+      console.log("Store updated successfully");
+      navigate('/home'); // Navigate to home or store view page
     } catch (error) {
-      console.error("Error adding store", error);
+      console.error("Error updating store", error);
     }
   };
 
+  if (!store) {
+    return <div>Loading store details...</div>;
+  }
+
   return (
     <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
-      <h2 className="title">Sign your store up with NOMs!</h2>
+      <h2 className="title">Edit Your Store</h2>
       <form onSubmit={handleSubmit} className="createForm w-full max-w-md mt-8 px-4">
         <div className="formGroup">
           <label>Store Name:</label>
@@ -118,11 +123,10 @@ function CreateStore() {
                 )}
             </LoadScript>
         </div>
-        <button type="submit" className="submitButton">Sign Up Store</button>
+        <button type="submit" className="submitButton">Update Store</button>
       </form>
-      {showSuccess && <div className="successMessage">Store signed up successfully!</div>}
     </div>
   );
 }
 
-export default CreateStore;
+export default EditStore;
