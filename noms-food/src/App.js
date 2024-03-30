@@ -7,6 +7,7 @@ import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
 import ViewOwnListings from './vendor/ViewOwnListings';
 import ViewStore from './vendor/ViewStore';
+import EditStore from './vendor/EditStore';
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import Home from "./components/home";
@@ -25,7 +26,8 @@ function App() {
     { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
     { path: "/viewownlistings", element: <ViewOwnListings /> },
-    { path: "/viewstore", element: <ViewStore />},
+    { path: "/viewstore", element: <ViewStore /> },
+    { path: "/editstore", element: <EditStore /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/type", element: <AccountType /> },
