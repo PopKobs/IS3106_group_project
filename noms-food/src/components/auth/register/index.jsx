@@ -5,6 +5,8 @@ import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
 import { collection, addDoc, getFirestore } from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
 
+// TO Do: Error handle weak password and others
+// To do: fix ui
 const Register = () => {
 
     const [profile, setProfile] = useState({
@@ -89,7 +91,8 @@ const Register = () => {
 
     return (
         <>
-            {userLoggedIn && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && accType == "Vendor" && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && accType == "Customer" && !isRegistering && (<Navigate to={'/custHome'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl">
