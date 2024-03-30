@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
+import { doc, deleteDoc, getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
+// import './CreateListing.css'; // Import the CSS file for styling
 
 const DeleteListing = () => {
     const [listingId, setListingId] = useState('');
 
-    const handleDelete = () => {
-        // Perform the delete operation using the listingId
-        // You can make an API call to delete the listing from the server
+    const handleDelete = async () => {
+        const db = getFirestore();
+        const listingDocRef = doc(db, "Listing", listingId);
 
-        // Example API call using fetch:
-        fetch(`/api/listings/${listingId}`, {
-            method: 'DELETE',
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response from the server
-                console.log('Listing deleted successfully');
-            })
-            .catch(error => {
-                // Handle any errors that occurred during the delete operation
-                console.error('Error deleting listing:', error);
-            });
+        try {
+            await deleteDoc(listingDocRef);
+            console.log('Listing deleted successfully');
+        } catch (error) {
+            console.error('Error deleting listing:', error);
+        }
     };
 
     return (
