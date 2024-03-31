@@ -39,9 +39,9 @@ function StoreListings() {
   return (
     <div>
       <Container>
-      {storeListings.map(listing => (
-          <ListStoreListing key={listing.id} listing={listing}/>
-      ))}
+        {storeListings.map(listing => (
+          <ListStoreListing key={listing.id} listing={listing} />
+        ))}
       </Container>
     </div>
   );
@@ -78,8 +78,8 @@ function ListStoreListing({ listing }) {
             <MoreVertIcon />
           </IconButton>
         }
-        title = {listing.title}
-        subheader= {listing.description}
+        title={listing.title}
+        subheader={listing.description}
       />
       <CardMedia
         component="img"

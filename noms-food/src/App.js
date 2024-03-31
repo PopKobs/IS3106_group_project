@@ -52,7 +52,7 @@ function App() {
   return (
     <AuthProvider>
       {isCustHeaderPage ? <CustHeader /> : <Header />}
-      <Container>
+      <Container maxWidth="xl">
         <div>{routes}</div>
       </Container>    
     </AuthProvider>

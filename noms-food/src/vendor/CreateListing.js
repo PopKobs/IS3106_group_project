@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { collection, addDoc, getFirestore, query, where, getDocs  } from "firebase/firestore";
 import './CreateListing.css'; // Import the CSS file for styling
 import { getAuth } from 'firebase/auth';
 
@@ -71,11 +71,25 @@ function CreateListing() {
 
     // If no validation errors, proceed with adding the listing
     const db = getFirestore();
+    const auth = getAuth();
+    const userEmail = auth.currentUser.email;
 
     try {
+      // Fetch the store associated with the current user's email
+      const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where('email', '==', userEmail)));
+      if (userQuerySnapshot.empty) {
+        throw new Error('User not found');
+      }
+      // Get the first user document (assuming there's only one user with this email)
+      const userData = userQuerySnapshot.docs[0].data();
+      const storeId = userData.storeId;
+
+      // Add the storeId to the listing object
+      const listingWithStoreId = { ...listing, storeId };
+
       const listingCollectionRef = collection(db, "Listing");
-      await addDoc(listingCollectionRef, listing); 
-      console.log('Submitting form:', listing);
+      await addDoc(listingCollectionRef, listingWithStoreId); 
+      console.log('Submitting form:', listingWithStoreId);
 
       setShowSuccess(true); // Show success message upon submission
       setListing({ title: '', description: '', price: 0, stock: 0 }); // Reset form data
