@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
+import { LoadScript,useLoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
 import './CreateStore.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext'; 
@@ -79,6 +79,15 @@ function CreateStore() {
     }
   };
 
+  const libraries = ["places"];
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs",
+    libraries,
+  });
+
+  if (loadError) return "Error loading maps";
+  if (!isLoaded) return "Loading maps";
+
   return (
     <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
       <h2 className="title">Sign your store up with NOMs!</h2>
@@ -97,26 +106,21 @@ function CreateStore() {
           <input type="time" name="closing" value={store.closing} onChange={handleInputChange} />
 
           <label>Location:</label>
-            <LoadScript
-                googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs"
-                libraries={["places"]}
-            >
-                <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
-                <input type="text" placeholder="Type location" />
-                </Autocomplete>
-                {marker.lat && marker.lng && (
-                <div className="googleMapContainer">
+            <Autocomplete onLoad={setAutocomplete} onPlaceChanged={handlePlaceSelect}>
+              <input type="text" placeholder="Type location" />
+            </Autocomplete>
+            {marker.lat && marker.lng && (
+              <div className="googleMapContainer">
                 <GoogleMap
-                    mapContainerClassName="googleMap"
-                    mapContainerStyle={{ height: "400px", width: "800px" }}
-                    center={marker}
-                    zoom={15}
+                  mapContainerClassName="googleMap"
+                  mapContainerStyle={{ height: "400px", width: "800px" }}
+                  center={marker}
+                  zoom={15}
                 >
-                    <Marker position={marker} />
+                  <Marker position={marker} />
                 </GoogleMap>
-                </div>
-                )}
-            </LoadScript>
+              </div>
+            )}
         </div>
         <button type="submit" className="submitButton">Sign Up Store</button>
       </form>
