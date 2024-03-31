@@ -6,6 +6,8 @@ import { collection, addDoc, getFirestore } from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
 import { Button, Container, Typography, TextField } from '@mui/material';
 
+// TO Do: Error handle weak password and others
+// To do: fix ui
 const Register = () => {
 
     const [profile, setProfile] = useState({
@@ -90,7 +92,8 @@ const Register = () => {
 
     return (
         <>
-            {userLoggedIn && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && accType == "Vendor" && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && accType == "Customer" && !isRegistering && (<Navigate to={'/custHome'} replace={true} />)}
         <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <div>
           <Typography variant="h5" sx={{ textAlign: 'center', marginBottom: '1rem' }}>
@@ -186,6 +189,7 @@ const Register = () => {
         </>
     )
 }
+            
 
 export default Register
 

@@ -2,6 +2,11 @@ import React, { useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
 import { useAuth } from '../../../contexts/authContext'
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection, query, where, getDoc, doc, getDocs } from 'firebase/firestore';
+
+// To Do: Partial Login happens even if you fail 
+// Reset Logging In
 
 const Login = () => {
     const { userLoggedIn } = useAuth()
@@ -10,12 +15,14 @@ const Login = () => {
     const [password, setPassword] = useState('')
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [userType, setUserType] = useState('')
 
     const onSubmit = async (e) => {
         e.preventDefault()
         if(!isSigningIn) {
             setIsSigningIn(true)
             await doSignInWithEmailAndPassword(email, password)
+            await fetchUserData();
             // doSendEmailVerification()
         }
     }
@@ -30,9 +37,37 @@ const Login = () => {
         }
     }
 
+    const fetchUserData = async () => {
+        const auth = getAuth(); // Get Current User State
+        const userIden = auth.currentUser?.uid; // UserId 
+        try {
+            const db = getFirestore();
+            const usersCollectionRef = collection(db, "Users");
+            console.log('Current User:', userIden);
+            
+            const q = query(usersCollectionRef, where("userId", "==", userIden));
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
+                
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const type = userData.type;
+                    setUserType(type);
+                });
+            } else {
+                setErrorMessage("No Account Found");
+            }
+        } catch (error) {
+            console.error("Error Retrieving User Account:", error);
+            setErrorMessage("Error Retrieving User Account, Please Try Again Later");
+        }
+    };
+
     return (
         <div>
-            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && userType == "Vendor" && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && userType == "Customer" && (<Navigate to={'/custHome'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl bg-white">
