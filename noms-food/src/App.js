@@ -13,9 +13,10 @@ import Register from "./components/auth/register";
 import Home from "./components/home";
 import Header from "./components/header";
 import TicketForm from "./user/ReportIT";
-import StoreListings from "./customer/searchStores";
 import ProfilePage from './profilepage';
 import AccountType from "./components/auth/register/type";
+import SearchStores from "./customer/searchStores"
+import StoreListings from "./customer/viewStoreListing"
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -33,8 +34,9 @@ function App() {
     { path: "/type", element: <AccountType /> },
     { path: "/home", element: <Home /> },
     { path: "/reportItTicket", element: <TicketForm /> },
-    { path: "/storeListing", element:<StoreListings />},
     { path: "/profilepage", element: <ProfilePage /> },
+    { path: "/searchStores", element: <SearchStores /> },
+    { path: "/store/:storeId", element: <StoreListings /> },
     // Add more routes as needed
   ]);
 

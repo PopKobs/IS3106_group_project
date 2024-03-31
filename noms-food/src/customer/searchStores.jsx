@@ -1,132 +1,83 @@
-//import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase/firebase'; // Import your Firebase configuration
+import { db } from '../firebase/firebase';
 import { collection, getDocs } from "firebase/firestore";
-import { Container } from '@mui/material';
+import { Container, Grid, Typography, Card, CardContent, TextField } from '@mui/material';
+import { Link } from 'react-router-dom';
 
-function StoreListings() {
-  const [storeListings, setStoreListings] = useState([]);
+function ViewStores() {
+  const [stores, setStores] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const fetchStoreListings = async () => {
+    const fetchStores = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'Listing')); // Assuming 'storeListings' is your collection name
-        const listingsData = querySnapshot.docs.map(doc => ({ id: doc.id, description: doc.data().description, title: doc.data().title }));
-        setStoreListings(listingsData);
+        const querySnapshot = await getDocs(collection(db, 'Store'));
+        const storesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setStores(storesData);
       } catch (error) {
-        console.error('Error fetching store listings:', error);
+        console.error('Error fetching stores:', error);
       }
     };
 
-    fetchStoreListings();
+    fetchStores();
   }, []);
 
-  return (
-    <div>
-      <Container>
-      {storeListings.map(listing => (
-          <ListStoreListing key={listing.id} listing={listing}/>
-      ))}
-      </Container>
-    </div>
+  const filteredStores = stores.filter(store =>
+    store.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-}
-
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
-function ListStoreListing({ listing }) {
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title = {listing.title}
-        subheader= {listing.description}
-      />
-      <CardMedia
-        component="img"
-        height="194"
-        image="/static/images/cards/paella.jpg"
-        alt="Paella dish"
-      />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          {listing.description}
+    <Container
+      maxWidth="sm" 
+      sx={{  
+        padding: '20px', 
+        height: '100vh',
+        marginTop: '20px' }}>
+      <Container maxWidth="sm"
+        sx={{ 
+          backgroundColor: 'white', 
+          padding: '20px', 
+          borderRadius: '10px',
+          marginTop: '55px' }}>
+        <Typography variant="h4" gutterBottom>
+          Available Stores
         </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>Method:</Typography>
-          <Typography paragraph>
-            nil
-          </Typography>
-          <Typography paragraph>
-            nil
-          </Typography>
-          <Typography paragraph>
-            nil
-          </Typography>
-          <Typography>
-            nil
-          </Typography>
-        </CardContent>
-      </Collapse>
-    </Card>
+        <TextField
+          label="Search by store name"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ marginBottom: '20px' }}
+        />
+        <Grid container spacing={3}>
+          {filteredStores.map(store => (
+            <Grid item xs={12} sm={6} md={4} key={store.id}>
+              <StoreCard store={store} />
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </Container>
   );
 }
 
-export default StoreListings;
+function StoreCard({ store }) {
+  return (
+    <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            {store.name}
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            {store.description}
+          </Typography>
+          {/* Add more details here if needed */}
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+export default ViewStores;
