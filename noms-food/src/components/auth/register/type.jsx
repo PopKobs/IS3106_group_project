@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Button, Container, Typography } from '@mui/material';
 
 
 const AccountType = () => {
+
+  useEffect(() => {
+    setLoginType(sessionStorage.getItem('LogIn'));
+  }, []);
     
     const [accType, setAccType] = useState(''); // User account type
+    const [loginType, setLoginType] = useState('');
     const navigate = useNavigate();
 
     const updateSessionStorage = (key, value) => {
@@ -23,7 +28,12 @@ const AccountType = () => {
         register();
     }
     const register = () => {
-      navigate("/register"); // Redirects user to register
+      if (loginType==='google') {
+        navigate("/gRegister");
+      } else {
+        navigate("/register"); // Redirects user to register
+      }
+      
     };
 
     return (

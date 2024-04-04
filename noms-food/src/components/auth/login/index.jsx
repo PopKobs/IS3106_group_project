@@ -4,9 +4,8 @@ import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../../../fireb
 import { useAuth } from '../../../contexts/authContext'
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDoc, doc, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
-// To Do: Partial Login happens even if you fail 
-// Reset Logging In
 
 const Login = () => {
     const { userLoggedIn } = useAuth()
@@ -16,6 +15,17 @@ const Login = () => {
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [userType, setUserType] = useState('')
+    const [noAccount, setNoAccount] = useState('')
+    const navigate = useNavigate();
+
+    const updateSessionStorage = (key, value) => {
+        sessionStorage.setItem(key, value); // Temporarily store Google Log In Status
+      };
+
+    const handleGoogle = async () => {
+        updateSessionStorage('LogIn', 'google');
+    }
+    
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -33,13 +43,27 @@ const Login = () => {
         }
     }
 
-    const onGoogleSignIn = (e) => {
+    const onGoogleSignIn = async (e) => {
         e.preventDefault()
+        
         if (!isSigningIn) {
-            setIsSigningIn(true)
-            doSignInWithGoogle().catch(err => {
-                setIsSigningIn(false)
-            })
+            try {
+                setIsSigningIn(true)
+                await doSignInWithGoogle();
+                await fetchUserData();
+                await handleGoogle();
+                if (noAccount===true) {
+                    navigate('/type');
+                } else if (userType==="Vendor") {
+                    navigate('/home');
+                } else if (userType==="Customer") {
+                    navigate('/custHome');
+                }
+            } catch (error) {
+                setErrorMessage(error.message);
+            } finally {
+                setIsSigningIn(false); // Reset Button
+            } 
         }
     }
 
@@ -63,6 +87,7 @@ const Login = () => {
                 });
             } else {
                 setErrorMessage("No Account Found");
+                setNoAccount(true);
             }
         } catch (error) {
             console.error("Error Retrieving User Account:", error);

@@ -18,6 +18,7 @@ import TicketForm from "./user/ReportIT";
 import ProfilePage from './profilepage';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
+import GRegister from "./components/auth/register/googleRegister";
 import SearchStores from "./customer/searchStores"
 import StoreListings from "./customer/viewStoreListing"
 import { AuthProvider } from "./contexts/authContext";
@@ -38,6 +39,7 @@ function App() {
     { path: "/editstore", element: <EditStore /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
+    { path: "/gRegister", element: <GRegister /> },
     { path: "/type", element: <AccountType /> },
     { path: "/home", element: <Home /> },
     { path: "/custHome", element: <CustHome /> },
