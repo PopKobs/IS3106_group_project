@@ -4,6 +4,7 @@ import './signup.css';
 import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography } from '@mui/material';
 import background from "./photo/noms_background.jpg"
+import { doSignOut } from "./firebase/auth.js";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -31,6 +32,10 @@ const LandingPage = () => {
   const handleAccountClick = () => {
     navigate("/login"); // Redirects user to the login page
   };*/
+
+  useEffect(() => {
+    doSignOut();
+  }, []);
 
   return (
     <Box

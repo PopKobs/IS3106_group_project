@@ -3,40 +3,96 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/authContext'
 import { doSignOut } from '../../firebase/auth'
 import icon from '../../photo/noms_icon.png'
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Drawer from '@mui/material/Drawer';
 
 const Header = () => {
     const navigate = useNavigate()
     const { userLoggedIn } = useAuth()
+
+    // Update the paths for the drawer
+    const paths1 = ['/home','/profilepage', '/createstore', '/viewstore', '/createlisting', '/viewownlistings'];
+
+    const [open, setOpen] = React.useState(false); // Open Drawer State
+
+    const toggleDrawer = (newOpen) => () => {
+        setOpen(newOpen);
+    };
+
+  const DrawerList = (
+    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+      <List>
+        {['Homepage','Profile', 'Create Store', 'View Store', 'Create Listing', 'View Listing'].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton onClick={() => navigate(paths1[index])}>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['Logout'].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton onClick={() => { doSignOut().then(() => { navigate('/login') }) }}>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+    
     return (
-        <nav className='flex flex-row gap-x-2 w-full z-20 fixed top-0 left-0 h-12 border-b place-content-center items-center bg-gray-200'>
-            {/* Icon */}
-            <img src={icon} alt="icon" className="w-8 h-8 ml-2" />
-            {
+        <Box sx={{ flexGrow: 1}} >
+        <AppBar position="static" sx={{ backgroundColor:'#e64a19' }}>
+        <Toolbar >
+          
+          {/* Icon */}
+          <img src={icon} alt="icon" className="w-8 h-8 ml-2" style={{ margin: '10px' }}/>
+
+          {
                 userLoggedIn
                     ?
                     <>
-                        <button
-                            onClick={() => navigate('/profilepage')}
-                            className='p-1 rounded-full hover:bg-gray-300'>
-                            <i className="fas fa-user-circle text-xl"></i> {/* Font Awesome User Icon */}
-                        </button>
-                        <button onClick={() => { doSignOut().then(() => { navigate('/login') }) }} >
-                            LOGOUT
-
-                        </button>
-                        <button
-                            onClick={() => navigate('/home')}>
-                            HOMEPAGE
-                        </button>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ mr: 2 }}
+                            onClick={toggleDrawer(true)}
+                        >
+                        <MenuIcon />
+                        </IconButton>
+                        <Drawer open={open} onClose={toggleDrawer(false)}>
+                        {DrawerList}
+                        </Drawer>
                     </>
                     :
                     <>
-                        <Link className='text-sm text-blue-600 underline' to={'/login'}>Login</Link>
-                        <Link className='text-sm text-blue-600 underline' to={'/type'}>Register New Account</Link>
+                        <Button style={{ color: 'white' }} onClick={() => navigate('/login')}> Login </Button>
+                        <Button style={{ color: 'white' }} onClick={() => navigate('/type')}> Register </Button>
                     </>
             }
 
-        </nav>
+        </Toolbar>
+        </AppBar>
+        </Box>
+
     )
 }
 
