@@ -20,10 +20,16 @@ const Login = () => {
     const onSubmit = async (e) => {
         e.preventDefault()
         if(!isSigningIn) {
-            setIsSigningIn(true)
-            await doSignInWithEmailAndPassword(email, password)
-            await fetchUserData();
-            // doSendEmailVerification()
+            try {
+                setIsSigningIn(true);
+                await doSignInWithEmailAndPassword(email, password);
+                await fetchUserData();
+                // doSendEmailVerification()
+            } catch (error) {
+                setErrorMessage(error.message);
+            } finally {
+                setIsSigningIn(false); // Reset Button
+            }
         }
     }
 
