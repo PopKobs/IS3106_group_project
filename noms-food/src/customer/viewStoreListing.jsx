@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
-import { Card, CardContent, Typography, Container, Grid } from '@mui/material';
+import { Card, CardContent, Typography, Button, Modal, Box, IconButton, Container, Stack } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 const fetchStoreAndListings = async (storeId) => {
   try {
@@ -32,6 +34,11 @@ const fetchStoreAndListings = async (storeId) => {
 function ViewStoreListings() {
   const { storeId } = useParams();
   const [storeListing, setStoreListing] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,54 +53,155 @@ function ViewStoreListings() {
     fetchData();
   }, [storeId]);
 
+  useEffect(() => {
+    const storedCartItems = sessionStorage.getItem('cartItems');
+    if (storedCartItems) {
+      setCartItems(JSON.parse(storedCartItems));
+    }
+  }, []);
+
+  const handleOpenModal = (listing) => {
+    setSelectedListing(listing);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedListing(null);
+    setShowModal(false);
+    setQuantity(1);
+  };
+
+  const handleIncreaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const addToCart = () => {
+    try {
+      let updatedCartItems = cartItems.slice();
+      const existingItemIndex = updatedCartItems.findIndex(item => item.id === selectedListing.id);
+      if (existingItemIndex !== -1) {
+        // Item already exists in cart, update its quantity
+        updatedCartItems[existingItemIndex].quantity += quantity;
+      } else {
+        // Item is not in cart, add it
+        const newItem = {
+          id: selectedListing.id,
+          title: selectedListing.title,
+          description: selectedListing.description,
+          quantity: quantity,
+          price: selectedListing.price * quantity,
+          unitPrice: selectedListing.price
+        };
+        updatedCartItems.push(newItem);
+      }
+      sessionStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      setCartItems(updatedCartItems);
+      handleCloseModal();
+      alert('Listing added to cart successfully!');
+    } catch (error) {
+      console.error('Error adding listing to cart:', error);
+      alert('Failed to add listing to cart!');
+    }
+  };
+
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        padding: '20px',
-        height: '100vh'
-      }}>
+    <div>
       <Container
-        maxWidth="lg"
+        maxWidth="sm"
         sx={{
-          backgroundColor: 'white',
           padding: '20px',
-          borderRadius: '10px',
-          marginTop: '55px'
+          height: '100vh',
+          marginTop: '20px'
         }}>
+        {selectedListing && (
+          <Modal open={showModal} onClose={handleCloseModal}>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'white',
+              boxShadow: 24,
+              p: 4,
+              maxWidth: 400,
+              borderRadius: 8,
+            }}>
+              <Typography variant="h5" gutterBottom>{selectedListing.title}</Typography>
+              <Typography variant="body1" gutterBottom>{selectedListing.description}</Typography>
+              <Typography variant="body1" gutterBottom>Quantity:</Typography>
+              <IconButton onClick={handleDecreaseQuantity}><RemoveIcon /></IconButton>
+              <Typography variant="body1" display="inline">{quantity}</Typography>
+              <IconButton onClick={handleIncreaseQuantity}><AddIcon /></IconButton>
+              <Typography variant="body1" gutterBottom>Aggregate Price: ${selectedListing.price * quantity}</Typography>
+              {cartItems.some(item => item.id === selectedListing.id) ? null :
+                <Button variant="contained" color="primary" onClick={addToCart}>Add to Cart</Button>
+              }
+            </Box>
+          </Modal>
+        )}
+        {/* Your store listings */}
         {storeListing && (
-          <div>
-            <Typography variant="h2" gutterBottom>{storeListing.store.name}</Typography>
-            <Typography variant="body1" gutterBottom>{storeListing.store.description}</Typography>
-            <Typography variant="h3" gutterBottom>Listings</Typography>
-            <Grid container spacing={3}>
-              {storeListing.listings.map(listing => (
-                <Grid item key={listing.id} xs={12} md={6} lg={4}>
-                  <StoreListingCard listing={listing} />
-                </Grid>
-              ))}
-            </Grid>
-          </div>
+          <Stack direction="column" spacing={3}>
+            {storeListing.listings.map(itemListing => (
+              <StoreListingCard
+                key={itemListing.id}
+                listing={itemListing}
+                handleOpenModal={() => handleOpenModal(itemListing)}
+                cartItems={cartItems}
+              />
+            ))}
+          </Stack>
         )}
       </Container>
-    </Container>
+    </div>
   );
+}
 
-  function StoreListingCard({ listing }) {
-    return (
-      <Card variant="outlined">
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {listing.title}
-          </Typography>
-          <Typography variant="body1" color="textSecondary">
-            {listing.description}
-          </Typography>
-        </CardContent>
-      </Card>
-    );
-  }
+function StoreListingCard({ listing, handleOpenModal, cartItems }) {
+  const isInCart = cartItems.some(item => item.id === listing.id);
+  const [addedToCart, setAddedToCart] = useState(false);
 
+  useEffect(() => {
+    if (isInCart) {
+      setAddedToCart(true);
+    }
+  }, [isInCart]);
+
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          {listing.title}
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          {listing.description}
+        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <Typography variant="body1" gutterBottom>Price: ${listing.price}</Typography>
+          </div>
+          {!isInCart && (
+            <div>
+              <Button variant="contained" color="primary" onClick={handleOpenModal}>
+                Add to Cart
+              </Button>
+            </div>
+          )}
+          {addedToCart && (
+            <Typography variant="body2" color="textSecondary">
+              Item added to cart
+            </Typography>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default ViewStoreListings;

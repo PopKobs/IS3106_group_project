@@ -20,6 +20,7 @@ import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
 import SearchStores from "./customer/searchStores"
 import StoreListings from "./customer/viewStoreListing"
+import CartView  from "./customer/cart";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -46,6 +47,7 @@ function App() {
     { path: "/searchStores", element: <SearchStores /> },
     { path: "/store/:storeId", element: <StoreListings /> },
     { path: "/profilepageCust", element: <ProfilePageCust /> },
+    { path: "/viewCart", element: <CartView/>},
     // Add more routes as needed
   ]);
 
