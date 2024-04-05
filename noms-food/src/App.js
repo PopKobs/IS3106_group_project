@@ -12,6 +12,7 @@ import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import Home from "./components/home/index";
 import CustHome from "./components/home/customerHome";
+import AdminHome from "./components/home/adminHome";
 import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
 import TicketForm from "./user/ReportIT";
@@ -27,6 +28,8 @@ function App() {
   const location = useLocation(); // Get current location
   const custHeaderPages = ["/custHome", "/profilepageCust"]; // Pages for customers (using customer header)
   const isCustHeaderPage = custHeaderPages.includes(location.pathname); // Check if current page is a customer page
+  const adminHeaderPages = ["/adminHome"]; // Pages for admin
+  const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
 
   const routes = useRoutes([
     { path: "/", element: <LandingPage /> },
@@ -41,6 +44,7 @@ function App() {
     { path: "/type", element: <AccountType /> },
     { path: "/home", element: <Home /> },
     { path: "/custHome", element: <CustHome /> },
+    { path: "/adminHome", element: <AdminHome /> },
     { path: "/reportItTicket", element: <TicketForm /> },
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },
@@ -51,7 +55,7 @@ function App() {
 
   return (
     <AuthProvider>
-      {isCustHeaderPage ? <CustHeader /> : <Header />}
+      {isCustHeaderPage ? <CustHeader /> : (isAdminPage ? <AdminHeader /> : <Header />)}
       <Container maxWidth="xl">
         <div>{routes}</div>
       </Container>    
