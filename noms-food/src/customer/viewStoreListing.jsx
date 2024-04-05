@@ -138,7 +138,7 @@ function ViewStoreListings() {
               <IconButton onClick={handleDecreaseQuantity}><RemoveIcon /></IconButton>
               <Typography variant="body1" display="inline">{quantity}</Typography>
               <IconButton onClick={handleIncreaseQuantity}><AddIcon /></IconButton>
-              <Typography variant="body1" gutterBottom>Aggregate Price: ${selectedListing.price * quantity}</Typography>
+              <Typography variant="body1" gutterBottom>Total Price: ${selectedListing.price * quantity}</Typography>
               {cartItems.some(item => item.id === selectedListing.id) ? null :
                 <Button variant="contained" color="primary" onClick={addToCart}>Add to Cart</Button>
               }

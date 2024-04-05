@@ -4,6 +4,7 @@ import './signup.css';
 import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography } from '@mui/material';
 import background from "./photo/noms_background.jpg"
+import nomsIcon from "./photo/noms_icon.png"
 import { doSignOut } from "./firebase/auth.js";
 
 import React, { useState, useEffect } from "react";
@@ -23,16 +24,6 @@ import {
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  /*const handleSignupLink = () => {
-      navigate("/signup");
-  }
-  const handleCreateListing = () => {
-      navigate("/createListing");
-  }
-  const handleAccountClick = () => {
-    navigate("/login"); // Redirects user to the login page
-  };*/
-
   useEffect(() => {
     doSignOut();
   }, []);
@@ -49,13 +40,28 @@ const LandingPage = () => {
         height: '100vh',
       }}
     >
-      <Container
+    <img 
+        src={nomsIcon} 
+        alt="NOMs Logo" 
+        style={{
+          position: 'absolute', // Set position to absolute
+          top: '50%', // Center vertically
+          left: '50%', // Center horizontally
+          transform: 'translate(-50%, -50%)', // Center the image
+          width: '50%', 
+          maxWidth: '300px', 
+          borderRadius: '8px',
+          zIndex: 1, 
+        }} 
+      />
+     <Container
         maxWidth="sm"
         sx={{
           textAlign: 'center',
           background: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
           borderRadius: '8px', // Rounded corners
           padding: '2rem', // Add padding
+          zIndex: 0,
         }}
       >
         <Typography variant="h2">Welcome to NOMs</Typography>
