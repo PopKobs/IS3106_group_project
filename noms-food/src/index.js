@@ -30,10 +30,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <div style={{ backgroundColor: theme.palette.primary.main }}>
+        <div style={{ backgroundColor: theme.palette.primary.main, minHeight: '100vh' }}>
           <App />
         </div>
       </ThemeProvider>
+
     </BrowserRouter>
   </React.StrictMode>
 );
