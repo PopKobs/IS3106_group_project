@@ -18,8 +18,8 @@ import TicketForm from "./user/ReportIT";
 import ProfilePage from './profilepage';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
-import SearchStores from "./customer/searchStores"
-import StoreListings from "./customer/viewStoreListing"
+import SearchStores from "./customer/searchStores";
+import StoreListings from "./customer/viewStoreListing";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
