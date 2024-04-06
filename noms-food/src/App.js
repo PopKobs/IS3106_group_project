@@ -6,6 +6,8 @@ import Signup from './signup';
 import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
 import ViewOwnListings from './vendor/ViewOwnListings';
+import ViewOngoingOrders from './vendor/ViewOngoingOrders';
+import ViewPastOrders from './vendor/ViewPastOrders';
 import ViewStore from './vendor/ViewStore';
 import EditStore from './vendor/EditStore';
 import Login from "./components/auth/login";
@@ -37,6 +39,8 @@ function App() {
     { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
     { path: "/viewownlistings", element: <ViewOwnListings /> },
+    { path: "/viewongoingorders", element: <ViewOngoingOrders /> },
+    { path: "/viewpastorders", element: <ViewPastOrders /> },
     { path: "/viewstore", element: <ViewStore /> },
     { path: "/editstore", element: <EditStore /> },
     { path: "/login", element: <Login /> },
