@@ -28,9 +28,11 @@ const ViewOngoingOrders = () => {
                     {orders.map((order) => (
                         <li key={order.id}>
                             <p>Order ID: {order.id}</p>
-                            <p>Customer: {order.customerName}</p>
-                            <p>Total Amount: {order.totalAmount}</p>
-                            {/* Add more order details as needed */}
+                            <p>Customer ID: {order.customerID}</p>
+                            <p>Total Price: {order.price}</p>
+                            <p>Order Date: {order.date}</p>
+                            <p>Listing ID: {order.listingID}</p>
+                            <p>Store ID: {order.storeID}</p>
                         </li>
                     ))}
                 </ul>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
 import { collection, getDocs } from "firebase/firestore";
-import { Container, Grid, Typography, Card, CardContent, TextField, Box } from '@mui/material';
+import { Container, Stack, Typography, Card, CardContent, TextField, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 function ViewStores() {
@@ -62,23 +62,21 @@ function ViewStores() {
           onChange={e => setSearchTerm(e.target.value)}
           style={{ marginBottom: '20px' }}
         />
-        <Grid container spacing={3}>
+        <Stack direction="column" spacing={3}>
           {filteredStores.map(store => (
-            <Grid item xs={12} sm={6} md={4} key={store.id}>
-              <Box sx={{ opacity: store.isOpen !== true ? 0.5 : 1, cursor: store.isOpen === true ? 'pointer' : 'not-allowed' }}>
-                <StoreCard store={store} disabled={store.isOpen !== true} />
-              </Box>
-            </Grid>
+            <StoreCard key={store.id} store={store} />
           ))}
-        </Grid>
+        </Stack>
       </Container>
     </Container>
   );
 }
 
-function StoreCard({ store, disabled }) {
+function StoreCard({ store }) {
+  const disabled = !store.isOpen;
+
   return (
-    <Box sx={{ opacity: store.isOpen !== true ? 0.5 : 1, cursor: store.isOpen === true ? 'pointer' : 'not-allowed' }}>
+    <Box sx={{ opacity: disabled ? 0.5 : 1, cursor: disabled ? 'not-allowed' : 'pointer' }}>
       {disabled ? (
         <Card>
           <CardContent>

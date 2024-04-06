@@ -6,6 +6,8 @@ import Signup from './signup';
 import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
 import ViewOwnListings from './vendor/ViewOwnListings';
+import ViewOngoingOrders from './vendor/ViewOngoingOrders';
+import ViewPastOrders from './vendor/ViewPastOrders';
 import ViewStore from './vendor/ViewStore';
 import EditStore from './vendor/EditStore';
 import Login from "./components/auth/login";
@@ -18,10 +20,13 @@ import CustHeader from "./components/header/custHeader";
 import AdminHeader from "./components/header/adminHeader";
 import TicketForm from "./user/ReportIT";
 import ProfilePage from './profilepage';
+import EditProfile from './editprofile';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
 import SearchStores from "./customer/searchStores"
 import StoreListings from "./customer/viewStoreListing"
+import CartView from "./customer/cart";
+import AdminUsersPage from './admin/viewUser';
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -38,6 +43,8 @@ function App() {
     { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
     { path: "/viewownlistings", element: <ViewOwnListings /> },
+    { path: "/viewongoingorders", element: <ViewOngoingOrders /> },
+    { path: "/viewpastorders", element: <ViewPastOrders /> },
     { path: "/viewstore", element: <ViewStore /> },
     { path: "/editstore", element: <EditStore /> },
     { path: "/login", element: <Login /> },
@@ -50,7 +57,10 @@ function App() {
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },
     { path: "/store/:storeId", element: <StoreListings /> },
+    { path: "/editprofile", element: <EditProfile /> },
+    { path: "/adminviewuser", element: <AdminUsersPage /> },
     { path: "/profilepageCust", element: <ProfilePageCust /> },
+    { path: "/viewCart", element: <CartView/>},
     // Add more routes as needed
   ]);
 

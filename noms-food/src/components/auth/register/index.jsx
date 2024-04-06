@@ -75,13 +75,21 @@ const Register = () => {
                 await handleNewUser(userId);
                 setIsRegistering(false);
                 //navigate("/home");
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    setErrorMessage('Email address is already in use.');
+              } catch (error) {
+                console.error('Error creating user:', error);
+                if (error.code) {
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            setErrorMessage('Email address is already in use.');
+                            break;
+                        case 'auth/weak-password':
+                            setErrorMessage('Password needs to be at least 6 characters.');
+                            break;
+                        default:
+                            setErrorMessage('An error occurred. Please try again later.');
+                    }
                 } else {
-                    // Handle other authentication errors
-                    console.error('Error creating user:', error);
-                    setErrorMessage('An error occurred. Please try again later.');
+                    setErrorMessage('An error occurred. Please check your network connection and try again.');
                 }
                 setIsRegistering(false);
                 return; // Exit early to prevent further execution
@@ -105,8 +113,11 @@ const Register = () => {
               type="email"
               autoComplete="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={email} 
+              onChange={(e) => { setEmail(e.target.value); setProfile((prevState) => ({
+                ...prevState,
+                email: e.target.value
+            })) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -116,8 +127,11 @@ const Register = () => {
               type="name"
               autoComplete="name"
               required
-              value={profile.name}
-              onChange={(e) => setProfile(e.target.value)}
+              value={profile.name} 
+              onChange={(e) => { setProfile((prevState) => ({
+                ...prevState,
+                name: e.target.value
+            })) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -127,8 +141,11 @@ const Register = () => {
               type="username"
               autoComplete="username"
               required
-              value={profile.username}
-              onChange={(e) => setProfile(e.target.value)}
+              value={profile.username} 
+              onChange={(e) => { setProfile((prevState) => ({
+                ...prevState,
+                username: e.target.value
+            })) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -138,8 +155,11 @@ const Register = () => {
               type="contact"
               autoComplete="contact"
               required
-              value={profile.contact}
-              onChange={(e) => setProfile(e.target.value)}
+              value={profile.contact} 
+              onChange={(e) => { setProfile((prevState) => ({
+                ...prevState,
+                contact: e.target.value
+            })) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -147,10 +167,10 @@ const Register = () => {
             <TextField
               label="Password"
               type="password"
-              autoComplete="password"
+              autoComplete='new-password'
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={password} 
+              onChange={(e) => { setPassword(e.target.value) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -158,14 +178,22 @@ const Register = () => {
             <TextField
               label="Confirm Password"
               type="password"
-              autoComplete="password"
+              autoComplete='off'
               required
-              value={confirmPassword}
-              onChange={(e) => setconfirmPassword(e.target.value)}
+              value={confirmPassword} 
+              onChange={(e) => { setconfirmPassword(e.target.value) }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
             />
+
+            {/* Display the error message */}
+            {errorMessage && (
+                        <Typography color="error" align="center">
+                            {errorMessage}
+                        </Typography>
+                    )}
+                    
             <Button
               type="submit"
               disabled={isRegistering}
