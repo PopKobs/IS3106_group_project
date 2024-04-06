@@ -15,6 +15,7 @@ import CustHome from "./components/home/customerHome";
 import AdminHome from "./components/home/adminHome";
 import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
+import AdminHeader from "./components/header/adminHeader";
 import TicketForm from "./user/ReportIT";
 import ProfilePage from './profilepage';
 import ProfilePageCust from './profilepageCust';
