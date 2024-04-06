@@ -1,33 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getFirestore, query, where, getDocs  } from "firebase/firestore";
-import './CreateListing.css'; // Import the CSS file for styling
+import { collection, addDoc, getFirestore, query, where, getDocs } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
 
 function CreateListing() {
-
-  const auth = getAuth(); // Get Current User State
+  const auth = getAuth();
 
   useEffect(() => {
-    const userIden = auth.currentUser?.uid; // UserId for association
+    const userIden = auth.currentUser?.uid;
     if (userIden) {
-      setListing(prevListing => ({
+      setListing((prevListing) => ({
         ...prevListing,
-        userId: userIden // User Association
+        userId: userIden,
       }));
     }
   }, [auth.currentUser]);
 
-  // State to store the form data and a state for displaying the success message
   const [listing, setListing] = useState({
     title: '',
     description: '',
-    price: 0,
-    stock: 0,
+    price: '',
+    stock: '',
   });
-  const [showSuccess, setShowSuccess] = useState(false); // State to handle success message visibility
-  const [errors, setErrors] = useState({}); // State to store form validation errors
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // Function to handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setListing({
@@ -36,99 +33,107 @@ function CreateListing() {
     });
   };
 
-  const handlePhotoChange = (e) => {
-  const photo = e.target.files[0]; // Get the first selected file
-  setListing({
-    ...listing,
-    photo: photo,
-  });
-};
-
-  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // It's a good practice to call this at the beginning
+    e.preventDefault();
 
-    // Validation rules
     const validationErrors = {};
-    if (!listing.title.trim()) {
-      validationErrors.title = 'Title is required';
-    }
-    if (!listing.description.trim()) {
-      validationErrors.description = 'Description is required';
-    }
-    if (listing.price <= 0) {
-      validationErrors.price = 'Price must be greater than 0';
-    }
-    if (listing.stock <= 0) {
-      validationErrors.stock = 'Stock must be greater than 0';
-    }
+    if (!listing.title.trim()) validationErrors.title = 'Title is required';
+    if (!listing.description.trim()) validationErrors.description = 'Description is required';
+    if (!listing.price || Number(listing.price) <= 0) validationErrors.price = 'Price must be greater than 0';
+    if (!listing.stock || Number(listing.stock) <= 0) validationErrors.stock = 'Stock must be greater than 0';
 
-    // If there are validation errors, update the state and return early
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
-    // If no validation errors, proceed with adding the listing
     const db = getFirestore();
-    const auth = getAuth();
-    const userEmail = auth.currentUser.email;
-
     try {
-      // Fetch the store associated with the current user's email
-      const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where('email', '==', userEmail)));
-      if (userQuerySnapshot.empty) {
-        throw new Error('User not found');
-      }
-      // Get the first user document (assuming there's only one user with this email)
-      const userData = userQuerySnapshot.docs[0].data();
-      const storeId = userData.storeId;
-
-      // Add the storeId to the listing object
-      const listingWithStoreId = { ...listing, storeId };
-
-      const listingCollectionRef = collection(db, "Listing");
-      await addDoc(listingCollectionRef, listingWithStoreId); 
-      console.log('Submitting form:', listingWithStoreId);
-
-      setShowSuccess(true); // Show success message upon submission
-      setListing({ title: '', description: '', price: 0, stock: 0 }); // Reset form data
-      setTimeout(() => setShowSuccess(false), 3000); // Hide success message after 3 seconds
-
+      const listingWithStoreId = { ...listing, userId: auth.currentUser.uid }; // Assuming the storeId is the userId for simplicity
+      await addDoc(collection(db, 'Listing'), listingWithStoreId);
+      setShowSuccess(true);
+      setListing({ title: '', description: '', price: '', stock: '' });
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
-      console.error("Error adding listing", error);
-      // Handle the error appropriately
+      console.error('Error adding listing', error);
     }
   };
 
   return (
-    <div className="createListingContainer">
-      <h2>Create Listing</h2>
-      <form onSubmit={handleSubmit} className="createForm">
-        <div className="formGroup">
-          <label>Title:</label>
-          <input type="text" name="title" value={listing.title} onChange={handleInputChange} />
-          {errors.title && <div className="errorMessage">{errors.title}</div>}
-        </div>
-        <div className="formGroup">
-          <label>Description:</label>
-          <textarea name="description" value={listing.description} onChange={handleInputChange} />
-          {errors.description && <div className="errorMessage">{errors.description}</div>}
-        </div>
-        <div className="formGroup">
-          <label>Price ($):</label>
-          <input type="number" name="price" value={listing.price} onChange={handleInputChange} />
-          {errors.price && <div className="errorMessage">{errors.price}</div>}
-        </div>
-        <div className="formGroup">
-          <label>Stock:</label>
-          <input type="number" name="stock" value={listing.stock} onChange={handleInputChange} />
-          {errors.stock && <div className="errorMessage">{errors.stock}</div>}
-        </div>
-        <button type="submit" className="submitButton">Create Listing</button>
-      </form>
-      {showSuccess && <div className="successMessage">Listing created successfully!</div>}
-    </div>
+    <Container maxWidth="sm" sx={{ my: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, backgroundColor: 'white' }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{
+            color: 'darkgreen',
+            mb: 3,
+            fontWeight: 'bold' // This makes the text bold
+          }}
+        >
+          Create Listing
+        </Typography>
+
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            fullWidth
+            label="Title"
+            name="title"
+            value={listing.title}
+            onChange={handleInputChange}
+            error={!!errors.title}
+            helperText={errors.title}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            multiline
+            rows={4}
+            value={listing.description}
+            onChange={handleInputChange}
+            error={!!errors.description}
+            helperText={errors.description}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Price ($)"
+            name="price"
+            type="number"
+            value={listing.price}
+            onChange={handleInputChange}
+            error={!!errors.price}
+            helperText={errors.price}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Stock"
+            name="stock"
+            type="number"
+            value={listing.stock}
+            onChange={handleInputChange}
+            error={!!errors.stock}
+            helperText={errors.stock}
+            margin="normal"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2, backgroundColor: 'darkgreen', '&:hover': { backgroundColor: 'green' } }}
+          >
+            Create Listing
+          </Button>
+          {showSuccess && (
+            <Alert severity="success" sx={{ mt: 3 }}>
+              Listing created successfully!
+            </Alert>
+          )}
+        </Box>
+      </Paper>
+    </Container>
   );
 }
 

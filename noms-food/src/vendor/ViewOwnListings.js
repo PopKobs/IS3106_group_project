@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, getFirestore, deleteDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { Grid, Card, CardContent, Typography, styled, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Grid, Card, CardContent, Typography, styled, Button, Dialog, DialogTitle, DialogContent, DialogActions, Container } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -26,7 +26,7 @@ function ViewOwnListings() {
   useEffect(() => {
     const fetchListings = async () => {
       const db = getFirestore();
-      const userId = getCurrentUserId();
+      const userId = auth.currentUser?.uid;
       const q = query(collection(db, 'Listing'), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       const fetchedListings = [];
@@ -39,11 +39,7 @@ function ViewOwnListings() {
     };
 
     fetchListings();
-  }, []);
-
-  const getCurrentUserId = () => {
-    return auth.currentUser?.uid;
-  };
+  }, [auth]);
 
   const handleOpenConfirmation = (listingId) => {
     setConfirmationOpen(true);
@@ -67,30 +63,31 @@ function ViewOwnListings() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Container>;
   }
 
   return (
-    <div className="viewListingContainer">
-      <Title variant="h2">My Listings</Title>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Title variant="h4">My Listings</Title>
       {listings.length === 0 ? (
-        <div>No listings found.</div>
+        <Typography>No listings found.</Typography>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           {listings.map((listing) => (
             <Grid item xs={12} sm={6} md={4} key={listing.id}>
               <StyledCard>
                 <CardContent>
-                  <Title variant="h6">{listing.title}</Title>
-                  <Typography variant="body1" component="p">{listing.description}</Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">Price: ${listing.price}</Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">Stock: {listing.stock}</Typography>
+                  <Typography variant="h6" component="div">{listing.title}</Typography>
+                  <Typography variant="body1">{listing.description}</Typography>
+                  <Typography variant="body2" color="textSecondary">Price: ${listing.price}</Typography>
+                  <Typography variant="body2" color="textSecondary">Stock: {listing.stock}</Typography>
                 </CardContent>
                 <Button
                   variant="contained"
                   color="error"
                   startIcon={<Delete />}
                   onClick={() => handleOpenConfirmation(listing.id)}
+                  sx={{ m: 1 }}
                 >
                   Delete
                 </Button>
@@ -112,8 +109,8 @@ function ViewOwnListings() {
           <Button onClick={handleDeleteListing} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Container>
   );
 }
 
-export default ViewOwnListings; //i
+export default ViewOwnListings;
