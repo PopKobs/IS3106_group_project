@@ -32,6 +32,7 @@ const LandingPage = () => {
     <Box
       sx={{
         display: 'flex',
+        position: 'relative',
         alignItems: 'center', // Center items vertically
         justifyContent: 'center', // Center items horizontally
         backgroundImage: `url(${background})`,
@@ -45,11 +46,11 @@ const LandingPage = () => {
         alt="NOMs Logo" 
         style={{
           position: 'absolute', // Set position to absolute
-          top: '50%', // Center vertically
+          top: '35%', // Center vertically
           left: '50%', // Center horizontally
           transform: 'translate(-50%, -50%)', // Center the image
           width: '50%', 
-          maxWidth: '300px', 
+          maxWidth: '200px', 
           borderRadius: '8px',
           zIndex: 1, 
         }} 
@@ -57,11 +58,19 @@ const LandingPage = () => {
      <Container
         maxWidth="sm"
         sx={{
+          position: 'absolute', // Set position to absolute
+          bottom: '35%', // Adjust bottom offset as desired
+          left: '50%', // Center horizontally
+          transform: 'translateX(-50%)', // Center the container
           textAlign: 'center',
           background: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
           borderRadius: '8px', // Rounded corners
           padding: '2rem', // Add padding
           zIndex: 0,
+          '@media (max-width: 600px)': { // Apply styles for screens with max width of 600px (mobile devices)
+            bottom: '20%', // Adjust bottom offset for mobile
+            padding: '1rem', // Adjust padding for mobile
+          }
         }}
       >
         <Typography variant="h2">Welcome to NOMs</Typography>

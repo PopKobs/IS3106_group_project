@@ -16,11 +16,13 @@ import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
 import TicketForm from "./user/ReportIT";
 import ProfilePage from './profilepage';
+import EditProfile from './editprofile';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
 import SearchStores from "./customer/searchStores"
 import StoreListings from "./customer/viewStoreListing"
-import CartView  from "./customer/cart";
+import CartView from "./customer/cart";
+import AdminUsersPage from './admin/viewUser';
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -46,6 +48,8 @@ function App() {
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },
     { path: "/store/:storeId", element: <StoreListings /> },
+    { path: "/editprofile", element: <EditProfile /> },
+    { path: "/adminviewuser", element: <AdminUsersPage /> },
     { path: "/profilepageCust", element: <ProfilePageCust /> },
     { path: "/viewCart", element: <CartView/>},
     // Add more routes as needed
