@@ -15,6 +15,7 @@ import CustHome from "./components/home/customerHome";
 import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
 import TicketForm from "./user/ReportIT";
+import ViewITTickets from "./user/ViewITTickets";
 import ProfilePage from './profilepage';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
@@ -42,6 +43,7 @@ function App() {
     { path: "/home", element: <Home /> },
     { path: "/custHome", element: <CustHome /> },
     { path: "/reportItTicket", element: <TicketForm /> },
+    { path: "/viewItTickets", element: <ViewITTickets />},
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },
     { path: "/store/:storeId", element: <StoreListings /> },
