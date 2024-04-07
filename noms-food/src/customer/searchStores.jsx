@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { Container, Stack, Typography, Card, CardContent, TextField, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -12,8 +12,13 @@ function ViewStores() {
     const fetchStores = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'Store'));
-        const storesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setStores(storesData);
+        const storesData = querySnapshot.docs.map(async (doc) => {
+          const storeData = { id: doc.id, ...doc.data() };
+          const isActive = await isUserActive(storeData); // Check user status
+          return { ...storeData, isActive }; // Merge with existing store data
+        });
+        const storesWithStatus = await Promise.all(storesData);
+        setStores(storesWithStatus);
       } catch (error) {
         console.error('Error fetching stores:', error);
       }
@@ -22,19 +27,37 @@ function ViewStores() {
     fetchStores();
   }, []);
 
-  const filteredStores = stores.filter(store =>
+  const isUserActive = async (store) => {
+    try {
+      if(store.creatorEmail){
+      const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where("email", "==", store.creatorEmail)));
+      let userIsActive = false;
+      const firstDoc = userQuerySnapshot.docs[0];
+      
+      if (firstDoc && firstDoc.data().status === "Active") {
+        userIsActive = true;
+      }
+      return userIsActive;
+      }
+    } catch (error) {
+      console.error('Error checking user status:', error);
+      throw error;
+    }
+  };
+
+  const filteredStores = stores.filter(store => store.isActive).filter(store =>
     store.name.toLowerCase().includes(searchTerm.toLowerCase())
   ).sort((a, b) => {
     // Sort by status: open stores come first
     if (a.isOpen === true && b.isOpen !== true) {
       return -1;
-    } else if (a.status !== true && b.status === true) {
+    } else if (a.isOpen !== true && b.isOpen === true) {
       return 1;
     } else {
       // If status is the same, maintain original order
       return 0;
     }
-  });;
+  });
 
   return (
     <Container
