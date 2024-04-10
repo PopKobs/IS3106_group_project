@@ -29,15 +29,15 @@ function ViewStores() {
 
   const isUserActive = async (store) => {
     try {
-      if(store.creatorEmail){
-      const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where("email", "==", store.creatorEmail)));
-      let userIsActive = false;
-      const firstDoc = userQuerySnapshot.docs[0];
-      
-      if (firstDoc && firstDoc.data().status === "Active") {
-        userIsActive = true;
-      }
-      return userIsActive;
+      if (store.creatorEmail) {
+        const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where("email", "==", store.creatorEmail)));
+        let userIsActive = false;
+        const firstDoc = userQuerySnapshot.docs[0];
+
+        if (firstDoc && firstDoc.data().status === "Active") {
+          userIsActive = true;
+        }
+        return userIsActive;
       }
     } catch (error) {
       console.error('Error checking user status:', error);

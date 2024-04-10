@@ -41,21 +41,21 @@ const LandingPage = () => {
         height: '100vh',
       }}
     >
-    <img 
-        src={nomsIcon} 
-        alt="NOMs Logo" 
+      <img
+        src={nomsIcon}
+        alt="NOMs Logo"
         style={{
           position: 'absolute', // Set position to absolute
           top: '35%', // Center vertically
           left: '50%', // Center horizontally
           transform: 'translate(-50%, -50%)', // Center the image
-          width: '50%', 
-          maxWidth: '200px', 
+          width: '50%',
+          maxWidth: '200px',
           borderRadius: '8px',
-          zIndex: 1, 
-        }} 
+          zIndex: 1,
+        }}
       />
-     <Container
+      <Container
         maxWidth="sm"
         sx={{
           position: 'absolute', // Set position to absolute

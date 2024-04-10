@@ -27,6 +27,7 @@ import SearchStores from "./customer/searchStores"
 import StoreListings from "./customer/viewStoreListing"
 import CartView from "./customer/cart";
 import AdminUsersPage from './admin/viewUser';
+import CheckoutPage from "./customer/checkout";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -60,16 +61,19 @@ function App() {
     { path: "/editprofile", element: <EditProfile /> },
     { path: "/adminviewuser", element: <AdminUsersPage /> },
     { path: "/profilepageCust", element: <ProfilePageCust /> },
-    { path: "/viewCart", element: <CartView/>},
+    { path: "/viewCart", element: <CartView /> },
+    { path: "/checkout", element: <CheckoutPage /> }
     // Add more routes as needed
   ]);
 
+  
+
   return (
     <AuthProvider>
-      {isCustHeaderPage ? <CustHeader /> : (isAdminPage ? <AdminHeader /> : <Header />)}
-      <Container maxWidth="xl">
-        <div>{routes}</div>
-      </Container>    
+        {isCustHeaderPage ? <CustHeader /> : (isAdminPage ? <AdminHeader /> : <Header />)}
+        <Container maxWidth="xl">
+          <div>{routes}</div>
+        </Container>
     </AuthProvider>
   );
 }
