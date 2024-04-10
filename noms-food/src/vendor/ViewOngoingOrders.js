@@ -1,39 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase/firebase';
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
-import { Container, Grid, Typography, Card, CardContent, TextField, Box } from '@mui/material';
+import { collection, doc, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { Container, Typography, TextField, Grid, Card, CardContent, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-const ViewOngoingOrders = ({ vendorStoreIDs }) => {
+function ViewOngoingOrders() {
     const [orders, setOrders] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const db = getFirestore();
+    const auth = getAuth();
 
     useEffect(() => {
         const fetchOrders = async () => {
-            try {
-                const firestoreDb = db;
-                const q = query(collection(db, 'Order'), where('status', '==', 'ongoing'), where('storeID', 'in', vendorStoreIDs));
-                const querySnapshot = await getDocs(q);
-                const ordersData = await Promise.all(querySnapshot.docs.map(async doc => {
-                    const orderData = doc.data();
-                    const storeSnapshot = await getDoc(doc(firestoreDb, 'Store', orderData.storeID));
-                    const storeData = storeSnapshot.data();
-                    const userSnapshot = await getDoc(doc(firestoreDb, 'User', orderData.customerID));
-                    const userData = userSnapshot.data();
-                    const listingPromises = orderData.listingIDList.map(listingID => getDoc(doc(firestoreDb, 'Listing', listingID)));
-                    const listingSnapshots = await Promise.all(listingPromises);
-                    const listingTitles = listingSnapshots.map(snapshot => snapshot.data().title);
-                    return { ...orderData, id: doc.id, storeName: storeData.name, customerName: userData.Name, listingTitles };
-                }));
-                setOrders(ordersData);
-            } catch (error) {
-                console.error('Error fetching ongoing orders:', error);
+            if (auth.currentUser) {
+                const currentUserId = auth.currentUser.uid;
+
+                // Query to get the vendor's details
+                const userQuery = query(collection(db, 'User'), where('userID', '==', currentUserId));
+                const userSnapshot = await getDocs(userQuery);
+                if (!userSnapshot.empty) {
+                    const userData = userSnapshot.docs[0].data();
+                    const storeId = userData.storeId;
+
+                    // Query to get the ongoing orders for the store
+                    const ordersQuery = query(collection(db, 'Order'), where('storeID', '==', storeId), where('status', '==', 'ongoing'));
+                    const ordersSnapshot = await getDocs(ordersQuery);
+
+                    // Convert the snapshot to an array of order objects
+                    const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setOrders(ordersData);
+                    console.log(ordersData);
+
+                }
             }
         };
-        
+
         fetchOrders();
-    }, [vendorStoreIDs]);
+    }, [db, auth]);
 
     const filteredOrders = orders.filter(order =>
         order.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -77,6 +80,7 @@ const ViewOngoingOrders = ({ vendorStoreIDs }) => {
     );
 };
 
+
 function OrderCard({ order }) {
     return (
         <Link to={`/order/${order.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -89,13 +93,13 @@ function OrderCard({ order }) {
                         Store Name: {order.storeName}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Store ID: {order.storeID}
+                        Store ID: {order.storeId}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
                         Customer Name: {order.customerName}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Customer ID: {order.customerID}
+                        Customer ID: {order.customerId}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
                         Total Price: {order.price}
