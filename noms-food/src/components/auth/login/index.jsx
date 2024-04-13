@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
-import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
+import { doSignInWithEmailAndPassword, doSignInWithGoogle, doSignOut } from '../../../firebase/auth'
 import { useAuth } from '../../../contexts/authContext'
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDoc, doc, getDocs } from 'firebase/firestore';
@@ -26,6 +26,9 @@ const Login = () => {
                 await fetchUserData();
                 // doSendEmailVerification()
             } catch (error) {
+                console.log("triggered")
+                doSignOut();
+                setUserType("");
                 setErrorMessage(error.message);
             } finally {
                 setIsSigningIn(false); // Reset Button
@@ -60,20 +63,35 @@ const Login = () => {
                     const userData = doc.data();
                     const type = userData.type;
                     setUserType(type);
+                    console.log(userData.status);
+                    if (userData.status == 'Banned') {
+                        console.log("Triggered");
+                        throw new Error("Your account has been banned");
+                    } else if (userData.status == 'Deleted') {
+                        throw new Error("This account has been deleted");
+                    }
                 });
             } else {
-                setErrorMessage("No Account Found");
+                throw new Error("No Account Found");
             }
         } catch (error) {
-            console.error("Error Retrieving User Account:", error);
-            setErrorMessage("Error Retrieving User Account, Please Try Again Later");
+            if (error.message==="Your account has been banned") {
+                throw new Error("Your account has been banned");
+            } else if (error.message==="This account has been deleted") {
+                throw new Error("This account has been deleted");
+            } else if (error.message==="No Account Found") {
+                throw new Error("No Account has Been Found");
+            } else {
+                throw new Error("Error While Retrieving Account");
+            }
         }
     };
 
     return (
         <div>
-            {userLoggedIn && userType == "Vendor" && (<Navigate to={'/home'} replace={true} />)}
-            {userLoggedIn && userType == "Customer" && (<Navigate to={'/custHome'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType == "Vendor" && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType == "Customer" && (<Navigate to={'/custHome'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType == "Admin" && (<Navigate to={'/adminHome'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl bg-white">

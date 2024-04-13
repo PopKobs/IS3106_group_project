@@ -37,7 +37,7 @@ function App() {
   const location = useLocation(); // Get current location
   const custHeaderPages = ["/custHome", "/profilepageCust"]; // Pages for customers (using customer header)
   const isCustHeaderPage = custHeaderPages.includes(location.pathname); // Check if current page is a customer page
-  const adminHeaderPages = ["/adminHome"]; // Pages for admin
+  const adminHeaderPages = ["/adminHome", "/adminviewuser"]; // Pages for admin
   const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
 
   const routes = useRoutes([
