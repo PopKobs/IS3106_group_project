@@ -14,27 +14,30 @@ function ViewOngoingOrders() {
         const fetchOrders = async () => {
             if (auth.currentUser) {
                 const currentUserId = auth.currentUser.uid;
-
+                console.log(currentUserId);
+    
                 // Query to get the vendor's details
                 const userQuery = query(collection(db, 'User'), where('userID', '==', currentUserId));
                 const userSnapshot = await getDocs(userQuery);
+    
                 if (!userSnapshot.empty) {
                     const userData = userSnapshot.docs[0].data();
                     const storeId = userData.storeId;
-
-                    // Query to get the ongoing orders for the store
-                    const ordersQuery = query(collection(db, 'Order'), where('storeID', '==', storeId), where('status', '==', 'ongoing'));
+                    console.log(storeId);
+                    console.log(userData);
+    
+                    // Query to get all orders for the user
+                    const ordersQuery = query(collection(db, 'Order'), where('userID', '==', currentUserId));
                     const ordersSnapshot = await getDocs(ordersQuery);
-
+    
                     // Convert the snapshot to an array of order objects
                     const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     setOrders(ordersData);
                     console.log(ordersData);
-
                 }
             }
         };
-
+    
         fetchOrders();
     }, [db, auth]);
 
