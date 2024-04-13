@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { Card, CardContent, Typography, Button, Modal, Box, IconButton, Container, Stack } from '@mui/material';
@@ -38,7 +38,7 @@ function ViewStoreListings() {
   const [selectedListing, setSelectedListing] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +54,9 @@ function ViewStoreListings() {
   }, [storeId]);
 
   useEffect(() => {
-    const storedCartItems = sessionStorage.getItem('cartItems');
+    const cartItemsKey = `cartItems_${storeId}`;
+    const storedCartItems = sessionStorage.getItem(cartItemsKey);
+    console.log(cartItemsKey);
     if (storedCartItems) {
       setCartItems(JSON.parse(storedCartItems));
     }
@@ -100,7 +102,8 @@ function ViewStoreListings() {
         };
         updatedCartItems.push(newItem);
       }
-      sessionStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      const cartItemsKey = `cartItems_${storeId}`;
+      sessionStorage.setItem(cartItemsKey, JSON.stringify(updatedCartItems));
       setCartItems(updatedCartItems);
       handleCloseModal();
       alert('Listing added to cart successfully!');
@@ -157,6 +160,16 @@ function ViewStoreListings() {
               />
             ))}
           </Stack>
+        )}
+        {cartItems.length > 0 && (
+          <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to={`/viewCart/${storeId}`}
+        >
+            Proceed to Cart
+          </Button>
         )}
       </Container>
     </div>

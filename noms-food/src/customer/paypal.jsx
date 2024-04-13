@@ -1,11 +1,16 @@
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import { Navigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const PaypalPayment = () => {
+    const { storeId } = useParams();
+    const cartItemsKey = `cartItems_${storeId}`;
+    const navigate = useNavigate();
 
     const serverUrl = "http://localhost:8888";
 
     const createOrder = (data) => {
-        const storedCartItems = sessionStorage.getItem('cartItems');
+        const storedCartItems = sessionStorage.getItem(cartItemsKey);
         const cartItems = storedCartItems ? JSON.parse(storedCartItems) : [];
         let totalPrice = 0;
 
@@ -40,6 +45,7 @@ const PaypalPayment = () => {
       };
 
       const onApprove = (data) => {
+
          // Order is captured on the server and the response is returned to the browser
          return fetch(`${serverUrl}/my-server/capture-paypal-order`, {
           method: "POST",
@@ -50,7 +56,13 @@ const PaypalPayment = () => {
             orderID: data.orderID
           })
         })
-        .then((response) => response.json());
+        .then((response) => response.json())
+        .then((order) => {
+          if (order.status == "COMPLETED") {
+            console.log(order);
+            navigate(`/orderConfirmed/${storeId}/${order.id}`);
+          }
+        });
       };
 
     return (

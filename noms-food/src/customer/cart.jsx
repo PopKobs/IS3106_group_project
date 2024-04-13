@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Paper, Button, Link } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 const CartView = () => {
   const [cartItems, setCartItems] = useState([]);
+  const { storeId } = useParams();
+  const cartItemsKey = `cartItems_${storeId}`;
 
   useEffect(() => {
-    const storedCartItems = sessionStorage.getItem('cartItems');
+    const storedCartItems = sessionStorage.getItem(cartItemsKey);
     if (storedCartItems) {
       setCartItems(JSON.parse(storedCartItems));
     }
@@ -16,7 +19,7 @@ const CartView = () => {
 
   const updateCartItems = (updatedCartItems) => {
     setCartItems(updatedCartItems);
-    sessionStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    sessionStorage.setItem(cartItemsKey, JSON.stringify(updatedCartItems));
   };
 
   // Function to remove item from cart
@@ -53,7 +56,7 @@ const CartView = () => {
 
   const handleCheckout = () => {
     if (cartItems.length > 0) {
-      window.location.href = '/checkout';
+      window.location.href = `/checkout/${storeId}`;
     }
   };
 

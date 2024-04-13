@@ -88,8 +88,11 @@ const createOrder = async (data) => {
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
  */
 const captureOrder = async (orderID) => {
+  
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders/${orderID}/capture`;
+
+  console.log(orderID)
 
   const response = await fetch(url, {
     method: "POST",
@@ -133,9 +136,9 @@ app.post("/my-server/create-paypal-order", async (req, res) => {
 });
 
 app.post("/my-server/capture-paypal-order", async (req, res) => {
-    console.log("help me")
+    console.log(req.body);
   try {
-    const { orderID } = req.params;
+    const { orderID } = req.body;
     const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
     res.status(httpStatusCode).json(jsonResponse);
   } catch (error) {

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, Paper, Grid, Box } from '@mui/material';
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useParams } from 'react-router-dom';
 import PaypalPayment from './paypal';
 
 const CheckoutPage = () => {
     const [cartItems, setCartItems] = useState([]);
-
+    const { storeId } = useParams();
+    const cartItemsKey = `cartItems_${storeId}`;
+ 
     useEffect(() => {
-        const storedCartItems = sessionStorage.getItem('cartItems');
+        const storedCartItems = sessionStorage.getItem(cartItemsKey);
         console.log(storedCartItems);
         if (storedCartItems) {
             setCartItems(JSON.parse(storedCartItems));
