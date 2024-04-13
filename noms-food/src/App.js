@@ -19,6 +19,7 @@ import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
 import AdminHeader from "./components/header/adminHeader";
 import TicketForm from "./user/ReportIT";
+import ViewITTickets from "./user/ViewITTickets";
 import ProfilePage from './profilepage';
 import EditProfile from './editprofile';
 import ProfilePageCust from './profilepageCust';
@@ -56,6 +57,7 @@ function App() {
     { path: "/custHome", element: <CustHome /> },
     { path: "/adminHome", element: <AdminHome /> },
     { path: "/reportItTicket", element: <TicketForm /> },
+    { path: "/viewItTickets", element: <ViewITTickets />},
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },
     { path: "/store/:storeId", element: <StoreListings /> },
