@@ -30,6 +30,7 @@ import CartView from "./customer/cart";
 import AdminUsersPage from './admin/viewUser';
 import CheckoutPage from "./customer/checkout";
 import OrderConfirmed from "./customer/orderConfirmed";
+import ViewStoreListings from "./customer/viewStoreListing";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -66,7 +67,8 @@ function App() {
     { path: "/profilepageCust", element: <ProfilePageCust /> },
     { path: "/viewCart/:storeId", element: <CartView /> },
     { path: "/checkout/:storeId", element: <CheckoutPage /> },
-    { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> }
+    { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> },
+    { path: "/store/:storeId", element: <ViewStoreListings /> }
     // Add more routes as needed
   ]);
 
