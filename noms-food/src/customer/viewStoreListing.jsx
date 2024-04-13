@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
-import { Card, CardContent, Typography, Button, Modal, Box, IconButton, Container, Stack } from '@mui/material';
+import { Container, Modal, Box, IconButton, Stack, Card, CardMedia, CardContent, CardActions, Typography, Button, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
@@ -187,32 +187,41 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
   }, [isInCart]);
 
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          {listing.title}
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          {listing.description}
-        </Typography>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <Typography variant="body1" gutterBottom>Price: ${listing.price}</Typography>
-          </div>
-          {!isInCart && (
-            <div>
-              <Button variant="contained" color="primary" onClick={handleOpenModal}>
+    <Card raised sx={{ display: 'flex', margin: 2, borderRadius: 2 }}>
+      <CardMedia
+        component="img"
+        sx={{ width: 151 }}
+        image="../photo/burgerpicture.jpg" // Replace with your image path
+        alt={listing.title}
+      />
+      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+        <Grid item xs>
+          <CardContent sx={{ flex: '1 0 auto' }}>
+            <Typography variant="body1" color="textSecondary">
+              {listing.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {listing.description}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Price: ${listing.price}
+            </Typography>
+          </CardContent>
+        </Grid>
+        <Grid item>
+          <CardActions>
+            {!isInCart ? (
+              <Button variant="contained" color="primary" onClick={() => handleOpenModal(listing)}>
                 Add to Cart
               </Button>
-            </div>
-          )}
-          {addedToCart && (
-            <Typography variant="body2" color="textSecondary">
-              Item added to cart
-            </Typography>
-          )}
-        </div>
-      </CardContent>
+            ) : (
+              <Typography variant="body2" color="secondary">
+                Item added to cart
+              </Typography>
+            )}
+          </CardActions>
+        </Grid>
+      </Grid>
     </Card>
   );
 }
