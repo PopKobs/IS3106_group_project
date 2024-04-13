@@ -17,6 +17,7 @@ const Register = () => {
         contact: "", // Added contact (phone number) field
         storeId: "",
         type: "", // Added account type field
+        status: "Active",
         
       });
 

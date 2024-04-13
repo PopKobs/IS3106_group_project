@@ -9,7 +9,7 @@ import { ThemeProvider, createTheme } from '@mui/material';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#169574', // Adjust primary color to your preference
+      main: '#D7F5E9', // Adjust primary color to your preference
     },
     secondary: {
       main: '#951638', // Adjust secondary color to your preference
