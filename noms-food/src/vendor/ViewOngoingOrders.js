@@ -15,31 +15,61 @@ function ViewOngoingOrders() {
         const fetchOrders = async () => {
             if (auth.currentUser) {
                 const currentUserId = auth.currentUser.uid;
-
-                // Query to get all orders for the user
-                const ordersQuery = query(collection(db, 'Order'), where('vendorID', '==', currentUserId));
+    
+                // Query to get all orders for the user where status is 'ongoing'
+                const ordersQuery = query(collection(db, 'Order'), where('vendorID', '==', currentUserId), where('status', '==', 'ongoing'));
                 const ordersSnapshot = await getDocs(ordersQuery);
-
+    
                 // Convert the snapshot to an array of order objects
                 let ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log(ordersData[0]);
-
+    
                 // Filter the orders based on the search term
                 if (searchTerm) {
                     ordersData = ordersData.filter(order => order.id.toLowerCase().includes(searchTerm.toLowerCase()));
                 }
-
-                const ordersDataWithDetails = await Promise.all(ordersData.map(async order => {
-                    const customerName = await getCustomerName(db, order.customerID); 
-                    return { ...order, customerName };
-                }));
-
-                setOrders(ordersDataWithDetails);
+    
+                // Ensure that all orders have been fetched before trying to fetch the customer names
+                if (ordersData.length === ordersSnapshot.size) {
+                    // Fetch the listing names for each listingID in the listingIDList of each order
+                    const ordersDataWithDetails = await Promise.all(ordersData.map(async order => {
+                        // Query to get the user document using the customerID from the order
+                        const nameQuery = query(collection(db, 'Users'), where('userId', '==', order.customerID));
+                        const userSnapshot = await getDocs(nameQuery);
+                        let customerName = '';
+                        if (!userSnapshot.empty) {
+                            const userDoc = userSnapshot.docs[0];
+                            customerName = userDoc.data().name;
+                        } else {
+                            console.log('No such document!');
+                        }
+    
+                        // Fetch the listing names for each listingID in the listingIDList of the order
+                        const listingNames = await Promise.all(order.listingIDList.map(async listingID => {
+                            console.log(listingID); // Print the listingID
+                            const listingDocRef = doc(db, 'Listing', listingID);
+                            const listingDocSnap = await getDoc(listingDocRef);
+                            let listingName = '';
+                            if (listingDocSnap.exists()) {
+                                listingName = listingDocSnap.data().title;
+                                console.log(`Listing ID: ${listingID}, Listing Name: ${listingName}`); // Print the listingID and the listingName
+                            } else {
+                                console.log('No such document!');
+                            }
+                            return listingName;
+                        }));
+    
+                        return { ...order, customerName, listingNames };
+                    }));
+    
+                    setOrders(ordersDataWithDetails);
+                }
             }
         };
-
+    
         fetchOrders();
     }, [db, auth, searchTerm]);
+
+    
 
     const filteredOrders = orders.filter(order =>
         order.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -83,21 +113,6 @@ function ViewOngoingOrders() {
     );
 };
 
-async function getCustomerName(db, userId) {
-    try {
-        const userDoc = doc(db, 'Users', userId);
-        const userSnapshot = await getDoc(userDoc);
-        if (userSnapshot.exists()) {
-            return userSnapshot.data().name;
-        } else {
-            console.log('No such document!');
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching user:', error);
-    }
-}
-
 function OrderCard({ order }) {
     const totalPrice = order.priceList.reduce((total, price, index) => total + price * order.quantityList[index], 0);
 
@@ -117,18 +132,21 @@ function OrderCard({ order }) {
                     <Typography variant="body1" color="textSecondary">
                         Order Date: {new Date(order.date.seconds * 1000).toLocaleDateString()}
                     </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                        Order Status: {order.status}
+                    </Typography>
                     <TableContainer>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Listing ID</TableCell>
+                                    <TableCell>Listing Name</TableCell>
                                     <TableCell>Quantity</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {order.listingIDList.map((listingID, index) => (
-                                    <TableRow key={listingID}>
-                                        <TableCell>{listingID}</TableCell>
+                                {order.listingNames.map((listingName, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{listingName}</TableCell>
                                         <TableCell>{order.quantityList[index]}</TableCell>
                                     </TableRow>
                                 ))}

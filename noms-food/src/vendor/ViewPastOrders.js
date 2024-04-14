@@ -1,39 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase/firebase';
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
-import { Container, Grid, Typography, Card, CardContent, TextField, Box } from '@mui/material';
+import { collection, doc, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { Container, Typography, TextField, Grid, Card, CardContent, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-const ViewPastOrders = ({ vendorStoreIDs }) => {
+
+function ViewPastOrders() {
     const [orders, setOrders] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const db = getFirestore();
+    const auth = getAuth();
 
     useEffect(() => {
         const fetchOrders = async () => {
-            try {
-                const firestoreDb = db;
-                const q = query(collection(db, 'Order'), where('status', '==', 'past'), where('storeID', 'in', vendorStoreIDs));
-                const querySnapshot = await getDocs(q);
-                const ordersData = await Promise.all(querySnapshot.docs.map(async doc => {
-                    const orderData = doc.data();
-                    const storeSnapshot = await getDoc(doc(firestoreDb, 'Store', orderData.storeID));
-                    const storeData = storeSnapshot.data();
-                    const userSnapshot = await getDoc(doc(firestoreDb, 'User', orderData.customerID));
-                    const userData = userSnapshot.data();
-                    const listingPromises = orderData.listingIDList.map(listingID => getDoc(doc(firestoreDb, 'Listing', listingID)));
-                    const listingSnapshots = await Promise.all(listingPromises);
-                    const listingTitles = listingSnapshots.map(snapshot => snapshot.data().title);
-                    return { ...orderData, id: doc.id, storeName: storeData.name, customerName: userData.Name, listingTitles };
-                }));
-                setOrders(ordersData);
-            } catch (error) {
-                console.error('Error fetching past orders:', error);
+            if (auth.currentUser) {
+                const currentUserId = auth.currentUser.uid;
+    
+                // Query to get all orders for the user where status is 'ongoing'
+                const ordersQuery = query(collection(db, 'Order'), where('vendorID', '==', currentUserId), where('status', '==', 'past'));
+                const ordersSnapshot = await getDocs(ordersQuery);
+    
+                // Convert the snapshot to an array of order objects
+                let ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+                // Filter the orders based on the search term
+                if (searchTerm) {
+                    ordersData = ordersData.filter(order => order.id.toLowerCase().includes(searchTerm.toLowerCase()));
+                }
+    
+                // Ensure that all orders have been fetched before trying to fetch the customer names
+                if (ordersData.length === ordersSnapshot.size) {
+                    // Fetch the listing names for each listingID in the listingIDList of each order
+                    const ordersDataWithDetails = await Promise.all(ordersData.map(async order => {
+                        // Query to get the user document using the customerID from the order
+                        const nameQuery = query(collection(db, 'Users'), where('userId', '==', order.customerID));
+                        const userSnapshot = await getDocs(nameQuery);
+                        let customerName = '';
+                        if (!userSnapshot.empty) {
+                            const userDoc = userSnapshot.docs[0];
+                            customerName = userDoc.data().name;
+                        } else {
+                            console.log('No such document!');
+                        }
+    
+                        // Fetch the listing names for each listingID in the listingIDList of the order
+                        const listingNames = await Promise.all(order.listingIDList.map(async listingID => {
+                            console.log(listingID); // Print the listingID
+                            const listingDocRef = doc(db, 'Listing', listingID);
+                            const listingDocSnap = await getDoc(listingDocRef);
+                            let listingName = '';
+                            if (listingDocSnap.exists()) {
+                                listingName = listingDocSnap.data().title;
+                                console.log(`Listing ID: ${listingID}, Listing Name: ${listingName}`); // Print the listingID and the listingName
+                            } else {
+                                console.log('No such document!');
+                            }
+                            return listingName;
+                        }));
+    
+                        return { ...order, customerName, listingNames };
+                    }));
+    
+                    setOrders(ordersDataWithDetails);
+                }
             }
         };
-        
+    
         fetchOrders();
-    }, [vendorStoreIDs]);
+    }, [db, auth, searchTerm]);
+
+    
 
     const filteredOrders = orders.filter(order =>
         order.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,7 +91,7 @@ const ViewPastOrders = ({ vendorStoreIDs }) => {
                     marginTop: '55px'
                 }}>
                 <Typography variant="h4" gutterBottom>
-                    Ongoing Orders
+                    Past Orders
                 </Typography>
                 <TextField
                     label="Search by order ID"
@@ -67,7 +103,7 @@ const ViewPastOrders = ({ vendorStoreIDs }) => {
                 />
                 <Grid container spacing={3}>
                     {filteredOrders.map(order => (
-                        <Grid item xs={12} sm={6} md={4} key={order.id}>
+                        <Grid item xs={12} sm={12} md={6} key={order.id}>
                             <OrderCard order={order} />
                         </Grid>
                     ))}
@@ -78,6 +114,8 @@ const ViewPastOrders = ({ vendorStoreIDs }) => {
 };
 
 function OrderCard({ order }) {
+    const totalPrice = order.priceList.reduce((total, price, index) => total + price * order.quantityList[index], 0);
+
     return (
         <Link to={`/order/${order.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Card>
@@ -86,46 +124,35 @@ function OrderCard({ order }) {
                         Order ID: {order.id}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Store Name: {order.storeName}
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary">
-                        Store ID: {order.storeID}
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary">
                         Customer Name: {order.customerName}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Customer ID: {order.customerID}
+                        Total Price: {totalPrice}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Total Price: {order.price}
+                        Order Date: {new Date(order.date.seconds * 1000).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
-                        Order Date: {order.date}
+                        Order Status: {order.status}
                     </Typography>
                     <TableContainer>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Listing ID</TableCell>
-                                    <TableCell>Listing Title</TableCell>
+                                    <TableCell>Listing Name</TableCell>
                                     <TableCell>Quantity</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {order.listingIDList.map((listingID, index) => (
-                                    <TableRow key={listingID}>
-                                        <TableCell>{listingID}</TableCell>
-                                        <TableCell>{order.listingTitles[index]}</TableCell>
+                                {order.listingNames.map((listingName, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{listingName}</TableCell>
                                         <TableCell>{order.quantityList[index]}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <Typography variant="body1" color="textSecondary">
-                        Store ID: {order.storeID}
-                    </Typography>
                 </CardContent>
             </Card>
         </Link>
