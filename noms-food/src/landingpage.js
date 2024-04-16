@@ -46,7 +46,7 @@ const LandingPage = () => {
         alt="NOMs Logo"
         style={{
           position: 'absolute', // Set position to absolute
-          top: '35%', // Center vertically
+          top: '32%', // Center vertically
           left: '50%', // Center horizontally
           transform: 'translate(-50%, -50%)', // Center the image
           width: '50%',
@@ -74,7 +74,7 @@ const LandingPage = () => {
         }}
       >
         <Typography variant="h2">Welcome to NOMs</Typography>
-        <Typography variant="subtitle1" sx={{ marginTop: 2 }}>This is your beautiful website</Typography>
+        <Typography variant="subtitle1" sx={{ marginTop: 2 }}>Every Bite Counts: Nourishing Communities, One Plate at a Time</Typography>
       </Container>
     </Box>
   );
