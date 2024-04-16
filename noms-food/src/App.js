@@ -31,6 +31,7 @@ import AdminUsersPage from './admin/viewUser';
 import CheckoutPage from "./customer/checkout";
 import OrderConfirmed from "./customer/orderConfirmed";
 import ViewStoreListings from "./customer/viewStoreListing";
+import AdminTicketView from "./admin/AdminTicketView";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -68,7 +69,8 @@ function App() {
     { path: "/viewCart/:storeId", element: <CartView /> },
     { path: "/checkout/:storeId", element: <CheckoutPage /> },
     { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> },
-    { path: "/store/:storeId", element: <ViewStoreListings /> }
+    { path: "/store/:storeId", element: <ViewStoreListings /> },
+    { path: "/adminTicketView", element: <AdminTicketView />}
     // Add more routes as needed
   ]);
 
