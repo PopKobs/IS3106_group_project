@@ -4,7 +4,7 @@ import { getFirestore, collection, query, getDocs, doc, getDoc, where } from 'fi
 import { db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
 
-const ViewAllOrders = () => {
+const ViewVendorOrders = () => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -15,19 +15,34 @@ const ViewAllOrders = () => {
         fetchOrders();
     }, []);
 
+    
+
     const fetchOrders = async () => {
         const auth = getAuth();
-        const currentUser = auth.currentUser;
-        const db = getFirestore();
-        const ordersCollection = collection(db, 'Order');
-        const ordersSnapshot = await getDocs(query(ordersCollection, where('customerId', '==', currentUser.uid)));
-        const ordersData = ordersSnapshot.docs.map(async doc => {
-            const orderData = doc.data();
-            const storeName = await fetchStoreName(orderData.storeId);
-            return { id: doc.id, ...orderData, storeName };
-        });
-        const resolvedOrdersData = await Promise.all(ordersData);
-        setOrders(resolvedOrdersData);
+        const activeUser = auth.currentUser;
+        if (!activeUser) {
+            return;
+        }
+    
+        try {
+            const db = getFirestore();
+            const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where('userId', '==', activeUser.uid)));
+            const activeUserEmail = userQuerySnapshot.docs[0].data().email;
+            
+            const storeQuerySnapshot = await getDocs(query(collection(db, 'Store'), where('creatorEmail', '==', activeUserEmail)));
+            const storeId = storeQuerySnapshot.docs[0].id;
+            const ordersSnapshot = await getDocs(query(collection(db, 'Order'), where('storeId', '==', storeId)));
+            const ordersData = ordersSnapshot.docs.map(async doc => {
+                const orderData = doc.data();
+                const storeName = await fetchStoreName(orderData.storeId);
+                return { id: doc.id, ...orderData, storeName };
+            });
+            const resolvedOrdersData = await Promise.all(ordersData);
+            setOrders(resolvedOrdersData);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            // Handle error
+        }
     };
 
     const fetchStoreName = async (storeId) => {
@@ -195,4 +210,4 @@ const ViewAllOrders = () => {
     );
 };
 
-export default ViewAllOrders;
+export default ViewVendorOrders;

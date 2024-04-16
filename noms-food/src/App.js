@@ -6,8 +6,6 @@ import Signup from './signup';
 import CreateStore from './vendor/CreateStore';
 import CreateListing from './vendor/CreateListing';
 import ViewOwnListings from './vendor/ViewOwnListings';
-import ViewOngoingOrders from './vendor/ViewOngoingOrders';
-import ViewPastOrders from './vendor/ViewPastOrders';
 import ViewStore from './vendor/ViewStore';
 import EditStore from './vendor/EditStore';
 import Login from "./components/auth/login";
@@ -32,6 +30,7 @@ import CheckoutPage from "./customer/checkout";
 import OrderConfirmed from "./customer/orderConfirmed";
 import ViewStoreListings from "./customer/viewStoreListing";
 import ViewAllOrders from "./customer/viewOrders";
+import ViewVendorOrders from "./vendor/viewVendorOrders";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -48,8 +47,6 @@ function App() {
     { path: "/createstore", element: <CreateStore /> },
     { path: "/createlisting", element: <CreateListing /> },
     { path: "/viewownlistings", element: <ViewOwnListings /> },
-    { path: "/viewongoingorders", element: <ViewOngoingOrders /> },
-    { path: "/viewpastorders", element: <ViewPastOrders /> },
     { path: "/viewstore", element: <ViewStore /> },
     { path: "/editstore", element: <EditStore /> },
     { path: "/login", element: <Login /> },
@@ -71,6 +68,7 @@ function App() {
     { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> },
     { path: "/store/:storeId", element: <ViewStoreListings /> },
     { path: "/viewOrders", element: <ViewAllOrders /> },
+    { path: "/viewStoreOrders", element: <ViewVendorOrders /> },
     // Add more routes as needed
   ]);
 
