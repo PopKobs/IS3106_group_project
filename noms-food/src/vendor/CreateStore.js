@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { LoadScript,useLoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
-import './CreateStore.css';
+import { LoadScript, useLoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
+//import './CreateStore.css';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/authContext'; 
+import { useAuth } from '../contexts/authContext';
 import { collection, addDoc, getFirestore, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
 
 
 function CreateStore() {
@@ -34,8 +35,8 @@ function CreateStore() {
   const handlePlaceSelect = () => {
     const address = autocomplete.getPlace();
     setStore({
-        ...store,
-        location: address.formatted_address,
+      ...store,
+      location: address.formatted_address,
     });
     setMarker({ lat: address.geometry.location.lat(), lng: address.geometry.location.lng() });
   };
@@ -44,7 +45,7 @@ function CreateStore() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const db = getFirestore();
     try {
       const storeCollectionRef = collection(db, "Store");
@@ -54,19 +55,19 @@ function CreateStore() {
         creatorEmail: currentUserEmail,
       });
 
-    const usersCollectionRef = collection(db, "Users");
-    const q = query(usersCollectionRef, where("email", "==", currentUserEmail));
-    const querySnapshot = await getDocs(q);
+      const usersCollectionRef = collection(db, "Users");
+      const q = query(usersCollectionRef, where("email", "==", currentUserEmail));
+      const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
+      if (!querySnapshot.empty) {
         // Assuming the email field is unique, there should only be one document
         const userDocRef = querySnapshot.docs[0].ref;
-    
+
         // Step 3: Update the user document with the store ID
         await updateDoc(userDocRef, {
           storeId: storeDocRef.id,
         });
-    
+
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
         navigate('/home'); // Navigate to home after successful store creation
@@ -89,43 +90,69 @@ function CreateStore() {
   if (!isLoaded) return "Loading maps";
 
   return (
-    <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
-      <h2 className="title">Sign your store up with NOMs!</h2>
-      <form onSubmit={handleSubmit} className="createForm w-full max-w-md mt-8 px-4">
-        <div className="formGroup">
-          <label>Store Name:</label>
-          <input type="text" name="name" value={store.name} onChange={handleInputChange} />
-
-          <label>Description:</label>
-          <input type="text" name="description" value={store.description} onChange={handleInputChange} />
-          
-          <label>Opening Hour:</label>
-          <input type="time" name="opening" value={store.opening} onChange={handleInputChange} />
-
-          <label>Closing Hour:</label>
-          <input type="time" name="closing" value={store.closing} onChange={handleInputChange} />
-
-          <label>Location:</label>
-            <Autocomplete onLoad={setAutocomplete} onPlaceChanged={handlePlaceSelect}>
-              <input type="text" placeholder="Type location" />
-            </Autocomplete>
-            {marker.lat && marker.lng && (
-              <div className="googleMapContainer">
-                <GoogleMap
-                  mapContainerClassName="googleMap"
-                  mapContainerStyle={{ height: "400px", width: "800px" }}
-                  center={marker}
-                  zoom={15}
-                >
-                  <Marker position={marker} />
-                </GoogleMap>
-              </div>
-            )}
+    <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+  <Typography variant='h3'>Sign your store up with NOMs!</Typography>
+  <Box sx={{ mt: 2, width: '100%', maxWidth: 400 }}>
+    <Stack spacing={2} direction="column">
+      {/* TextField components */}
+      <TextField
+        id="name"
+        label="Store Name"
+        variant="filled"
+        required
+        onChange={handleInputChange}
+      />
+      <TextField
+        id="description"
+        label="Description"
+        variant="filled"
+        required
+        onChange={handleInputChange}
+      />
+      <TextField
+        id="opening"
+        label="Opening Hours"
+        variant="filled"
+        required
+        onChange={handleInputChange}
+      />
+      <TextField
+        id="closing"
+        label="Closing Hours"
+        variant="filled"
+        required
+        onChange={handleInputChange}
+      />
+      <Autocomplete onLoad={setAutocomplete} onPlaceChanged={handlePlaceSelect}>
+        <TextField
+          id="location"
+          label="Store Location"
+          variant="filled"
+          required
+          placeholder='Type Store Location'
+          onChange={handleInputChange}
+        />
+      </Autocomplete>
+      {/* GoogleMap component */}
+      {marker.lat && marker.lng && (
+        <div className="googleMapContainer">
+          <GoogleMap
+            mapContainerClassName="googleMap"
+            mapContainerStyle={{ height: "400px", width: "100%" }}
+            center={marker}
+            zoom={15}
+          >
+            <Marker position={marker} />
+          </GoogleMap>
         </div>
-        <button type="submit" className="submitButton">Sign Up Store</button>
-      </form>
-      {showSuccess && <div className="successMessage">Store signed up successfully!</div>}
-    </div>
+      )}
+    </Stack>
+    <Button sx={{ mt: 2, width: '100%' }} onClick={(e) => handleSubmit(e)}>Sign Up Store</Button>
+  </Box>
+  <Box><Button style={{ backgroundColor:'#00897b', color: 'white' }} onClick={(e) => handleSubmit(e)}>Sign Up Store</Button></Box>
+  {showSuccess && <Box sx={{ mt: 2 }}>Store signed up successfully!</Box>}
+</Container>
+
   );
 }
 
