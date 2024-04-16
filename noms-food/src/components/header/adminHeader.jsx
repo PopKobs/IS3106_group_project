@@ -60,7 +60,7 @@ const CustHeader = () => {
     return (
 
         <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ backgroundColor:'#e64a19' }}>
+        <AppBar position="static" sx={{ backgroundColor:'#00897b' }}>
         <Toolbar>
           
           {/* Icon */}

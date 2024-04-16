@@ -36,8 +36,8 @@ import { Container } from "@mui/material";
 
 function App() {
   const location = useLocation(); // Get current location
-  const custHeaderPages = ["/custHome", "/profilepageCust"]; // Pages for customers (using customer header)
-  const isCustHeaderPage = custHeaderPages.includes(location.pathname); // Check if current page is a customer page
+  const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout", "/orderConfirmed"]; // Pages for customers (using customer header)
+  const isCustHeaderPage = custHeaderPages.some(path => location.pathname.startsWith(path)); // Check if current page is a customer page
   const adminHeaderPages = ["/adminHome", "/adminviewuser"]; // Pages for admin
   const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
 

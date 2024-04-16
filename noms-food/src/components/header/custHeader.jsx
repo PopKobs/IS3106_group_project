@@ -24,7 +24,7 @@ const CustHeader = () => {
     const { userLoggedIn } = useAuth()
 
     // Update the paths for the drawer
-    const paths1 = ['/custHome','/profilepageCust'];
+    const paths1 = ['/custHome','/profilepageCust',"/searchStores", "/viewCart/:storeId"];
 
     const [open, setOpen] = React.useState(false); // Open Drawer State
 
@@ -35,7 +35,7 @@ const CustHeader = () => {
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
           <List>
-            {['Homepage','Profile'].map((text, index) => (
+            {['Homepage','Profile', 'Search Stores', 'My Cart'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton onClick={() => navigate(paths1[index])}>
                   <ListItemText primary={text} />
@@ -60,7 +60,7 @@ const CustHeader = () => {
     return (
 
         <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ backgroundColor:'#e64a19' }}>
+        <AppBar position="static" sx={{ backgroundColor:'#00897b' }}>
         <Toolbar>
           
           {/* Icon */}
