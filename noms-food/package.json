@@ -8,6 +8,7 @@
     "@firebase/firestore": "^4.5.1",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "@paypal/react-paypal-js": "^8.2.0",
     "@react-google-maps/api": "^2.19.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
