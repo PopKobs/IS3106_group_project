@@ -1,6 +1,9 @@
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { getAuth } from 'firebase/auth';
+import { collection, addDoc, getFirestore, where, query, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 
 const PaypalPayment = () => {
     const { storeId } = useParams();
@@ -60,10 +63,62 @@ const PaypalPayment = () => {
         .then((order) => {
           if (order.status == "COMPLETED") {
             console.log(order);
+            try {
+              documentOrder(order);
+            } catch (error) {
+              console.log("Die");
+            }
             navigate(`/orderConfirmed/${storeId}/${order.id}`);
           }
         });
       };
+
+      const documentOrder = async (order) => {
+        const storedCartItems = sessionStorage.getItem(cartItemsKey);
+        console.log(storedCartItems);
+        const orderDetails = JSON.parse(storedCartItems);
+        const orderItems = orderDetails.map(item => ({
+            listingId: item.id,
+            price: item.unitPrice,
+            quantity: item.quantity,
+        }));
+
+        console.log(order);
+
+        const currentTime = new Date();
+
+        const auth = getAuth(); // Get Current User State
+        const currentUser = auth.currentUser;
+        const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where("userId", "==", currentUser.uid)));
+        const user = userQuerySnapshot.docs[0].data();
+
+        const totalPrice = orderDetails.reduce((total, item) => total + item.price, 0);
+
+        if (orderDetails && orderDetails.length > 0 ){
+            const newOrderPayload = {
+              customerId: currentUser.uid,
+              customerName: user.name,
+              date: currentTime,
+              orderItems: orderItems,
+              orderStatus: "ongoing",
+              orderPrice: totalPrice,
+              storeId: storeId,
+              orderId: order.id
+            }
+
+            console.log(newOrderPayload);
+
+            const db = getFirestore();
+            try {
+                addDoc(collection(db, 'Order'), newOrderPayload);
+                console.log("Done")
+            } catch (error) {
+                console.error('Error adding order', error);
+            }
+
+            sessionStorage.setItem(cartItemsKey, JSON.stringify([]))
+        }
+      }
 
     return (
         <PayPalButtons
