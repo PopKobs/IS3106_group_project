@@ -31,6 +31,7 @@ import OrderConfirmed from "./customer/orderConfirmed";
 import ViewStoreListings from "./customer/viewStoreListing";
 import ViewAllOrders from "./customer/viewOrders";
 import ViewVendorOrders from "./vendor/viewVendorOrders";
+import AdminTicketView from "./admin/AdminTicketView";
 import { AuthProvider } from "./contexts/authContext";
 import { Container } from "@mui/material";
 
@@ -69,6 +70,7 @@ function App() {
     { path: "/store/:storeId", element: <ViewStoreListings /> },
     { path: "/viewOrders", element: <ViewAllOrders /> },
     { path: "/viewStoreOrders", element: <ViewVendorOrders /> },
+    { path: "/adminTicketView", element: <AdminTicketView />}
     // Add more routes as needed
   ]);
 
