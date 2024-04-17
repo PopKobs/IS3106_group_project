@@ -1,39 +1,93 @@
-import React from 'react';
-import { useAuth } from '../../contexts/authContext';
-import { useNavigate } from 'react-router-dom';
-import { Button, Container, Typography, Box, Paper } from '@mui/material';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Container, Typography, Button } from '@mui/material';
+import '../../signup.css';
+
+// Import your images
+import background from "../../photo/nomswallpaper.jpg";
+import nomsIcon from "../../photo/noms_icon.png";
+import categoryImage1 from "../../photo/avocado.png";
+import categoryImage2 from "../../photo/chinese.jpg";
+import categoryImage3 from "../../photo/japanese.jpg";
+import categoryImage4 from "../../photo/pastries.jpg";
 
 const CustHome = () => {
-  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
+  const handleButtonClick = () => {
+    navigate('/login');
+  };
+
   return (
-    <Container component="main" maxWidth="sm" sx={{ mt: 8, mb: 4 }}>
-      <Paper elevation={3} sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 }, backgroundColor: 'white' }}>
-        <Typography variant="h5" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
-          Hello {currentUser.displayName || currentUser.email}, you are now logged in.
-        </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            onClick={() => navigate('/reportItTicket')}
-            sx={{ maxWidth: '200px' }}
-          >
-            Report IT Issue
+    <Box sx={{ width: '100%' }}>
+      <Box
+        sx={{
+          backgroundImage: `url(${background})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '80vh', // You can adjust this as needed
+          width: '100vw', // Ensure it takes full width
+          marginLeft: '-2vw', // Resets any inherited margin
+          position: 'relative',
+        }}
+      >
+        <Container maxWidth="sm" sx={{ textAlign: 'center', position: 'relative' }}>
+          <Typography variant="h2" sx={{ color: 'white', fontWeight: 'bold', textAlign: 'left', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>
+            Healthy food for you at NOMs
+          </Typography>
+          <Typography variant="subtitle1" sx={{ marginTop: 0, color: 'white', textAlign: 'left', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)'}}>
+            Every Bite Counts: Nourishing Communities, One Plate at a Time.
+          </Typography>
+          <Button variant="contained" onClick={handleButtonClick} sx={{ marginTop: '1rem', backgroundColor:"teal", color:"white", fontWeight:"bold"}}>
+            Login to learn more
           </Button>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            onClick={() => navigate('/viewItTickets')}
-            sx={{ maxWidth: '200px' }}
-          >
-            View my IT tickets
-          </Button>
+        </Container>
+      </Box>
+
+      {/* Smaller Standard Size Category Images in 2x2 Grid */}
+      {/* Category Images */}
+      <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            padding: '2rem',
+            flexWrap: 'wrap', // Ensures responsiveness
+          }}
+        >
+          {[
+            { image: categoryImage1, label: "Healthy Greens", link: "/greens" },
+            { image: categoryImage2, label: "Savoury Chinese Food", link: "/chinese" },
+            { image: categoryImage3, label: "Savoury Japanese Food", link: "/japanese" },
+            { image: categoryImage4, label: "Delicious Pastries", link: "/pastries" }
+          ].map((category, index) => (
+            <Box key={index} sx={{ width: '22%', margin: '1%', position: 'relative', textAlign: 'center' }}>
+              <img
+                src={category.image}
+                alt={category.label}
+                style={{
+                  width: '100%', // Adjust width as needed
+                  borderRadius: '8px', // Rounded edges
+                  height: '100%', // Ensure the image covers the area
+                }}
+              />
+              <Typography variant="subtitle1" sx={{ position: 'absolute', top: '10%', right: '0px', width: '100%', fontSize: '130%', fontFamily: 'cursive', color: 'white', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.6)' }}>
+                {category.label}
+              </Typography>
+              <Button variant="contained" sx={{ position: 'absolute', bottom: '5%', left: '30%', transform: 'translateX(-50%)', backgroundColor: 'rgba(128, 128, 128, 0.4)', color: 'white', }} onClick={() => navigate(category.link)}>
+                Learn More
+              </Button>
+            </Box>
+          ))}
         </Box>
-      </Paper>
-    </Container>
+
+
+    </Box>
   );
 };
 
 export default CustHome;
+
+
