@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LoadScript, useLoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
 //import './CreateStore.css';
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +42,10 @@ function CreateStore() {
   };
 
   const onLoad = (autoC) => setAutocomplete(autoC);
+
+  useEffect(()=> {
+    localStorage.setItem('isMapsApiLoaded', true);
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
