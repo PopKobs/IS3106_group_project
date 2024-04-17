@@ -103,7 +103,8 @@ const PaypalPayment = () => {
               orderStatus: "Ongoing",
               orderPrice: totalPrice,
               storeId: storeId,
-              orderId: order.id
+              orderId: order.id,
+              orderReviewed: false
             }
 
             console.log(newOrderPayload);

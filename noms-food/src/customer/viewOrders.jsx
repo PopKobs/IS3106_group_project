@@ -1,6 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Tab, Tabs, TabPanel, ListItem, ListItemText, Box, Stack, Dialog, DialogTitle, DialogContent, DialogActions, Button, TableCell, TableRow, TableBody, TableHead, Table, Paper, TableContainer } from '@mui/material';
-import { getFirestore, collection, query, getDocs, doc, getDoc, where } from 'firebase/firestore';
+import { 
+    Typography, 
+    Container, 
+    Tab, 
+    Tabs, 
+    TabPanel, 
+    ListItem, 
+    ListItemText, 
+    Box, 
+    Stack, 
+    Dialog, 
+    DialogTitle, 
+    DialogContent, 
+    DialogActions, 
+    Button, 
+    TableCell, 
+    TableRow, 
+    TableBody, 
+    TableHead, 
+    Table, 
+    Paper, 
+    TableContainer,
+    Select,
+    MenuItem,
+    TextField,
+ } from '@mui/material';
+import { getFirestore, collection, query, getDocs, doc, getDoc, where, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
 
@@ -85,9 +110,9 @@ const ViewAllOrders = () => {
 
     const filteredOrders = orders.filter(order => {
         if (tabValue === 'active') {
-            return order.orderStatus === 'ongoing';
+            return order.orderStatus != 'Completed';
         } else if (tabValue === 'completed') {
-            return order.orderStatus === 'completed';
+            return order.orderStatus === 'Completed';
         }
     }).sort((a, b) => {
         if (a.date > b.date) {
@@ -99,6 +124,57 @@ const ViewAllOrders = () => {
         }
     });
 
+
+    const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
+    const [rating, setRating] = useState("");
+    const [comment, setComment] = useState("");
+
+    const openRatingDialog = (order) => {
+        setSelectedOrder(order);
+        setRatingDialogOpen(true);
+    };
+
+    const closeRatingDialog = () => {
+        setRatingDialogOpen(false);
+    };
+
+    const handleRatingUpdate = (rating) => {
+        setRating(rating)
+    };
+
+    const handleCommentUpdate = (comment) => {
+        setComment(comment)
+    };
+
+    const handleLeaveReview = async () => {
+        try {
+            const auth = getAuth();
+            const activeUser = auth.currentUser;
+            const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where('userId', '==', activeUser.uid)));
+            const activeUserUsername = userQuerySnapshot.docs[0].data().username;
+
+            const reviewData = {
+                rating: rating,
+                comment: comment,
+                userName: activeUserUsername,
+                storeId: selectedOrder.storeId,
+            };
+
+            console.log(reviewData);
+
+            await addDoc(collection(db, 'Review'), reviewData);
+
+            const orderRef = doc(db, 'Order', selectedOrder.id);
+            await updateDoc(orderRef, { orderReviewed: true });
+            fetchOrders();
+            closeRatingDialog();
+            alert("Review Added Successfully");
+        } catch (error) {
+            console.error('Error leaving review:', error);
+        }
+    };
+
+
     return (
         <Container maxWidth="sm" style={{ marginTop: '50px' }}>
             <Typography variant="h4" gutterBottom>
@@ -109,7 +185,7 @@ const ViewAllOrders = () => {
                     value={tabValue}
                     onChange={(event, newValue) => setTabValue(newValue)}
                     variant="fullWidth"
-                    indicatorColor="secondary" 
+                    indicatorColor="secondary"
                     textColor="secondary"
                 >
                     <Tab value="active" label="Active Orders" />
@@ -120,7 +196,7 @@ const ViewAllOrders = () => {
                 <Box bgcolor="white" p={2} borderRadius={4}>
                     <Stack spacing={2}>
                         {filteredOrders.map(order => (
-                            <Box key={order.id} bgcolor="white" borderRadius={4} boxShadow={1} onClick={() => handleListItemClick(order)} style={{ cursor: 'pointer' }}>
+                            <Box key={order.id} bgcolor="white" borderRadius={4} boxShadow={1} style={{ cursor: 'pointer' }}>
                                 <ListItem>
                                     <ListItemText
                                         primary={
@@ -138,6 +214,18 @@ const ViewAllOrders = () => {
                                             </Typography>
                                         }
                                     />
+                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Box mt={1}>
+                                            <Button onClick={() => handleListItemClick(order)} color="primary" fullWidth sx={{ color: 'black', borderColor: 'black' }}>
+                                                View Details
+                                            </Button>
+                                        </Box>
+                                        {tabValue === 'completed' && order.orderReviewed === false && (
+                                            <Button onClick={() => openRatingDialog(order)} color="primary" fullWidth sx={{ color: 'black', borderColor: 'black' }}>
+                                                Leave Review
+                                            </Button>
+                                        )}
+                                    </Box>
                                 </ListItem>
                             </Box>
                         ))}
@@ -188,6 +276,44 @@ const ViewAllOrders = () => {
                 <DialogActions>
                     <Button onClick={handleCloseDialog} sx={{ color: 'black' }}>
                         Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={ratingDialogOpen} onClose={closeRatingDialog}>
+                <DialogTitle>Update Order Status</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Change status for Order ID: {selectedOrder && selectedOrder.orderId.slice(-4)}
+                    </Typography>
+                    <Select
+                        value={rating}
+                        onChange={(event) => handleRatingUpdate(event.target.value)}
+                        fullWidth
+                    >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                    </Select>
+                    <Box mt={2}>
+                        <TextField
+                            label="Comment"
+                            multiline
+                            rows={4}
+                            variant="outlined"
+                            fullWidth
+                            value={comment}
+                            onChange={(event) => handleCommentUpdate(event.target.value)}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleLeaveReview} color="primary">
+                        Leave Feedback
+                    </Button>
+                    <Button onClick={closeRatingDialog} color="primary">
+                        Cancel
                     </Button>
                 </DialogActions>
             </Dialog>
