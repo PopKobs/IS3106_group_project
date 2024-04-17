@@ -1,8 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Tab, Tabs, TabPanel, ListItem, ListItemText, Box, Stack, Dialog, DialogTitle, DialogContent, DialogActions, Button, TableCell, TableRow, TableBody, TableHead, Table, Paper, TableContainer } from '@mui/material';
-import { getFirestore, collection, query, getDocs, doc, getDoc, where } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
+import {
+    Typography,
+    Container,
+    Button,
+    Box,
+    Tabs,
+    Tab,
+    ListItem,
+    ListItemText,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    Paper,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TableHead,
+    Select,
+    MenuItem,
+    Alert
+} from '@mui/material';
+import { getFirestore, collection, query, getDocs, doc, updateDoc, where, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { db } from '../firebase/firebase';
 
 const ViewVendorOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -10,12 +33,12 @@ const ViewVendorOrders = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [orderDetails, setOrderDetails] = useState([]);
     const [tabValue, setTabValue] = useState('active');
+    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('');
 
     useEffect(() => {
         fetchOrders();
     }, []);
-
-    
 
     const fetchOrders = async () => {
         const auth = getAuth();
@@ -23,12 +46,12 @@ const ViewVendorOrders = () => {
         if (!activeUser) {
             return;
         }
-    
+
         try {
             const db = getFirestore();
             const userQuerySnapshot = await getDocs(query(collection(db, 'Users'), where('userId', '==', activeUser.uid)));
             const activeUserEmail = userQuerySnapshot.docs[0].data().email;
-            
+
             const storeQuerySnapshot = await getDocs(query(collection(db, 'Store'), where('creatorEmail', '==', activeUserEmail)));
             const storeId = storeQuerySnapshot.docs[0].id;
             const ordersSnapshot = await getDocs(query(collection(db, 'Order'), where('storeId', '==', storeId)));
@@ -41,7 +64,6 @@ const ViewVendorOrders = () => {
             setOrders(resolvedOrdersData);
         } catch (error) {
             console.error('Error fetching orders:', error);
-            // Handle error
         }
     };
 
@@ -84,11 +106,10 @@ const ViewVendorOrders = () => {
                 itemTitle: listingData.title,
                 itemQuantity: item.quantity,
                 itemUnitPrice: item.price,
-                itemTotalPrice: (item.price * item.quantity)
+                itemTotalPrice: item.price * item.quantity
             };
             listingsData.push(itemBought);
         }
-        console.log(listingsData);
         setOrderDetails(listingsData);
     };
 
@@ -98,21 +119,39 @@ const ViewVendorOrders = () => {
         setSelectedOrder(null);
     };
 
+    const handleStatusDialog = (order) => {
+        setSelectedOrder(order);
+        setStatusDialogOpen(true);
+    };
+
+    const handleStatusUpdate = (status) => {
+        setSelectedStatus(status)
+    };
+
+    const handleStatusChange = async () => {
+        try {
+            console.log(selectedStatus);
+            const orderRef = doc(db, 'Order', selectedOrder.id);
+            await updateDoc(orderRef, { orderStatus: selectedStatus });
+            alert("Update Successful");
+            fetchOrders();
+            setStatusDialogOpen(false);
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
+    const handleStatusUpdateClose = () => {
+        setStatusDialogOpen(false);
+    };
+
     const filteredOrders = orders.filter(order => {
         if (tabValue === 'active') {
-            return order.orderStatus === 'ongoing';
+            return order.orderStatus !== 'Completed';
         } else if (tabValue === 'completed') {
-            return order.orderStatus === 'completed';
+            return order.orderStatus === 'Completed';
         }
-    }).sort((a, b) => {
-        if (a.date > b.date) {
-            return -1;
-        } else if (a.date < b.date) {
-            return 1;
-        } else {
-            return 0;
-        }
-    });
+    }).sort((a, b) => a.date > b.date ? -1 : a.date < b.date ? 1 : 0);
 
     return (
         <Container maxWidth="sm" style={{ marginTop: '50px' }}>
@@ -124,39 +163,55 @@ const ViewVendorOrders = () => {
                     value={tabValue}
                     onChange={(event, newValue) => setTabValue(newValue)}
                     variant="fullWidth"
-                    indicatorColor="secondary" 
+                    indicatorColor="secondary"
                     textColor="secondary"
                 >
-                    <Tab value="active" label="Active Orders" />
-                    <Tab value="completed" label="Completed Orders" />
+                    <Tab value="active" label="View Active Orders" />
+                    <Tab value="completed" label="View Completed Orders" />
                 </Tabs>
             </Box>
             {orders.length > 0 ? (
                 <Box bgcolor="white" p={2} borderRadius={4}>
-                    <Stack spacing={2}>
-                        {filteredOrders.map(order => (
-                            <Box key={order.id} bgcolor="white" borderRadius={4} boxShadow={1} onClick={() => handleListItemClick(order)} style={{ cursor: 'pointer' }}>
-                                <ListItem>
-                                    <ListItemText
-                                        primary={
-                                            <Typography variant="body1" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
-                                                Order ID: {order.orderId.slice(-4)}
-                                            </Typography>
-                                        }
-                                        secondary={
-                                            <Typography variant="body1">
-                                                <strong>Store Name:</strong> {order.storeName}
-                                                <br />
-                                                <strong>Date:</strong> {order.date.toDate().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })}
-                                                <br />
-                                                <span style={{ color: 'green', fontWeight: 'bold' }}>Status: {order.orderStatus}</span>
-                                            </Typography>
-                                        }
-                                    />
-                                </ListItem>
-                            </Box>
-                        ))}
-                    </Stack>
+                    {filteredOrders.map(order => (
+                        <Box
+                            key={order.id}
+                            bgcolor="white"
+                            borderRadius={4}
+                            boxShadow={1}
+                            style={{ cursor: 'pointer', marginBottom: '8px' }}
+                        >
+                            <ListItem>
+                                <ListItemText
+                                    primary={
+                                        <Typography variant="body1" style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+                                            Order ID: {order.orderId.slice(-4)}
+                                        </Typography>
+                                    }
+                                    secondary={
+                                        <Typography variant="body1">
+                                            <strong>Store Name:</strong> {order.storeName}
+                                            <br />
+                                            <strong>Date:</strong> {order.date.toDate().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })}
+                                            <br />
+                                            <span style={{ color: 'green', fontWeight: 'bold' }}>Status: {order.orderStatus}</span>
+                                        </Typography>
+                                    }
+                                />
+                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                    <Box mt={1}>
+                                        <Button onClick={() => handleListItemClick(order)} color="primary" fullWidth sx={{ color: 'black', borderColor: 'black' }}>
+                                            View Details
+                                        </Button>
+                                    </Box>
+                                    {tabValue === 'active' && (
+                                        <Button onClick={() => handleStatusDialog(order)} color="primary" fullWidth sx={{ color: 'black', borderColor: 'black' }}>
+                                            Update Status
+                                        </Button>
+                                    )}
+                                </Box>
+                            </ListItem>
+                        </Box>
+                    ))}
                 </Box>
             ) : (
                 <Typography variant="body1">
@@ -203,6 +258,30 @@ const ViewVendorOrders = () => {
                 <DialogActions>
                     <Button onClick={handleCloseDialog} sx={{ color: 'black' }}>
                         Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={statusDialogOpen} onClose={handleStatusUpdateClose}>
+                <DialogTitle>Update Order Status</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Change status for Order ID: {selectedOrder && selectedOrder.orderId.slice(-4)}
+                    </Typography>
+                    <Select
+                        value={selectedStatus}
+                        onChange={(event) => handleStatusUpdate(event.target.value)}
+                        fullWidth
+                    >
+                        <MenuItem value="Ready For Collection">Ready For Collection</MenuItem>
+                        <MenuItem value="Completed">Completed</MenuItem>
+                    </Select>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleStatusChange} color="primary">
+                        Update
+                    </Button>
+                    <Button onClick={handleStatusUpdateClose} color="primary">
+                        Cancel
                     </Button>
                 </DialogActions>
             </Dialog>

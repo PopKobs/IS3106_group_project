@@ -100,7 +100,7 @@ const PaypalPayment = () => {
               customerName: user.name,
               date: currentTime,
               orderItems: orderItems,
-              orderStatus: "ongoing",
+              orderStatus: "Ongoing",
               orderPrice: totalPrice,
               storeId: storeId,
               orderId: order.id

@@ -3,7 +3,7 @@ import { Navigate, Link } from 'react-router-dom'
 import { doSignInWithEmailAndPassword, doSignInWithGoogle, doSignOut } from '../../../firebase/auth'
 import { useAuth } from '../../../contexts/authContext'
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDoc, doc, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 // To Do: Partial Login happens even if you fail 
 // Reset Logging In
@@ -64,10 +64,10 @@ const Login = () => {
                     const type = userData.type;
                     setUserType(type);
                     console.log(userData.status);
-                    if (userData.status == 'Banned') {
+                    if (userData.status === 'Banned') {
                         console.log("Triggered");
                         throw new Error("Your account has been banned");
-                    } else if (userData.status == 'Deleted') {
+                    } else if (userData.status === 'Deleted') {
                         throw new Error("This account has been deleted");
                     }
                 });
@@ -89,9 +89,9 @@ const Login = () => {
 
     return (
         <div>
-            {userLoggedIn && !isSigningIn && userType == "Vendor" && (<Navigate to={'/home'} replace={true} />)}
-            {userLoggedIn && !isSigningIn && userType == "Customer" && (<Navigate to={'/custHome'} replace={true} />)}
-            {userLoggedIn && !isSigningIn && userType == "Admin" && (<Navigate to={'/adminHome'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType === "Vendor" && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType === "Customer" && (<Navigate to={'/custHome'} replace={true} />)}
+            {userLoggedIn && !isSigningIn && userType === "Admin" && (<Navigate to={'/adminHome'} replace={true} />)}
 
             <main className="w-full h-screen flex self-center place-content-center place-items-center">
                 <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl bg-white">

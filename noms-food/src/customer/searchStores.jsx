@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
 import icon from '../photo/niceFood.jpg'
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
 import {
   Container,
   Grid,
@@ -37,8 +37,10 @@ function ViewStores() {
   });
 
   useEffect(() => {
+    
     const fetchStores = async () => {
       try {
+        await updateStoreStatus();
         const querySnapshot = await getDocs(collection(db, 'Store'));
         const storesData = querySnapshot.docs.map(async (doc) => {
           const storeData = { id: doc.id, ...doc.data() };
@@ -122,6 +124,43 @@ function ViewStores() {
     return a.distance - b.distance; // Sort by distance
   });
 
+  const updateStoreStatus = async () => {
+    const currentTime = new Date();
+    const storesCollection = collection(db, 'Store');
+    const storesSnapshot = await getDocs(storesCollection);
+
+    storesSnapshot.forEach(async (storeDoc) => {
+        const storeData = storeDoc.data();
+        const openingHours = storeData.opening;
+        const [openHour, openMinute] = openingHours.split(':').map(Number);
+        const closingHours = storeData.closing;
+        const [closeHour, closeMinute] = closingHours.split(':').map(Number);
+
+        // Check if the store has opening hours defined
+        if (openingHours) {
+            const openTime = new Date(currentTime);
+            openTime.setHours(openHour, openMinute, 0, 0);
+            const closeTime = new Date(currentTime);
+            closeTime.setHours(closeHour, closeMinute, 0, 0);
+
+            // Check if the current time is between open and close hours
+            if (currentTime >= openTime && currentTime <= closeTime) {
+                // Store is open
+                await updateDoc(doc(db, 'Store', storeDoc.id), { isOpen: true });
+                //console.log(storeData.name + " Open pls");
+            } else {
+                // Store is closed
+                await updateDoc(doc(db, 'Store', storeDoc.id), { isOpen: false });
+                //console.log(storeData.name + " Close pls");
+            }
+        } else {
+            // If opening hours are not defined, consider the store closed
+            await updateDoc(doc(db, 'Store', storeDoc.id), { isOpen: false });
+            //console.log(storeData.name + " Dont Exist pls");
+        }
+    });
+};
+
   // // Card component refactored for better UI
   // function StoreCard({ store }) {
   //   const disabled = !store.isOpen;
@@ -171,7 +210,7 @@ function StoreCard({ store }) {
  
   
   const imageRef = ref(storage, `users/store/${store.id}`);
-  console.log(`users/store/${store.id}`)
+  /*console.log(`users/store/${store.id}`)*/
     getDownloadURL(imageRef)
       .then((url) => {
         // Set the image URL once it's fetched
@@ -179,7 +218,7 @@ function StoreCard({ store }) {
       })
       .catch((error) => {
         // Handle any errors
-        console.log("no find")
+        //console.log("no find")
       
       });
 
