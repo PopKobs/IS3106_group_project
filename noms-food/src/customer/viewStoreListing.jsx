@@ -90,7 +90,9 @@ function ViewStoreListings() {
   };
 
   const handleIncreaseQuantity = () => {
-    setQuantity(quantity + 1);
+    if (quantity < parseInt(selectedListing.stock, 10)){
+      setQuantity(quantity + 1);
+    }
   };
 
   const handleDecreaseQuantity = () => {

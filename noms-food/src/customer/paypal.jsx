@@ -2,7 +2,7 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from 'firebase/auth';
-import { collection, addDoc, getFirestore, where, query, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getFirestore, where, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
 const PaypalPayment = () => {
@@ -112,6 +112,19 @@ const PaypalPayment = () => {
             try {
                 addDoc(collection(db, 'Order'), newOrderPayload);
                 console.log("Done")
+                for (const item of orderItems) {
+                  const listingDocRef = doc(db, 'Listing', item.listingId);
+                  const listingDocSnapshot = await getDoc(listingDocRef);
+                  if (listingDocSnapshot.exists()) {
+                      const listingData = listingDocSnapshot.data();
+                      const currentInventoryCount = parseInt(listingData.inventoryCount, 10);
+                      const updatedInventoryCount = currentInventoryCount - item.quantity;
+                      await updateDoc(listingDocRef, { inventoryCount: updatedInventoryCount });
+                      console.log(`Updated inventory count for listing ${item.listingId}`);
+                  } else {
+                      console.log(`Listing ${item.listingId} not found.`);
+                  }
+                }
             } catch (error) {
                 console.error('Error adding order', error);
             }
