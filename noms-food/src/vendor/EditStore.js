@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoadScript, Autocomplete, GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import {  Autocomplete, GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import './CreateStore.css'; // Assuming CSS styles are appropriate for EditStore as well
 import { useAuth } from '../contexts/authContext';
 import { doc, getDoc, getFirestore, query, collection, where, getDocs, updateDoc } from "firebase/firestore";
+import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
 
 function EditStore() {
   const navigate = useNavigate();
@@ -22,7 +23,8 @@ function EditStore() {
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs",
-    
+    libraries:["places"]
+
   });
 
   useEffect(() => {
@@ -89,50 +91,122 @@ function EditStore() {
     return <div>Loading store details...</div>;
   }
 
-  
+
 
   return (
-    <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
-      <h2 className="title">Edit Your Store</h2>
-      <form onSubmit={handleSubmit} className="createForm w-full max-w-md mt-8 px-4">
-        <div className="formGroup">
-          <label>Store Name:</label>
-          <input type="text" name="name" value={store.name} onChange={handleInputChange} />
 
-          <label>Description:</label>
-          <input type="text" name="description" value={store.description} onChange={handleInputChange} />
-          
-          <label>Opening Hour:</label>
-          <input type="time" name="opening" value={store.opening} onChange={handleInputChange} />
+    <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Typography variant='h3'>Sign your store up with NOMs!</Typography>
+      <Box sx={{ mt: 2, width: '100%', maxWidth: 400 }}>
+        <Stack spacing={2} direction="column">
+          {/* TextField components */}
+          <TextField
+            id="name"
+            label="Store Name"
+            variant="filled"
+            required
+            value={store.name}
+            onChange={handleInputChange}
+          />
+          <TextField
+            id="description"
+            label="Description"
+            variant="filled"
+            required
+            value={store.description}
+            onChange={handleInputChange}
+          />
+          <TextField
+            id="opening"
+            label="Opening Hours"
+            variant="filled"
+            required
+            value={store.opening}
+            onChange={handleInputChange}
+          />
+          <TextField
+            id="closing"
+            label="Closing Hours"
+            variant="filled"
+            required
+            value={store.closing}
+            onChange={handleInputChange}
+          />
+          <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
+            {/* <input type="text" placeholder="Type new location" /> */}
+            <TextField
+          id="location"
+          label="Store Location"
+          variant="filled"
+          required
+          placeholder='Type Store Location'
+          onChange={handleInputChange}
+          sx={{width: '100%'}}
+        />
+          </Autocomplete>
+          {marker.lat && marker.lng && (
+            <div className="googleMapContainer">
+              <GoogleMap
+                mapContainerClassName="googleMap"
+                mapContainerStyle={{ height: "400px", width: "800px" }}
+                center={marker}
+                zoom={15}
+              >
+                <Marker position={marker} />
+              </GoogleMap>
+            </div>
+          )}
+        </Stack>
+        {/* <Button sx={{ mt: 2, width: '100%' }} onClick={(e) => handleSubmit(e)}>Save Details </Button> */}
+      </Box>
+      <Box><Button style={{ backgroundColor: '#00897b', color: 'white' }} onClick={(e) => handleSubmit(e)}>Save Details</Button></Box>
+      {/* {showSuccess && <Box sx={{ mt: 2 }}>Store signed up successfully!</Box>} */}
+    </Container>
 
-          <label>Closing Hour:</label>
-          <input type="time" name="closing" value={store.closing} onChange={handleInputChange} />
 
-          <label>Location:</label>
-            <LoadScript
-                googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs"
-                libraries={["places"]}
-            >
-                <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
-                <input type="text" placeholder="Type location" />
-                </Autocomplete>
-                {marker.lat && marker.lng && (
-                <div className="googleMapContainer">
-                <GoogleMap
-                    mapContainerClassName="googleMap"
-                    mapContainerStyle={{ height: "400px", width: "800px" }}
-                    center={marker}
-                    zoom={15}
-                >
-                    <Marker position={marker} />
-                </GoogleMap>
-                </div>
-                )}
-            </LoadScript>
-        </div>
-        <button type="submit" className="submitButton">Update Store</button>
-      </form>
-    </div>
+    // <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
+    //   <h2 className="title">Edit Your Store</h2>
+    //   <form onSubmit={handleSubmit} className="createForm w-full max-w-md mt-8 px-4">
+    //     <div className="formGroup">
+    //       <label>Store Name:</label>
+    //       <input type="text" name="name" value={store.name} onChange={handleInputChange} />
+
+    //       <label>Description:</label>
+    //       <input type="text" name="description" value={store.description} onChange={handleInputChange} />
+
+    //       <label>Opening Hour:</label>
+    //       <input type="time" name="opening" value={store.opening} onChange={handleInputChange} />
+
+    //       <label>Closing Hour:</label>
+    //       <input type="time" name="closing" value={store.closing} onChange={handleInputChange} />
+
+    //       <label>Location:</label>
+    //         <LoadScript
+    //             googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs"
+    //             libraries={["places"]}
+    //         >
+    //             <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
+    //             <input type="text" placeholder="Type location" />
+    //             </Autocomplete>
+    //             {marker.lat && marker.lng && (
+    //             <div className="googleMapContainer">
+    //             <GoogleMap
+    //                 mapContainerClassName="googleMap"
+    //                 mapContainerStyle={{ height: "400px", width: "800px" }}
+    //                 center={marker}
+    //                 zoom={15}
+    //             >
+    //                 <Marker position={marker} />
+    //             </GoogleMap>
+    //             </div>
+    //             )}
+    //         </LoadScript>
+    //     </div>
+    //     <button type="submit" className="submitButton">Update Store</button>
+    //   </form>
+    // </div>
+
+
   );
 }
 

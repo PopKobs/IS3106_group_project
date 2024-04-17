@@ -135,6 +135,7 @@ function CreateStore() {
           required
           placeholder='Type Store Location'
           onChange={handleInputChange}
+          sx={{width: '100%'}}
         />
       </Autocomplete>
       {/* GoogleMap component */}
