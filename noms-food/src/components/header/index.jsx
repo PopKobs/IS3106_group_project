@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/authContext'
 import { doSignOut } from '../../firebase/auth'
-import icon from '../../photo/noms_icon.png'
+import icon from '../../photo/nomsicon.png'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -62,7 +62,9 @@ const Header = () => {
         <Toolbar >
           
           {/* Icon */}
-          <img src={icon} alt="icon" className="w-8 h-8 ml-2" style={{ margin: '10px' }}/>
+          <a href="/">
+          <img src={icon} alt="icon" style={{ width: '64px', height: '64px', margin: '0px' }} />
+          </a>
 
           {
                 userLoggedIn

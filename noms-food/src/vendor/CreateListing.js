@@ -12,6 +12,7 @@ function CreateListing() {
       setListing((prevListing) => ({
         ...prevListing,
         userId: userIden,
+        
       }));
     }
   }, [auth.currentUser]);
@@ -21,6 +22,7 @@ function CreateListing() {
     description: '',
     price: '',
     stock: '',
+    
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});

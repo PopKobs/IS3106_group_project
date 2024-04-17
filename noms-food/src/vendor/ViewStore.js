@@ -81,8 +81,6 @@ function ViewStore() {
         height: '400px' // Adjust height as needed
     };
 
-    console.log(store.location);
-
     return (
         <LoadScript
             googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs" 
