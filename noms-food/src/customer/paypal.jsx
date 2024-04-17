@@ -118,9 +118,11 @@ const PaypalPayment = () => {
                   const listingDocSnapshot = await getDoc(listingDocRef);
                   if (listingDocSnapshot.exists()) {
                       const listingData = listingDocSnapshot.data();
-                      const currentInventoryCount = parseInt(listingData.inventoryCount, 10);
+                      const currentInventoryCount = parseInt(listingData.stock, 10);
+                      console.log(currentInventoryCount);
                       const updatedInventoryCount = currentInventoryCount - item.quantity;
-                      await updateDoc(listingDocRef, { inventoryCount: updatedInventoryCount });
+                      console.log(updatedInventoryCount);
+                      await updateDoc(listingDocRef, { stock: updatedInventoryCount });
                       console.log(`Updated inventory count for listing ${item.listingId}`);
                   } else {
                       console.log(`Listing ${item.listingId} not found.`);

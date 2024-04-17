@@ -121,6 +121,15 @@ function ViewStores() {
     const distance = userLocation.lat ? calculateDistance(userLocation.lat, userLocation.lng, store.location.lat, store.location.lng) : null;
     return { ...store, distance };
   }).filter(store => store.isActive && store.name.toLowerCase().includes(searchTerm.toLowerCase())).sort((a, b) => {
+           if (a.isOpen === true && b.isOpen !== true) {
+         return -1;
+       } else if (a.isOpen !== true && b.isOpen === true) {
+         return 1;
+       } else {
+    
+         return 0;
+       }
+    }).sort((a, b) => {
     return a.distance - b.distance; // Sort by distance
   });
 
