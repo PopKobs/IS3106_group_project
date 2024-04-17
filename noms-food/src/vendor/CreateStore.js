@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { LoadScript, useLoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
-//import './CreateStore.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
 import { collection, addDoc, getFirestore, query, where, getDocs, updateDoc } from "firebase/firestore";
-import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
+import { Box, Paper, Container, Typography, TextField, Stack, Grid, Button } from "@mui/material";
+import vendorPhoto from '../photo/vendor.jpeg';
 
 
 function CreateStore() {
@@ -89,70 +89,54 @@ function CreateStore() {
   if (loadError) return "Error loading maps";
   if (!isLoaded) return "Loading maps";
 
-  return (
-    <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-  <Typography variant='h3'>Sign your store up with NOMs!</Typography>
-  <Box sx={{ mt: 2, width: '100%', maxWidth: 400 }}>
-    <Stack spacing={2} direction="column">
-      {/* TextField components */}
-      <TextField
-        id="name"
-        label="Store Name"
-        variant="filled"
-        required
-        onChange={handleInputChange}
-      />
-      <TextField
-        id="description"
-        label="Description"
-        variant="filled"
-        required
-        onChange={handleInputChange}
-      />
-      <TextField
-        id="opening"
-        label="Opening Hours"
-        variant="filled"
-        required
-        onChange={handleInputChange}
-      />
-      <TextField
-        id="closing"
-        label="Closing Hours"
-        variant="filled"
-        required
-        onChange={handleInputChange}
-      />
-      <Autocomplete onLoad={setAutocomplete} onPlaceChanged={handlePlaceSelect}>
-        <TextField
-          id="location"
-          label="Store Location"
-          variant="filled"
-          required
-          placeholder='Type Store Location'
-          onChange={handleInputChange}
-        />
-      </Autocomplete>
-      {/* GoogleMap component */}
-      {marker.lat && marker.lng && (
-        <div className="googleMapContainer">
-          <GoogleMap
-            mapContainerClassName="googleMap"
-            mapContainerStyle={{ height: "400px", width: "100%" }}
-            center={marker}
-            zoom={15}
-          >
-            <Marker position={marker} />
-          </GoogleMap>
-        </div>
-      )}
-    </Stack>
-    <Button sx={{ mt: 2, width: '100%' }} onClick={(e) => handleSubmit(e)}>Sign Up Store</Button>
-  </Box>
-  <Box><Button style={{ backgroundColor:'#00897b', color: 'white' }} onClick={(e) => handleSubmit(e)}>Sign Up Store</Button></Box>
-  {showSuccess && <Box sx={{ mt: 2 }}>Store signed up successfully!</Box>}
-</Container>
+  const sideImageStyles = {
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  };
 
+  return (
+    <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={7}>
+          <Typography variant='h4' sx={{ mb: 2 }}>Sign your store up with NOMs!</Typography>
+          <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+              {/* TextField components */}
+              <TextField name="name" label="Store Name" variant="outlined" required onChange={handleInputChange} />
+              <TextField name="description" label="Description" variant="outlined" required onChange={handleInputChange} />
+              <TextField name="opening" label="Opening Hours" variant="outlined" required onChange={handleInputChange} />
+              <TextField name="closing" label="Closing Hours" variant="outlined" required onChange={handleInputChange} />
+              <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
+                <TextField name="location" label="Store Location" variant="outlined" required onChange={handleInputChange} />
+              </Autocomplete>
+              {/* GoogleMap component */}
+              {marker.lat && marker.lng && (
+                <Paper elevation={3} sx={{ height: 400 }}>
+                  <GoogleMap
+                    mapContainerStyle={{ height: "100%", width: "100%" }}
+                    center={marker}
+                    zoom={15}
+                  >
+                    <Marker position={marker} />
+                  </GoogleMap>
+                </Paper>
+              )}
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>Sign Up Store</Button>
+            </Stack>
+          </Box>
+        </Grid>
+        <Grid item xs={10} md={5}>
+          <Box
+            component="img"
+            src={vendorPhoto}
+            alt="Vendor"
+            sx={{ width: '98%', height: 'auto', borderRadius: '8px' }}
+          />
+        </Grid>
+      </Grid>
+      {showSuccess && <Typography color="success.main" sx={{ mt: 2 }}>Store signed up successfully!</Typography>}
+    </Container>
   );
 }
 
