@@ -9,10 +9,10 @@ import { ThemeProvider, createTheme } from '@mui/material';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#D7F5E9', // Adjust primary color to your preference
+      main: '#477368', // Adjust primary color to your preference
     },
     secondary: {
-      main: '#951638', // Adjust secondary color to your preference
+      main: '#F7F4ED', // Adjust secondary color to your preference
     },
   },
   typography: {
@@ -30,7 +30,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <div style={{ backgroundColor: theme.palette.primary.main, minHeight: '100vh' }}>
+        <div style={{ backgroundColor: theme.palette.secondary.main, minHeight: '100vh' }}>
           <App />
         </div>
       </ThemeProvider>
