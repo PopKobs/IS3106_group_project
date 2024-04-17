@@ -21,13 +21,14 @@ const fetchStoreAndListings = async (storeId) => {
     // Fetch store details
     const storeDoc = await getDoc(doc(db, 'Store', storeId));
     const storeData = storeDoc.data();
-
+    // console.log(storeData.userId);
     if (!storeData) {
       throw new Error('Store not found');
     }
 
     // Query listings related to the store ID
-    const listingsQuery = query(collection(db, 'Listing'), where('userId', '==', auth.currentUser.uid));
+    const listingsQuery = query(collection(db, 'Listing'), where('userId', '==', storeData.userId));
+
     const listingsSnapshot = await getDocs(listingsQuery);
     const listingsData = listingsSnapshot.docs.map(doc => ({
       id: doc.id,
@@ -133,48 +134,44 @@ function ViewStoreListings() {
     
   return (
     <div>
-      <Container
-        maxWidth="md"
-        sx={{
-          padding: '20px',
-          marginTop: '20px'
-        }}
-      >
+      <Container maxWidth="md" sx={{ marginTop: '20px' }}>
         {storeListing && (
           <>
-            <Grid container alignItems="center" spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="h4" gutterBottom>
-                  <LocationOnIcon sx={{ mr: 2, color: 'red', width: '90px'}} /> {storeName}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Grid container direction="column" alignItems="flex-end">
-                  <Grid item>
-                    <Typography variant="body1" gutterBottom>
-                      <AccessTimeIcon sx={{ mr: 1 }} /> Opening: {storeOpening}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body1" gutterBottom>
-                      <AccessTimeIcon sx={{ mr: 1 }} /> Closing: {storeClosing}
-                    </Typography>
-                  </Grid>
+            <Paper elevation={3} sx={{ borderRadius: '10px', marginBottom: '10px', width: '83%'}}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h4" gutterBottom>
+                    <LocationOnIcon sx={{ mb: 1, ml: 2, mr: 0, color: red[500], fontSize: '2.5rem' }} /> {storeName}
+                  </Typography>
                 </Grid>
+                
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', fontSize: '0.8rem', mr: 3}}>
+                  <AccessTimeIcon sx={{ mr: 0.5, fontSize: '1.25rem' }} /> Opening: {storeOpening}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', fontSize: '0.8rem', mr: 3.6 }}>
+                  <AccessTimeIcon sx={{ mr: 0.5, fontSize: '1.25rem' }} /> Closing: {storeClosing}
+                </Typography>
+
+
               </Grid>
-              <Stack spacing={2} xs={12}>
-                {storeListing.listings.map(itemListing => (
-                  <StoreListingCard
-                    key={itemListing.id}
-                    listing={itemListing}
-                    handleOpenModal={() => handleOpenModal(itemListing)}
-                    cartItems={cartItems}
-                  />
-                ))}
-              </Stack>
-            </Grid>
+              </Grid>
+            </Paper>
+
+            <Stack spacing={2}>
+              {storeListing.listings.map(itemListing => (
+                <StoreListingCard
+                  key={itemListing.id}
+                  listing={itemListing}
+                  handleOpenModal={() => handleOpenModal(itemListing)}
+                  cartItems={cartItems}
+                />
+              ))}
+            </Stack>
           </>
         )}
+        
+
         <Modal open={showModal} onClose={handleCloseModal}>
           <Box
             sx={{
@@ -233,7 +230,7 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
 
   return (
     <Paper elevation={3} sx={{ borderRadius: 1, width: 700 }}>
-      <Card sx={{ display: 'flex', flexDirection: 'row', width: 500, height: 160, }}>
+      <Card sx={{ display: 'flex', flexDirection: 'row', width: 700, height: 160, }}>
         <CardMedia
           component="img"
           image={icon}

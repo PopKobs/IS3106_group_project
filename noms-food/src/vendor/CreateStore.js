@@ -9,7 +9,7 @@ import { Box, Container, Typography, TextField, Stack, Button } from "@mui/mater
 
 function CreateStore() {
   const navigate = useNavigate();
-  const { currentUserEmail } = useAuth();
+  const { currentUserEmail, currentUserId } = useAuth();
   const [store, setStore] = useState({
     name: '',
     description: '',
@@ -17,7 +17,9 @@ function CreateStore() {
     closing: '',
     location: '',
     isOpen: false,
-    creatorEmail: currentUserEmail || ''
+    distance: '0',
+    creatorEmail: currentUserEmail || '',
+    userId: currentUserId || ''
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [autocomplete, setAutocomplete] = useState(null);
@@ -51,12 +53,20 @@ function CreateStore() {
     e.preventDefault();
 
     const db = getFirestore();
+
     try {
       const storeCollectionRef = collection(db, "Store");
+      console.log(currentUserId);
+      console.log(store.name);
+      console.log(store.location);
+      console.log(store.description);
+      console.log(store.opening);
+      console.log(store.closing);
+      console.log(store.isOpen);
+      console.log(currentUserEmail);
       const storeDocRef = await addDoc(storeCollectionRef, {
         ...store,
         location: marker,
-        creatorEmail: currentUserEmail,
       });
 
       const usersCollectionRef = collection(db, "Users");
@@ -68,6 +78,7 @@ function CreateStore() {
         const userDocRef = querySnapshot.docs[0].ref;
 
         // Step 3: Update the user document with the store ID
+        
         await updateDoc(userDocRef, {
           storeId: storeDocRef.id,
         });
@@ -101,6 +112,7 @@ function CreateStore() {
       {/* TextField components */}
       <TextField
         id="name"
+        name="name"
         label="Store Name"
         variant="filled"
         required
@@ -108,6 +120,7 @@ function CreateStore() {
       />
       <TextField
         id="description"
+        name="description"
         label="Description"
         variant="filled"
         required
@@ -115,6 +128,7 @@ function CreateStore() {
       />
       <TextField
         id="opening"
+        name="opening"
         label="Opening Hours"
         variant="filled"
         required
@@ -122,6 +136,7 @@ function CreateStore() {
       />
       <TextField
         id="closing"
+        name="closing"
         label="Closing Hours"
         variant="filled"
         required
@@ -130,6 +145,7 @@ function CreateStore() {
       <Autocomplete onLoad={setAutocomplete} onPlaceChanged={handlePlaceSelect}>
         <TextField
           id="location"
+          name="location"
           label="Store Location"
           variant="filled"
           required

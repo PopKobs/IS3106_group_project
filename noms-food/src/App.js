@@ -17,6 +17,7 @@ import Header from "./components/header/index";
 import CustHeader from "./components/header/custHeader";
 import AdminHeader from "./components/header/adminHeader";
 import TicketForm from "./user/ReportIT";
+import TicketFormCust from "./customer/reportITCust";
 import ViewITTickets from "./user/ViewITTickets";
 import ProfilePage from './profilepage';
 import EditProfile from './editprofile';
@@ -37,7 +38,7 @@ import { Container } from "@mui/material";
 
 function App() {
   const location = useLocation(); // Get current location
-  const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout", "/orderConfirmed"]; // Pages for customers (using customer header)
+  const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout", "/orderConfirmed", "/reportItTicketCust"]; // Pages for customers (using customer header)
   const isCustHeaderPage = custHeaderPages.some(path => location.pathname.startsWith(path)); // Check if current page is a customer page
   const adminHeaderPages = ["/adminHome", "/adminviewuser"]; // Pages for admin
   const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
@@ -57,6 +58,7 @@ function App() {
     { path: "/custHome", element: <CustHome /> },
     { path: "/adminHome", element: <AdminHome /> },
     { path: "/reportItTicket", element: <TicketForm /> },
+    { path: "/reportItTicketCust", element: <TicketFormCust /> },
     { path: "/viewItTickets", element: <ViewITTickets />},
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> },

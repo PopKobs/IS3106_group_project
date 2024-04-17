@@ -11,7 +11,8 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [currentUserEmail, setCurrentUSerEmail] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [isEmailUser, setIsEmailUser] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
@@ -26,7 +27,8 @@ export function AuthProvider({ children }) {
     if (user) {
 
       setCurrentUser(user);
-      setCurrentUSerEmail(user.email)
+      setCurrentUserEmail(user.email);
+      setCurrentUserId(user.uid);
 
       // check if provider is email and password login
       const isEmail = user.providerData.some(
@@ -55,6 +57,7 @@ export function AuthProvider({ children }) {
     isGoogleUser,
     currentUser,
     currentUserEmail,
+    currentUserId,
     setCurrentUser
   };
 
