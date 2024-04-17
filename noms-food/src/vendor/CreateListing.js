@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getFirestore, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getFirestore} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
 
@@ -67,7 +67,7 @@ function CreateListing() {
           component="h2"
           gutterBottom
           sx={{
-            color: 'darkgreen',
+            color: 'black',
             mb: 3,
             fontWeight: 'bold' // This makes the text bold
           }}
@@ -85,7 +85,21 @@ function CreateListing() {
             error={!!errors.title}
             helperText={errors.title}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(0,0,0,0.23)', // Default border color
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0d6659', // Border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0d6659', // Border color when input is focused
+                },
+              }
+            }}
           />
+
           <TextField
             fullWidth
             label="Description"
@@ -97,6 +111,19 @@ function CreateListing() {
             error={!!errors.description}
             helperText={errors.description}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(0,0,0,0.23)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0d6659',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0d6659',
+                },
+              }
+            }}
           />
           <TextField
             fullWidth
@@ -108,6 +135,19 @@ function CreateListing() {
             error={!!errors.price}
             helperText={errors.price}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(0,0,0,0.23)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0d6659',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0d6659',
+                },
+              }
+            }}
           />
           <TextField
             fullWidth
@@ -119,12 +159,29 @@ function CreateListing() {
             error={!!errors.stock}
             helperText={errors.stock}
             margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(0,0,0,0.23)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0d6659',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0d6659',
+                },
+                
+                '&.Mui-focused .MuiInputLabel-outlined': {
+                  color: '#0d6659' // Label color when input is focused
+                }
+              }
+            }}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, backgroundColor: 'darkgreen', '&:hover': { backgroundColor: 'green' } }}
+            sx={{ mt: 3, mb: 2, backgroundColor: '#0d6659', '&:hover': { backgroundColor: '#32B48E' } }}
           >
             Create Listing
           </Button>

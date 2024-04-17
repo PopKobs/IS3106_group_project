@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
-import Stack from '@mui/material/Stack';
-import { updateDoc } from 'firebase/firestore';
-import { collection, query, where, getDocs, getFirestore, deleteDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { Grid, Card, CardContent, Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Container, Button, TextField } from '@mui/material';
-
-
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { Card, Container, CardActions, CardMedia, Typography, Button, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, Tabs, Tab } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/system';
+import burgerPicture from '../photo/burgerpicture.jpg';
+
 
 const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'row',
   justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: theme.spacing(2),
   margin: theme.spacing(2, 0),
-  backgroundColor: 'white',
-  border: `1px solid ${theme.palette.divider}`, // Add border
-  boxShadow: theme.shadows[1], // Optional: Adds a subtle shadow (remove if you prefer a flat design)
+  backgroundColor: theme.palette.background.paper,
 }));
+
+const MediaSection = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  padding: '16px',
+});
+
+const DetailsSection = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  padding: '16px',
+  flex: '1',
+});
+
+const ActionsSection = styled(CardActions)({
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  paddingRight: '16px',
+});
+
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -37,6 +52,7 @@ function ViewOwnListings() {
   const auth = getAuth();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentListing, setCurrentListing] = useState(null);
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -81,6 +97,14 @@ function ViewOwnListings() {
     setCurrentListing({ ...currentListing, [name]: value });
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  const filteredListings = listings.filter(listing =>
+    tabValue === 0 ? listing.stock > 0 : listing.stock === 0
+  );
+
   const handleUpdateListing = async () => {
     if (currentListing) {
       const db = getFirestore();
@@ -118,94 +142,116 @@ function ViewOwnListings() {
   }
 
   return (
-    <StyledContainer maxWidth="md">
-      <Typography variant="h4" gutterBottom component="div" sx={{ fontWeight: 'bold', color: 'darkgreen', pb: 2 }}>
-        My Listings
-      </Typography>
+    <StyledContainer maxWidth="md" sx={{ my: 5 }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          centered
+          sx={{
+            '& .MuiTab-root': { // Default style for all tabs
+              color: '#030303', // Normal state color
+            },
+            '& .Mui-selected': { // Style for the selected tab
+              color: '#119e80', // Custom color for selected tab
+              fontWeight: 'bold', // Optional: if you want the selected tab to be bold
+            },
+            '& .MuiTab-root:hover': { // Hover state for tabs
+              color: '#0a4d43', // A darker shade for hover, closer to #119e80
+              opacity: 0.9
+            },
+            '& .MuiTabs-indicator': { // Style for the indicator line
+              backgroundColor: '#119e80', // Same color as selected tab
+            }
+          }}
+        >
+          <Tab label="In Stock" />
+          <Tab label="Out Of Stock" />
+        </Tabs>
+
+      </Box>
       {loading ? (
         <Typography>Loading...</Typography>
-      ) : listings.length === 0 ? (
+      ) : filteredListings.length === 0 ? (
         <Typography>No listings found.</Typography>
       ) : (
-        <Grid container spacing={2} justifyContent="center">
-          {listings.map((listing) => (
-            <Grid item xs={12} md={6} key={listing.id}>
+        <Grid container spacing={2}>
+          {filteredListings.map((listing) => (
+            <Grid item xs={12} key={listing.id}>
               <StyledCard>
-                <div>
+                <MediaSection>
+                  <CardMedia
+                    component="img"
+                    image={burgerPicture}
+                    alt="Burger"
+                    sx={{ width: '100px', height: '100px' }}
+                  />
+                </MediaSection>
+                <DetailsSection>
                   <Typography variant="h6">{listing.title}</Typography>
-                  <Typography variant="body1">{listing.description}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Price: ${listing.price}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Stock: {listing.stock}
-                  </Typography>
-                </div>
-                <Stack direction="column" spacing={1}>
-                <IconButton 
-                  onClick={() => handleOpenEditDialog(listing)} 
-                  sx={{ color: 'black' }}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton 
-                  onClick={() => handleOpenConfirmation(listing.id)} 
-                  color="error"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Stack>
+                  <Typography>{listing.description}</Typography>
+                  <Typography>Price: ${listing.price}</Typography>
+                  <Typography>Stock: {listing.stock}</Typography>
+                </DetailsSection>
+                <ActionsSection>
+                  <IconButton onClick={() => handleOpenEditDialog(listing)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={() => handleOpenConfirmation(listing.id)} color="error">
+                    <DeleteIcon />
+                  </IconButton>
+                </ActionsSection>
               </StyledCard>
             </Grid>
           ))}
         </Grid>
       )}
 
-<Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-      <DialogTitle>Edit Listing</DialogTitle>
-      <DialogContent>
-        <TextField
-          margin="normal"
-          fullWidth
-          label="Title"
-          name="title"
-          value={currentListing?.title || ''}
-          onChange={handleEditInputChange}
-        />
-        <TextField
-          margin="normal"
-          fullWidth
-          label="Description"
-          name="description"
-          multiline
-          rows={4}
-          value={currentListing?.description || ''}
-          onChange={handleEditInputChange}
-        />
-        <TextField
-          margin="normal"
-          fullWidth
-          label="Price ($)"
-          name="price"
-          type="number"
-          value={currentListing?.price || ''}
-          onChange={handleEditInputChange}
-        />
-        <TextField
-          margin="normal"
-          fullWidth
-          label="Stock"
-          name="stock"
-          type="number"
-          value={currentListing?.stock || ''}
-          onChange={handleEditInputChange}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseEditDialog} color="primary">Cancel</Button>
-        <Button onClick={handleUpdateListing} color="primary">Save</Button>
-      </DialogActions>
-    </Dialog>
+      <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Listing</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Title"
+            name="title"
+            value={currentListing?.title || ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Description"
+            name="description"
+            multiline
+            rows={4}
+            value={currentListing?.description || ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Price ($)"
+            name="price"
+            type="number"
+            value={currentListing?.price || ''}
+            onChange={handleEditInputChange}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Stock"
+            name="stock"
+            type="number"
+            value={currentListing?.stock || ''}
+            onChange={handleEditInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} sx={{ color: 'black' }} >Cancel </Button>
+          <Button onClick={handleUpdateListing} sx={{ color: 'green' }}>Save</Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={confirmationOpen} onClose={handleCloseConfirmation}>
         <DialogTitle>Confirm Deletion</DialogTitle>
@@ -213,12 +259,14 @@ function ViewOwnListings() {
           <Typography>Are you sure you want to delete this listing?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button onClick={handleCloseConfirmation} sx={{ color: 'black' }} >Cancel</Button>
           <Button onClick={handleDeleteListing} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
     </StyledContainer>
   );
+
+
 }
 
 export default ViewOwnListings;
