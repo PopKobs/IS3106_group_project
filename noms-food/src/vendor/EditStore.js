@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoadScript, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
+import { LoadScript, Autocomplete, GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import './CreateStore.css'; // Assuming CSS styles are appropriate for EditStore as well
 import { useAuth } from '../contexts/authContext';
 import { doc, getDoc, getFirestore, query, collection, where, getDocs, updateDoc } from "firebase/firestore";
@@ -19,6 +19,11 @@ function EditStore() {
   });
   const [autocomplete, setAutocomplete] = useState(null);
   const [marker, setMarker] = useState({ lat: null, lng: null });
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs",
+    
+  });
 
   useEffect(() => {
     const fetchStore = async () => {
@@ -83,6 +88,8 @@ function EditStore() {
   if (!store) {
     return <div>Loading store details...</div>;
   }
+
+  
 
   return (
     <div className="createStoreContainer flex flex-col items-center justify-center pt-16">
