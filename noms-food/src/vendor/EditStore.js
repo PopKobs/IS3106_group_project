@@ -36,9 +36,9 @@ function EditStore() {
 
   useEffect(() => {
     // Fetch the image URL from Firebase Storage
-    const auth = getAuth(); // Get Current User State
-    const userIden = auth.currentUser?.uid; // UserId 
-    const imageRef = ref(storage, `users/store/${userIden}`);
+    // const auth = getAuth(); // Get Current User State
+    // const userIden = auth.currentUser?.uid; // UserId 
+    const imageRef = ref(storage, `users/store/${store.id}`);
     getDownloadURL(imageRef)
       .then((url) => {
         // Set the image URL once it's fetched
@@ -48,7 +48,7 @@ function EditStore() {
         // Handle any errors
         console.error('Error fetching image URL:', error);
       });
-  }, []);
+  }, [store]);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -60,12 +60,12 @@ function EditStore() {
       return;
     }
 
-    const auth = getAuth(); // Get Current User State
-    const userIden = auth.currentUser?.uid; // UserId 
+    // const auth = getAuth(); // Get Current User State
+    // const userIden = auth.currentUser?.uid; // UserId 
     try {
 
       // Check if a photo already exists for the user
-      const storageRef = ref(storage, `users/store/${userIden}`)
+      const storageRef = ref(storage, `users/store/${store.id}`)
 
       // Delete the file
       deleteObject(storageRef).then(() => {

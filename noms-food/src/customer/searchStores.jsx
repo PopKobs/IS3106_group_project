@@ -17,6 +17,7 @@ import {
 import { Link } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Autocomplete, useLoadScript } from '@react-google-maps/api';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const libraries = ["places"];
 
@@ -161,10 +162,26 @@ function ViewStores() {
   //     </Grid>
   //   );
   // }
+  const storage = getStorage();
+  
 
 function StoreCard({ store }) {
+  const [imageLink, setImageLink] = useState(icon); 
   const disabled = !store.isOpen;
-  const imageLink = icon; // replace with the actual path to your image
+ 
+  
+  const imageRef = ref(storage, `users/store/${store.id}`);
+  console.log(`users/store/${store.id}`)
+    getDownloadURL(imageRef)
+      .then((url) => {
+        // Set the image URL once it's fetched
+        setImageLink(url)
+      })
+      .catch((error) => {
+        // Handle any errors
+        console.log("no find")
+      
+      });
 
   // Format the distance to show only two decimal places
   const formattedDistance = store.distance === 0 ? "0 km" : store.distance ? `${store.distance.toFixed(2)} km` : "Distance not available";
