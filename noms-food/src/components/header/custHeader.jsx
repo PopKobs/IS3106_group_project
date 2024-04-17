@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/authContext'
 import { doSignOut } from '../../firebase/auth'
-import icon from '../../photo/noms_icon.png'
+import icon from '../../photo/nomsicon.png'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,6 +17,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Drawer from '@mui/material/Drawer';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
 const CustHeader = () => {
@@ -64,8 +66,9 @@ const CustHeader = () => {
         <Toolbar>
           
           {/* Icon */}
-          <img src={icon} alt="icon" className="w-8 h-8 ml-2" style={{ margin: '10px' }}/>
-
+          <a href="/custHome">
+          <img src={icon} alt="icon" style={{ width: '64px', height: '64px', margin: '0px' }} />
+          </a>
           {
                 userLoggedIn
                     ?
@@ -83,6 +86,15 @@ const CustHeader = () => {
                         <Drawer open={open} onClose={toggleDrawer(false)}>
                         {DrawerList}
                         </Drawer>
+                        <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
+                          {/* Cart Icon */}
+                          <IconButton color="inherit" onClick={() => navigate('/viewCart')}>
+                              <ShoppingCartIcon />
+                          </IconButton>
+                          {/* Profile Icon */}
+                          <IconButton color="inherit" onClick={() => navigate('/profilepageCust')}>
+                              <AccountCircleIcon />
+                          </IconButton>  
                     </>
                     :
                     <>

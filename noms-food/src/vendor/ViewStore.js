@@ -84,8 +84,6 @@ function ViewStore() {
         height: '400px' // Adjust height as needed
     };
 
-    //console.log(store.location);
-
     return (
         <Container>
             {!store ? <div>Loading store information...</div>
