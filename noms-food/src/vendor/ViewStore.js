@@ -14,6 +14,7 @@ import { LoadScript, GoogleMap, Marker, useLoadScript } from '@react-google-maps
 import { useNavigate } from 'react-router-dom';
 import './ViewStore.css';
 import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 function ViewStore() {
     const { currentUserEmail } = useAuth();
@@ -30,17 +31,31 @@ function ViewStore() {
 
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: "AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs",
-        
-      });
+
+    });
+
+    const storage = getStorage();
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imageUrl, setImageUrl] = useState(null);
+    const [storeId2, setStoreId] = useState("");
+
     useEffect(() => {
-        // const isMapsApiLoadedFromStorage = localStorage.getItem('isMapsApiLoaded');
-        // console.log(isMapsApiLoadedFromStorage)
-        // if (isMapsApiLoadedFromStorage) {
-        //     setIsMapsApiLoaded(true)
-        // } else {
-        //     setIsMapsApiLoaded(false)
-            
-        // }
+
+        const imageRef = ref(storage, `users/store/${storeId2}`);
+        getDownloadURL(imageRef)
+            .then((url) => {
+                // Set the image URL once it's fetched
+                setImageUrl(url);
+            })
+            .catch((error) => {
+                // Handle any errors
+                console.error('Error fetching image URL:', error);
+            });
+    }, [storeId2]);
+
+
+    useEffect(() => {
+
         const fetchStore = async () => {
             // Step 1: Query the Users collection to get the user's storeId
             const q = query(collection(db, "Users"), where("email", "==", currentUserEmail));
@@ -49,6 +64,7 @@ function ViewStore() {
             if (!querySnapshot.empty) {
                 const userDoc = querySnapshot.docs[0].data();
                 const storeId = userDoc.storeId;
+                setStoreId(storeId)
 
                 // Step 2: Fetch the store details using the storeId
                 const storeRef = doc(db, "Store", storeId);
@@ -108,6 +124,19 @@ function ViewStore() {
                 <Box>
                     <Box>
                         <h2 className="ViewStore-header">View Your Store</h2>
+                        <Box>
+                            <Typography variant="h6" gutterBottom>
+                                Store Image:
+                            </Typography>
+                            <div>
+                                {imageUrl ? (
+                                    <img src={imageUrl} alt="Stars" />
+                                ) : (
+                                    <p>Store Image has not been set...</p>
+                                )}
+                            </div>
+
+                        </Box>
                         <div className="ViewStore-details">
                             <p><b>Store Name:</b> {store.name}</p>
                             <p><b>Description:</b> {store.description}</p>
@@ -115,7 +144,7 @@ function ViewStore() {
                             <p><b>Closing Hours:</b> {store.closing}</p>
                             <p><b>Store Location:</b> {address}</p>
                         </div>
-                    </Box> 
+                    </Box>
                     {
                         isLoaded ?
                             <div className="ViewStore-container">
@@ -135,10 +164,10 @@ function ViewStore() {
                             //     googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs"
                             //     onLoad={() => setIsMapsApiLoaded(true)}
                             // >
-                                <Box>
-                                    <Typography>Loading...</Typography>
-                                </Box>
-                            // </LoadScript>
+                            <Box>
+                                <Typography>Loading...</Typography>
+                            </Box>
+                        // </LoadScript>
 
                     }
 
