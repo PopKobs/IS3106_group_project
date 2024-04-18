@@ -89,6 +89,7 @@ function ViewITTickets() {
                   <CardContent>
                     <Typography variant="h6">{ticket.title}</Typography>
                     <Typography color="textSecondary">Reported on: {ticket.reportedDate?.toLocaleString()}</Typography>
+                    <Typography sx={{ mt: 1 }}>{ticket.description}</Typography>
                   </CardContent>
                 </Card>
               </ListItem>
