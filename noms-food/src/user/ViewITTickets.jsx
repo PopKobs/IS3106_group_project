@@ -9,24 +9,23 @@ import {
   CardContent,
   List,
   ListItem,
-  Divider,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
-  Box,
-  ListItemSecondaryAction
+  Tabs,
+  Tab,
+  Paper
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
 
 function ViewITTickets() {
   const auth = getAuth();
   const currentUser = auth.currentUser;
-  const [tickets, setTickets] = useState([]);
+  const [ongoingTickets, setOngoingTickets] = useState([]);
+  const [closedTickets, setClosedTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -38,10 +37,11 @@ function ViewITTickets() {
         const fetchedTickets = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          // Convert the reportedDate to a Date object if it's a Firestore Timestamp
           reportedDate: doc.data().reportedDate?.toDate()
         }));
-        setTickets(fetchedTickets);
+        
+        setOngoingTickets(fetchedTickets.filter(ticket => ticket.status === 'open'));
+        setClosedTickets(fetchedTickets.filter(ticket => ticket.status === 'closed'));
         setLoading(false);
       }
     };
@@ -51,11 +51,15 @@ function ViewITTickets() {
 
   const handleOpenDetails = (ticket) => {
     setSelectedTicket(ticket);
-    setDetailDialogOpen(true); // Open the dialog
+    setDetailDialogOpen(true);
   };
 
   const handleCloseDetails = () => {
-    setDetailDialogOpen(false); // Close the dialog
+    setDetailDialogOpen(false);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
   if (loading) {
@@ -63,57 +67,69 @@ function ViewITTickets() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Box width="100%" bgcolor="background.paper" borderRadius={2} boxShadow={3}>
-        <Box p={3} textAlign="center">
-          <Typography variant="h4" component="h1" gutterBottom>
-            My IT Tickets
-          </Typography>
-        </Box>
-        <Divider />
+    <Container maxWidth="md" sx={{ mt: 4, mb: 3 }}>
+      <Paper elevation={3} sx={{ width: '100%', p: 2, mb: 2 }}>
+        <Tabs value={tabValue} onChange={handleTabChange} centered>
+          <Tab label="Ongoing IT Tickets" />
+          <Tab label="Closed IT Tickets" />
+        </Tabs>
+      </Paper>
+      <Paper elevation={3} sx={{ width: '100%', p: 2 }}>
         <List>
-          {tickets.length > 0 ? (
-            tickets.map((ticket, index) => (
-              <React.Fragment key={ticket.id}>
-                <ListItem
-                  secondaryAction={
-                    <IconButton edge="end" onClick={() => handleOpenDetails(ticket)}>
-                      <VisibilityIcon />
-                    </IconButton>
-                  }
-                >
+          {tabValue === 0 && ongoingTickets.length === 0 && (
+            <Typography sx={{ textAlign: 'center', my: 2 }}>No Ongoing Tickets to show.</Typography>
+          )}
+          {tabValue === 1 && closedTickets.length === 0 && (
+            <Typography sx={{ textAlign: 'center', my: 2 }}>No Closed Tickets to show.</Typography>
+          )}
+          {tabValue === 0 ? (
+            ongoingTickets.map((ticket) => (
+              <ListItem key={ticket.id}>
+                <Card sx={{ width: '100%' }}>
                   <CardContent>
                     <Typography variant="h6">{ticket.title}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Reported on: {ticket.reportedDate?.toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2">{ticket.description}</Typography>
+                    <Typography color="textSecondary">Reported on: {ticket.reportedDate?.toLocaleString()}</Typography>
                   </CardContent>
-                </ListItem>
-                {index < tickets.length - 1 && <Divider />}
-              </React.Fragment>
+                </Card>
+              </ListItem>
             ))
           ) : (
-            <CardContent>
-              <Typography>No tickets reported.</Typography>
-            </CardContent>
+            closedTickets.map((ticket) => (
+              <ListItem button onClick={() => handleOpenDetails(ticket)} key={ticket.id}>
+                <Card sx={{ width: '100%' }}>
+                  <CardContent>
+                    <Typography variant="h6">{ticket.title}</Typography>
+                    <Typography color="textSecondary">Reported on: {ticket.reportedDate?.toLocaleString()}</Typography>
+                    <Typography sx={{ mt: 1 }}>{ticket.description}</Typography>
+                    {ticket.reply && (
+                      <Typography color="primary" sx={{ mt: 1 }}>
+                        Reply: {ticket.reply}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </ListItem>
+            ))
           )}
         </List>
-      </Box>
-
+      </Paper>
 
       {/* Dialog for ticket details */}
       <Dialog open={detailDialogOpen} onClose={handleCloseDetails} maxWidth="sm" fullWidth>
         <DialogTitle>IT Ticket Details</DialogTitle>
         <DialogContent>
           <Typography variant="h6">{selectedTicket?.title}</Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Reported on: {selectedTicket?.reportedDate?.toLocaleString()} 
+          <Typography color="textSecondary">
+            Reported on: {selectedTicket?.reportedDate?.toLocaleString()}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
+          <Typography sx={{ mt: 2 }}>
             {selectedTicket?.description}
           </Typography>
-          {/* You can add more details here */}
+          {selectedTicket?.reply && (
+            <Typography sx={{ mt: 2 }}>
+              Reply: {selectedTicket?.reply}
+            </Typography>
+          )}
         </DialogContent>
       </Dialog>
     </Container>
