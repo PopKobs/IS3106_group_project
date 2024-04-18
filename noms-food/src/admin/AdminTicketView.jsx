@@ -1,7 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab, Paper, Typography, Container, List, ListItem, ListItemText, Button, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Divider, DialogActions, Card, styled, Tabs, Tab, Paper, Typography, Container, List, ListItem, ListItemText, Button, TextField } from '@mui/material';
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+
+
+// Enhanced Card Style
+const StyledCard = styled(Card)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    margin: theme.spacing(2),
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[2],
+    borderRadius: theme.shape.borderRadius,
+    transition: 'box-shadow 0.3s ease-in-out',
+    '&:hover': {
+        boxShadow: theme.shadows[4],
+    }
+}));
+
+// Modern Button Style
+const ActionButton = styled(Button)({
+    transition: 'background-color 0.3s',
+    '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    }
+});
+
+// Dialog Content with Improved Padding
+const DialogContentStyled = styled(DialogContent)({
+    padding: '20px',
+});
+
 
 const getAllTickets = async () => {
     try {
@@ -67,11 +97,12 @@ const AdminTicketView = () => {
     const filteredTickets = tickets.filter(ticket => (tabValue === 0 ? ticket.status === 'open' : ticket.status === 'closed'));
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Container maxWidth="md" sx={{ mt: 4 }}>
             <Paper elevation={3} sx={{ p: 2, backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 3px 10px rgb(0 0 0 / 0.2)' }}>
-                <Typography variant="h4" sx={{ mb: 2 }}>
-                    Admin IT Ticket Management
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', textAlign: 'center' }}>  {/* Increased bottom margin, bold, and centered */}
+                    IT Ticket Management
                 </Typography>
+                <Divider sx={{ mb: 2 }} />  {/* Divider added for clear separation */}
                 <Tabs
                     value={tabValue}
                     onChange={handleTabChange}
@@ -147,6 +178,7 @@ const AdminTicketView = () => {
             )}
         </Container>
     );
+
 };
 
 export default AdminTicketView;
