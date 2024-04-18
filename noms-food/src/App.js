@@ -40,7 +40,7 @@ import { Container } from "@mui/material";
 
 function App() {
   const location = useLocation(); // Get current location
-  const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout", "/orderConfirmed", "/reportItTicketCust", "/viewItTicketsCust"]; // Pages for customers (using customer header)
+  const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout/:storeId", "/orderConfirmed", "/reportItTicketCust", "/viewItTicketsCust", "/editprofileCust", "/viewCart/:storeId", "/orderConfirmed/:storeId/:orderId", "/store/:storeId", "/viewOrders"]; // Pages for customers (using customer header)
   const isCustHeaderPage = custHeaderPages.some(path => location.pathname.startsWith(path)); // Check if current page is a customer page
   const adminHeaderPages = ["/adminHome", "/adminviewuser"]; // Pages for admin
   const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
@@ -48,35 +48,36 @@ function App() {
   const routes = useRoutes([
     { path: "/", element: <LandingPage /> },
     { path: "/signup", element: <Signup /> },
-    { path: "/createstore", element: <CreateStore /> },
-    { path: "/createlisting", element: <CreateListing /> },
-    { path: "/viewownlistings", element: <ViewOwnListings /> },
-    { path: "/viewstore", element: <ViewStore /> },
-    { path: "/editstore", element: <EditStore /> },
-    { path: "/login", element: <Login /> },
+    { path: "/createstore", element: <CreateStore /> }, //Vendor
+    { path: "/createlisting", element: <CreateListing /> }, //Vendor
+    { path: "/viewownlistings", element: <ViewOwnListings /> }, //Vendor
+    { path: "/viewstore", element: <ViewStore /> }, //Vendor
+    { path: "/editstore", element: <EditStore /> }, //Vendor
+    { path: "/login", element: <Login /> }, 
     { path: "/register", element: <Register /> },
     { path: "/type", element: <AccountType /> },
     { path: "/home", element: <Home /> },
-    { path: "/custHome", element: <CustHome /> },
-    { path: "/adminHome", element: <AdminHome /> },
-    { path: "/reportItTicket", element: <TicketForm /> },
-    { path: "/reportItTicketCust", element: <TicketFormCust /> },
-    { path: "/viewItTickets", element: <ViewITTickets />},
-    { path: "/viewItTicketsCust", element: <ViewITTicketsCust />},
+    { path: "/custHome", element: <CustHome /> }, //Customer
+    { path: "/adminHome", element: <AdminHome /> }, //Admin
+    { path: "/reportItTicket", element: <TicketForm /> }, //Vendor
+    { path: "/reportItTicketCust", element: <TicketFormCust /> }, //Customer
+    { path: "/viewItTickets", element: <ViewITTickets />}, //Vendor
+    { path: "/viewItTicketsCust", element: <ViewITTicketsCust />}, //Customer
     { path: "/profilepage", element: <ProfilePage /> },
-    { path: "/searchStores", element: <SearchStores /> },
-    { path: "/store/:storeId", element: <StoreListings /> },
+    { path: "/searchStores", element: <SearchStores /> }, //Customer
+    //{ path: "/store/:storeId", element: <StoreListings /> },
     { path: "/editprofile", element: <EditProfile /> },
-    { path: "/adminviewuser", element: <AdminUsersPage /> },
-    { path: "/profilepageCust", element: <ProfilePageCust /> },
-    { path: "/viewCart/:storeId", element: <CartView /> },
-    { path: "/checkout/:storeId", element: <CheckoutPage /> },
-    { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> },
-    { path: "/store/:storeId", element: <ViewStoreListings /> },
-    { path: "/viewOrders", element: <ViewAllOrders /> },
-    { path: "/viewStoreOrders", element: <ViewVendorOrders /> },
-    { path: "/adminTicketView", element: <AdminTicketView />},
-    { path: "/viewShopReviews", element: <ShopReviewsPage />}
+    { path: "/editprofileCust", element: <EditProfile /> },
+    { path: "/adminviewuser", element: <AdminUsersPage /> }, 
+    { path: "/profilepageCust", element: <ProfilePageCust /> }, //Customer
+    { path: "/viewCart/:storeId", element: <CartView /> }, //Customer
+    { path: "/checkout/:storeId", element: <CheckoutPage /> }, //Customer
+    { path: "/orderConfirmed/:storeId/:orderId", element: <OrderConfirmed /> }, //Customer
+    { path: "/store/:storeId", element: <ViewStoreListings /> }, //Customer
+    { path: "/viewOrders", element: <ViewAllOrders /> }, //Customer
+    { path: "/viewStoreOrders", element: <ViewVendorOrders /> }, //Vendor
+    { path: "/adminTicketView", element: <AdminTicketView />}, //Admin
+    { path: "/viewShopReviews", element: <ShopReviewsPage />} //Vendor
     // Add more routes as needed
   ]);
 
