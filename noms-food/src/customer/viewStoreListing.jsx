@@ -166,6 +166,8 @@ const StoreInfoHeader = () => {
   const handleIncreaseQuantity = () => {
     if (quantity < parseInt(selectedListing.stock, 10)){
       setQuantity(quantity + 1);
+    } else {
+      alert("Max Quantity Avaliable");
     }
   };
 

@@ -88,6 +88,10 @@ function ViewStore() {
     }, [store, isMapsApiLoaded]); // Depend on store.location and isMapsApiLoaded
 
 
+    const navigateReview = (() => {
+        navigate('/viewShopReviews');
+    })
+
     // if (!store) {
     //     return <div>Loading store information...</div>;
     // }
@@ -141,8 +145,7 @@ function ViewStore() {
                 </Box>
             }
             <Box>
-                <p>Rating: 4.5/5 (Fake Rating)</p> <br />
-                <button className="ViewStore-button" onClick={() => console.log('View Reviews clicked')}>View Reviews</button> <br /><br />
+                <button className="ViewStore-button" onClick={navigateReview}>View All Reviews</button> <br /><br />
                 <button className="ViewStore-button" onClick={handleEditStore}>Edit Store</button> <br /><br />
             </Box>
         </Container>
