@@ -14,6 +14,7 @@ import icon from '../photo/niceFood.jpg';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FavoriteIcon from '@mui/icons-material/Favorite';import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import AccessTimeIcon
 import { red } from '@mui/material/colors';
+import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -116,19 +117,19 @@ const StoreInfoHeader = () => {
         {storeName}
       </Typography>
       <Box display="flex" alignItems="center" gap={1}>
-        <AccessTimeIcon color="action" />
+        <AccessTimeIcon style={{ color: 'green' }} />
         <Typography variant="subtitle1">
           {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        <LocationOnIcon color="action" />
+        <LocationOnIcon style={{ color: 'green' }} />
         <Typography variant="subtitle1">
           {storeLocationString || 'Location not specified'}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        <InfoIcon color="action" />
+        <InfoIcon style={{ color: 'green' }} />
         <Typography variant="subtitle1">
           {storeDescription || 'No description available'}
         </Typography>
