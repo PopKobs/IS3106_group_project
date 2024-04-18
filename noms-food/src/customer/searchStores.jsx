@@ -11,9 +11,10 @@ import {
   CardMedia,
   TextField,
   Box,
-  // Rating, // Uncomment if you're using Rating
-  // Stack, // Import Stack if you're using it below
+  Checkbox,
+  FormControlLabel
 } from '@mui/material';
+import { green } from '@mui/material/colors';
 import { Link } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Autocomplete, useLoadScript } from '@react-google-maps/api';
@@ -26,6 +27,37 @@ function ViewStores() {
   const [searchTerm, setSearchTerm] = useState('');
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
   const [autocomplete, setAutocomplete] = useState(null);
+
+  const categories = [
+    'Japanese',
+    'Chinese',
+    'Western',
+    'Korean',
+    'Pastry',
+    'Greens',
+    'Halal',
+  ];
+
+  const [selectedCategories, setSelectedCategories] = useState(new Set());
+
+  const toggleCategory = category => {
+    setSelectedCategories(prevSelectedCategories => {
+      const newSet = new Set(prevSelectedCategories);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
+
+  const isStoreInSelectedCategories = store => {
+    if (selectedCategories.size === 0) return true;
+    return selectedCategories.has(store.category);
+  };
+
+
 
   const onAutocompleteLoad = (autocomplete) => {
     setAutocomplete(autocomplete);
@@ -133,6 +165,8 @@ function ViewStores() {
     return a.distance - b.distance; // Sort by distance
   });
 
+  const filteredStoresByCategory = filteredStores.filter(isStoreInSelectedCategories);
+
   const updateStoreStatus = async () => {
     const currentTime = new Date();
     const storesCollection = collection(db, 'Store');
@@ -237,7 +271,7 @@ function StoreCard({ store }) {
   return (
     <Grid item xs={12} sm={6} md={3}>
       <Box sx={{ opacity: disabled ? 0.5 : 1, display: 'flex' }}>
-        <Card raised sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Card raised sx={{ borderRadius: '6%', width: '100%', display: 'flex', flexDirection: 'column', minHeight: '330px' }}>
           <CardMedia
             component="img"
             height="140"
@@ -272,81 +306,99 @@ function StoreCard({ store }) {
 }
 
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}> {/* Changed to 'lg' and added padding on y-axis */}
-      <Typography variant="h4" gutterBottom sx={{ pb: 2 }}>
-        Available Stores
-      </Typography>
+//   return (
+//     <Container maxWidth="lg" sx={{ py: 4 }}> {/* Changed to 'lg' and added padding on y-axis */}
+//       <Typography variant="h4" gutterBottom sx={{ pb: 2 }}>
+//         Available Stores
+//       </Typography>
       
-      {isLoaded && (
+//       {isLoaded && (
+//         <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={handlePlaceSelect}>
+//           <TextField
+//             label="Enter your current location"
+//             variant="outlined"
+//             fullWidth
+//             placeholder="Type your location"
+//           />
+//         </Autocomplete>
+//       )}
+
+//       <TextField
+//         label="Search by store name"
+//         variant="outlined"
+//         fullWidth
+//         value={searchTerm}
+//         onChange={e => setSearchTerm(e.target.value)}
+//         sx={{ mb: 3 }}
+//       />
+//       <Grid container spacing={2}>
+//         {filteredStores.map(store => (
+//           <StoreCard key={store.id} store={store} />
+//         ))}
+//       </Grid>
+//     </Container>
+//   );
+// }
+
+return (
+  <Container maxWidth="xl" sx={{ py: 4, display: 'flex' }}>
+    <Box sx={{ flex: 0.5, pr: 2, borderRight: '1px solid #E0E0E0', minHeight: '100vh', width: '200px'}}>
+      <Typography variant="h6">Categories</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      {categories.map(category => (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedCategories.has(category)}
+              onChange={() => toggleCategory(category)}
+              sx={{
+                color: green[400], // Color when the checkbox is not checked
+                '&.Mui-checked': {
+                  color: green[600], // Color when the checkbox is checked
+                },
+              }}
+            />
+          }
+          label={category}
+          key={category}
+        />
+      ))}
+    </Box>
+      {/* ... add other controls for filtering by distance or other parameters */}
+    </Box>
+
+    
+    <Box sx={{ flex: 3, pl: 2 }}>
+    <Typography variant="h4">Available Stores</Typography>
+    {isLoaded && (
         <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={handlePlaceSelect}>
           <TextField
             label="Enter your current location"
             variant="outlined"
             fullWidth
             placeholder="Type your location"
+            sx={{ marginTop: '10px' }}
           />
         </Autocomplete>
       )}
-
       <TextField
         label="Search by store name"
         variant="outlined"
         fullWidth
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
-        sx={{ mb: 3 }}
+        sx={{ mb: 2, marginTop: '10px' }}
       />
+      {/* ... the rest of your search input fields */}
       <Grid container spacing={2}>
-        {filteredStores.map(store => (
+        {filteredStoresByCategory.map(store => (
           <StoreCard key={store.id} store={store} />
         ))}
       </Grid>
-    </Container>
-  );
+    </Box>
+  </Container>
+);
 }
 
 export default ViewStores;
 
-
-  // return (
-  //   <Container
-  //     maxWidth="sm"
-  //     sx={{
-  //       padding: '20px',
-  //       height: '100vh',
-  //       marginTop: '20px'
-  //     }}>
-  //     <Container maxWidth="sm"
-  //       sx={{
-  //         backgroundColor: 'white',
-  //         padding: '20px',
-  //         borderRadius: '10px',
-  //         marginTop: '55px'
-  //       }}>
-  //       <Typography variant="h4" gutterBottom>
-  //         Available Stores
-  //       </Typography>
-  //       <TextField
-  //         label="Search by store name"
-  //         variant="outlined"
-  //         fullWidth
-  //         value={searchTerm}
-  //         onChange={e => setSearchTerm(e.target.value)}
-  //         style={{ marginBottom: '20px' }}
-  //       />
-  //       <Stack direction="column" spacing={3}>
-  //         {filteredStores.map(store => (
-  //           <StoreCard key={store.id} store={store} />
-  //         ))}
-  //       </Stack>
-  //     </Container>
-
-    
-  //   </Container>
-
-  //   <Grid container spacing={2} sx={{ paddingTop: '20px' }}>
-  //   {filteredStores.map(store => (
-  //     <StoreCard key={store.id} store={store} />
-  //   ))}
-  //   </Grid>

@@ -11,9 +11,11 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import icon from '../photo/niceFood.jpg';
-import LocationOnIcon from '@mui/icons-material/LocationOn'; // Import LocationOnIcon
-import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import AccessTimeIcon
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import FavoriteIcon from '@mui/icons-material/Favorite';import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import AccessTimeIcon
 import { red } from '@mui/material/colors';
+import { styled } from '@mui/material/styles';
+import InfoIcon from '@mui/icons-material/Info';
 
 const fetchStoreAndListings = async (storeId) => {
   const auth = getAuth();
@@ -53,6 +55,11 @@ function ViewStoreListings() {
   const [storeName, setStoreName] = useState('');
   const [storeOpening, setStoreOpening] = useState('');
   const [storeClosing, setStoreClosing] = useState('');
+  const [storeDistance, setStoreDistance] = useState(0);
+  const [storeDescription, setStoreDescription] = useState('');
+  const [storeLocation, setStoreLocation] = useState(null);
+  const [storeLocationString, setStoreLocationString] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +69,10 @@ function ViewStoreListings() {
         setStoreName(data.store.name);
         setStoreOpening(data.store.opening);
         setStoreClosing(data.store.closing);
+        setStoreLocation(data.store.location);
+        setStoreLocationString(data.store.locationString);
+        setStoreDistance(data.store.distance);
+        setStoreDescription(data.store.description);
       } catch (error) {
         console.error('Error fetching store and listings:', error);
       }
@@ -69,6 +80,65 @@ function ViewStoreListings() {
 
     fetchData();
   }, [storeId]);
+
+  // <-----------------------------------------Store Info Header---------------------------------------------->
+  
+const HeaderContainer = styled(Container)(({ theme }) => ({
+  padding: theme.spacing(3),
+  backgroundColor: '#fff', // Adjust the background color as per your theme
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[1],
+  marginBottom: theme.spacing(3),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+}));
+
+// Modify the InfoHeader style to have a margin at the top, making it drop below the navbar
+const InfoHeader = styled(Paper)(({ theme }) => ({
+  marginTop: theme.spacing(3), // Adjust the margin as per your navbar height
+  padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column', // Stack items vertically
+  alignItems: 'flex-start', // Align items to the left
+  gap: theme.spacing(1), // Add gap between items for better spacing
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: theme.spacing(1),
+}));
+
+// Modify the StoreInfoHeader function to display information in a better layout
+const StoreInfoHeader = () => {
+  return (
+    <InfoHeader>
+      <Typography variant="h5" component="h1" gutterBottom>
+        {storeName}
+      </Typography>
+      <Box display="flex" alignItems="center" gap={1}>
+        <AccessTimeIcon color="action" />
+        <Typography variant="subtitle1">
+          {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <LocationOnIcon color="action" />
+        <Typography variant="subtitle1">
+          {storeLocationString || 'Location not specified'}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <InfoIcon color="action" />
+        <Typography variant="subtitle1">
+          {storeDescription || 'No description available'}
+        </Typography>
+      </Box>
+    </InfoHeader>
+  );
+};
+  
+
+// <---------------------------------------------------End--------------------------------------->
 
   useEffect(() => {
     const cartItemsKey = `cartItems_${storeId}`;
@@ -136,29 +206,10 @@ function ViewStoreListings() {
     
   return (
     <div>
+      <StoreInfoHeader />
       <Container maxWidth="md" sx={{ marginTop: '20px' }}>
         {storeListing && (
           <>
-            <Paper elevation={3} sx={{ borderRadius: '10px', marginBottom: '10px', width: '83%'}}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h4" gutterBottom>
-                    <LocationOnIcon sx={{ mb: 1, ml: 2, mr: 0, color: red[500], fontSize: '2.5rem' }} /> {storeName}
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', fontSize: '0.8rem', mr: 3}}>
-                  <AccessTimeIcon sx={{ mr: 0.5, fontSize: '1.25rem' }} /> Opening: {storeOpening}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', fontSize: '0.8rem', mr: 3.6 }}>
-                  <AccessTimeIcon sx={{ mr: 0.5, fontSize: '1.25rem' }} /> Closing: {storeClosing}
-                </Typography>
-
-
-              </Grid>
-              </Grid>
-            </Paper>
 
             <Stack spacing={2}>
               {storeListing.listings.map(itemListing => (
