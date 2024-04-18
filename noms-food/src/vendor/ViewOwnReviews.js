@@ -84,8 +84,14 @@ const ShopReviewsPage = () => {
                         <Card key={review.id} style={{ marginBottom: '20px' }}>
                             <CardContent>
                                 <Typography variant="h6">
-                                    Rating: {review.rating} / 5
+                                    Rating:
                                 </Typography>
+                                {Array.from({ length: Math.floor(review.rating) }, (_, index) => (
+                                    <StarIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                ))}
+                                {Array.from({ length: Math.max(5 - Math.ceil(review.rating), 0) }, (_, index) => (
+                                    <StarBorderIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                ))}
                                 <Typography variant="body1">
                                     Comment: {review.comment}
                                 </Typography>
