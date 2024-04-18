@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/authContext'
 import { doSignOut } from '../../firebase/auth'
-import icon from '../../photo/nomsicon.png'
+import icon from '../../photo/nomsicon2.png'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -62,13 +62,12 @@ const CustHeader = () => {
     return (
 
         <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ backgroundColor:'#00897b' }}>
+        <AppBar position="static" sx={{ backgroundColor:'white' }}>
         <Toolbar>
           
           {/* Icon */}
           <a href="/custHome">
-          <img src={icon} alt="icon" style={{ width: '64px', height: '64px', margin: '0px' }} />
-          </a>
+          <img src={icon} alt="icon" style={{ height: '40px', margin: '0px' }} />          </a>
           {
                 userLoggedIn
                     ?
@@ -76,7 +75,7 @@ const CustHeader = () => {
                         <IconButton
                             size="large"
                             edge="start"
-                            color="inherit"
+                            color="teal"
                             aria-label="menu"
                             sx={{ mr: 2 }}
                             onClick={toggleDrawer(true)}
@@ -88,18 +87,18 @@ const CustHeader = () => {
                         </Drawer>
                         <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
                           {/* Cart Icon */}
-                          <IconButton color="inherit" onClick={() => navigate('/viewCart')}>
+                          <IconButton color="green" onClick={() => navigate('/viewCart')}>
                               <ShoppingCartIcon />
                           </IconButton>
                           {/* Profile Icon */}
-                          <IconButton color="inherit" onClick={() => navigate('/profilepageCust')}>
+                          <IconButton color="green" onClick={() => navigate('/profilepageCust')}>
                               <AccountCircleIcon />
                           </IconButton>  
                     </>
                     :
                     <>
-                        <Button style={{ color: 'white' }} onClick={() => navigate('/login')}> Login </Button>
-                        <Button style={{ color: 'white' }} onClick={() => navigate('/type')}> Register </Button>
+                        <Button style={{ color: 'teal' }} onClick={() => navigate('/login')}> Login </Button>
+                        <Button style={{ color: 'teal' }} onClick={() => navigate('/type')}> Register </Button>
                     </>
             }
 

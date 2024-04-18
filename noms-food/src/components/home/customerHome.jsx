@@ -15,7 +15,7 @@ const CustHome = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate('/login');
+    navigate('/searchStores');
   };
 
   return (
@@ -35,14 +35,15 @@ const CustHome = () => {
         }}
       >
         <Container maxWidth="sm" sx={{ textAlign: 'center', position: 'relative' }}>
-          <Typography variant="h2" sx={{ color: 'white', fontWeight: 'bold', textAlign: 'left', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>
-            Healthy food for you at NOMs
+          <Typography variant="h2" sx={{ color: 'white', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>
+            Healthy food for you at <span style={{ color: '#3EDF34' }}>NOMS</span>
           </Typography>
+          
           <Typography variant="subtitle1" sx={{ marginTop: 0, color: 'white', textAlign: 'left', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)'}}>
             Every Bite Counts: Nourishing Communities, One Plate at a Time.
           </Typography>
           <Button variant="contained" onClick={handleButtonClick} sx={{ marginTop: '1rem', backgroundColor:"teal", color:"white", fontWeight:"bold"}}>
-            Login to learn more
+            Browse our stores
           </Button>
         </Container>
       </Box>
