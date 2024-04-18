@@ -104,7 +104,7 @@ function ViewOwnListings() {
   };
 
   const filteredListings = listings.filter(listing =>
-    tabValue === 0 ? listing.stock > 0 : listing.stock === 0
+    tabValue === 0 ? listing.stock != "0" : listing.stock === "0"
   );
 
   // Inside your component function
