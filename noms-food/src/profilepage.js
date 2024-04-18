@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, getFirestore, doc, deleteDoc } from "firebase/firestore"; // Import deleteDoc
+import { collection, query, where, getDocs, getFirestore, doc, deleteDoc, updateDoc } from "firebase/firestore"; // Import deleteDoc
 import { useAuth } from './contexts/authContext';
 import { doSignOut } from './firebase/auth';
+import { getAuth } from 'firebase/auth';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -15,6 +16,8 @@ const ProfilePage = () => {
   const { userLoggedIn, currentUserEmail } = useAuth(); // Assuming you have a way to get the current user's email
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false); // State to control the dialog visibility
+  const auth = getAuth(); // Get Current User State
+  const userIden = auth.currentUser?.uid; // UserId 
 
   useEffect(() => {
     if (!userLoggedIn) {
@@ -24,8 +27,9 @@ const ProfilePage = () => {
 
     const fetchUserData = async () => {
       const db = getFirestore();
+      
       const usersRef = collection(db, "Users");
-      const q = query(usersRef, where("email", "==", currentUserEmail));
+      const q = query(usersRef, where("userId", "==", userIden));
 
       try {
         const querySnapshot = await getDocs(q);
@@ -51,27 +55,35 @@ const ProfilePage = () => {
     setOpenDialog(false);
   }
 
+  // const disableUserAccount = async (uid) => {
+  //   try {
+  //     const userRef = doc(db, "Users", uid);
+  //     await updateDoc(userRef, { status: "Banned" });
+  //     updateUserStatus(uid, "Banned");
+  //     console.log(`User account with UID ${uid} disabled successfully.`);
+  //   } catch (error) {
+  //     console.error("Error disabling user account:", error);
+  //   }
+  // };
+
   const handleDeleteAccount = async () => {
     const db = getFirestore();
-    const usersRef = collection(db, "Users");
-    const q = query(usersRef, where("email", "==", currentUserEmail));
-
+    const q = query(collection(db, "Users"), where("userId", "==", userIden));
+    const querySnapshot = await getDocs(q);
     try {
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const userDocId = querySnapshot.docs[0].id;
-        await deleteDoc(doc(db, "Users", userDocId));
-        console.log("Account successfully deleted");
-        doSignOut().then(() => {
-          navigate('/login');
-        });
-      } else {
-        console.log("No such document to delete!");
-      }
+      const docRef = querySnapshot.docs[0].ref;
+      const userRef = doc(db, "Users", userIden);
+      await updateDoc(docRef, { status: "Deleted" });
+
+      console.log(`User account with UID ${userIden} disabled successfully.`);
+      setOpenDialog(false); // Close the dialog after the action
+      doSignOut().then(() => {
+        navigate('/');
+      });
     } catch (error) {
-      console.error("Error deleting user account: ", error);
+      console.error("Error disabling user account:", error);
     }
-    setOpenDialog(false); // Close the dialog after the action
+    
   };
 
   return (
@@ -124,7 +136,7 @@ const ProfilePage = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleDeleteAccount} autoFocus color="error">
+          <Button onClick={() => handleDeleteAccount()} autoFocus color="error">
             Yes, Delete Account
           </Button>
         </DialogActions>
