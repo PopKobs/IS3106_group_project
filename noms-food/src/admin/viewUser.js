@@ -128,9 +128,6 @@ const AdminUsersPage = () => {
                     </IconButton>
                   ) : (
                     <div>
-                      <IconButton color="primary">
-                        <EditIcon />
-                      </IconButton>
                       {user.status === "Banned" ? (
                         <IconButton
                           color="primary"
@@ -146,9 +143,6 @@ const AdminUsersPage = () => {
                           <BlockIcon />
                         </IconButton>
                       )}
-                      <IconButton>
-                        <VisibilityIcon />
-                      </IconButton>
                     </div>
                   )}
                 </TableCell>
