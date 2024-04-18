@@ -23,7 +23,7 @@ const Header = () => {
     const { userLoggedIn } = useAuth()
 
     // Update the paths for the drawer
-    const paths1 = ['/home','/profilepage', '/createstore', '/viewstore', '/createlisting', '/viewownlistings'];
+    const paths1 = ['/home','/profilepage', '/viewstore', '/createlisting', '/viewownlistings'];
 
     const [open, setOpen] = React.useState(false); // Open Drawer State
 
@@ -34,7 +34,7 @@ const Header = () => {
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
-        {['Homepage','Profile', 'Create Store', 'View Store', 'Create Listing', 'View Listing'].map((text, index) => (
+        {['Homepage','Profile', 'View Store', 'Create Listing', 'View Listings'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(paths1[index])}>
               <ListItemText primary={text} />
@@ -73,7 +73,7 @@ const Header = () => {
                         <IconButton
                             size="large"
                             edge="start"
-                            color="inherit"
+                            color="teal"
                             aria-label="menu"
                             sx={{ mr: 2 }}
                             onClick={toggleDrawer(true)}

@@ -17,6 +17,7 @@ import { red } from '@mui/material/colors';
 import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const fetchStoreAndListings = async (storeId) => {
   const auth = getAuth();
@@ -278,16 +279,29 @@ const StoreInfoHeader = () => {
   );
 }
   
+const storage = getStorage();
 
 function StoreListingCard({ listing, handleOpenModal, cartItems }) {
   const isInCart = cartItems.some(item => item.id === listing.id);
+  const [imageLink, setImageLink] = useState(icon); 
+  
+  const imageRef = ref(storage, `users/listing/${listing.id}`);
+  /*console.log(`users/store/${store.id}`)*/
+    getDownloadURL(imageRef)
+      .then((url) => {
+        // Set the image URL once it's fetched
+        setImageLink(url)
+      })
+      .catch((error) => {
+      
+      });
 
   return (
     <Paper elevation={3} sx={{ borderRadius: 1, width: 700 }}>
       <Card sx={{ display: 'flex', flexDirection: 'row', width: 700, height: 160, }}>
         <CardMedia
           component="img"
-          image={icon}
+          image={imageLink}
           alt={listing.title}
           sx={{ width: 160, height: 160, objectFit: 'cover' }}
         />

@@ -29,7 +29,15 @@ const Login = () => {
                 console.log("triggered")
                 doSignOut();
                 setUserType("");
-                setErrorMessage(error.message);
+                if (error.message === "Firebase: Error (auth/invalid-credential).") {
+                    setErrorMessage("Invalid Login Credentials");
+                } else if (error.message === "Firebase: Error (auth/invalid-email).") {
+                    setErrorMessage("Invalid Email");
+                } else if (error.message === "Firebase: Error (auth/missing-password).") {
+                    setErrorMessage("Fill In Missing Password");
+                } else {
+                    setErrorMessage(error.message);
+                }
             } finally {
                 setIsSigningIn(false); // Reset Button
             }
@@ -144,7 +152,7 @@ const Login = () => {
                         </button>
                     </form>
                     <p className="text-center text-sm">Don't have an account? <Link to={'/type'} className="hover:underline font-bold">Sign up</Link></p>
-                    <div className='flex flex-row text-center w-full'>
+                    {/* <div className='flex flex-row text-center w-full'>
                         <div className='border-b-2 mb-2.5 mr-2 w-full'></div><div className='text-sm font-bold w-fit'>OR</div><div className='border-b-2 mb-2.5 ml-2 w-full'></div>
                     </div>
                     <button
@@ -165,7 +173,7 @@ const Login = () => {
                             </defs>
                         </svg>
                         {isSigningIn ? 'Signing In...' : 'Continue with Google'}
-                    </button>
+                    </button> */}
                 </div>
             </main>
         </div>

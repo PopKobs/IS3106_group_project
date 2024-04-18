@@ -123,8 +123,8 @@ function CreateStore() {
               {/* TextField components */}
               <TextField name="name" label="Store Name" variant="outlined" required onChange={handleInputChange} />
               <TextField name="description" label="Description" variant="outlined" required onChange={handleInputChange} />
-              <TextField name="opening" label="Opening Hours" variant="outlined" required onChange={handleInputChange} />
-              <TextField name="closing" label="Closing Hours" variant="outlined" required onChange={handleInputChange} />
+              <TextField name="opening" label="Opening Hours" variant="outlined" placeholder='HH:MM' required onChange={handleInputChange} />
+              <TextField name="closing" label="Closing Hours" variant="outlined" placeholder='HH:MM' required onChange={handleInputChange} />
               {/* Dropdown for categories component */}
               {/* Dropdown for categories */}
               <TextField

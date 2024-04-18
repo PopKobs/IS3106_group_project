@@ -10,47 +10,47 @@ import { Button, Container, Typography, TextField } from '@mui/material';
 // To do: fix ui
 const Register = () => {
 
-    const [profile, setProfile] = useState({
-        email: "",
-        name: "",
-        username: "",
-        contact: "", // Added contact (phone number) field
-        storeId: "",
-        type: "", // Added account type field
-        status: "Active",
-        
-      });
+  const [profile, setProfile] = useState({
+    email: "",
+    name: "",
+    username: "",
+    contact: "", // Added contact (phone number) field
+    storeId: "",
+    type: "", // Added account type field
+    status: "Active",
 
-    const [accType, setAccType] = useState(''); // User account type
+  });
 
-    const navigate = useNavigate()
+  const [accType, setAccType] = useState(''); // User account type
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setconfirmPassword] = useState('')
-    const [isRegistering, setIsRegistering] = useState(false)
-    const [errorMessage, setErrorMessage] = useState('')
+  const navigate = useNavigate()
 
-    const { userLoggedIn } = useAuth()
-    const auth = getAuth();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setconfirmPassword] = useState('')
+  const [isRegistering, setIsRegistering] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-    // Load data from sessionStorage when component mounts
-    useEffect(() => {
-        const storedData = sessionStorage.getItem('accType');
-        
-        if (storedData) {
-          setAccType(storedData);
-          setProfile(prevProfile => ({
-            ...prevProfile,
-            type: storedData, // Set profile.type here
-            
-          }));
-        }
-      }, []);
+  const { userLoggedIn } = useAuth()
+  const auth = getAuth();
+
+  // Load data from sessionStorage when component mounts
+  useEffect(() => {
+    const storedData = sessionStorage.getItem('accType');
+
+    if (storedData) {
+      setAccType(storedData);
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        type: storedData, // Set profile.type here
+
+      }));
+    }
+  }, []);
 
   const handleNewUser = async (userId) => {
     const db = getFirestore();
-    
+
     try {
 
       const userCollectionRef = collection(db, "Users");
@@ -64,46 +64,55 @@ const Register = () => {
     }
   };
 
-    const onSubmit = async (e) => {
-        e.preventDefault()
-        if(!isRegistering) {
-            setIsRegistering(true);
-            console.log("The Account Type: ")
-            console.log(accType)
-            try {
-                const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-                const userId = userCredential.user.uid;
-                await handleNewUser(userId);
-                setIsRegistering(false);
-                //navigate("/home");
-              } catch (error) {
-                console.error('Error creating user:', error);
-                if (error.code) {
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            setErrorMessage('Email address is already in use.');
-                            break;
-                        case 'auth/weak-password':
-                            setErrorMessage('Password needs to be at least 6 characters.');
-                            break;
-                        default:
-                            setErrorMessage('An error occurred. Please try again later.');
-                    }
-                } else {
-                    setErrorMessage('An error occurred. Please check your network connection and try again.');
-                }
-                setIsRegistering(false);
-                return; // Exit early to prevent further execution
-            }
-            
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    if (!isRegistering) {
+      setIsRegistering(true);
+      console.log("The Account Type: ")
+      console.log(accType)
+      try {
+        if (confirmPassword != password) {
+          throw new Error("Passwords do not match")
         }
-    }
+        const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+        const userId = userCredential.user.uid;
+        await handleNewUser(userId);
+        setIsRegistering(false);
+        //navigate("/home");
+      } catch (error) {
+        console.error(error.message);
+        if (error.message) {
+          switch (error.message) {
+            case "Firebase: Error (auth/email-already-in-use).":
+              setErrorMessage('Email address is already in use.');
+              break;
+            case "Firebase: Password should be at least 6 characters (auth/weak-password).":
+              setErrorMessage('Password needs to be at least 6 characters.');
+              break;
+            case "Firebase: Error (auth/invalid-email).":
+              setErrorMessage('Use a valid email format.');
+              break;
+            case "Passwords do not match":
+              setErrorMessage('Please ensure passwords match.');
+              break;
+            default:
+              setErrorMessage('An error occurred. Please try again later.');
+          }
+        } else {
+          setErrorMessage('An error occurred. Please check your network connection and try again.');
+        }
+        setIsRegistering(false);
+        return; // Exit early to prevent further execution
+      }
 
-    return (
-        <>
-            {userLoggedIn && accType == "Vendor" && !isRegistering && (<Navigate to={'/home'} replace={true} />)}
-            {userLoggedIn && accType == "Customer" && !isRegistering && (<Navigate to={'/custHome'} replace={true} />)}
-        <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    }
+  }
+
+  return (
+    <>
+      {userLoggedIn && accType == "Vendor" && !isRegistering && (<Navigate to={'/createstore'} replace={true} />)}
+      {userLoggedIn && accType == "Customer" && !isRegistering && (<Navigate to={'/custHome'} replace={true} />)}
+      <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <div>
           <Typography variant="h5" sx={{ textAlign: 'center', marginBottom: '1rem' }}>
             Create a New Account
@@ -114,11 +123,13 @@ const Register = () => {
               type="email"
               autoComplete="email"
               required
-              value={email} 
-              onChange={(e) => { setEmail(e.target.value); setProfile((prevState) => ({
-                ...prevState,
-                email: e.target.value
-            })) }}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value); setProfile((prevState) => ({
+                  ...prevState,
+                  email: e.target.value
+                }))
+              }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -128,11 +139,13 @@ const Register = () => {
               type="name"
               autoComplete="name"
               required
-              value={profile.name} 
-              onChange={(e) => { setProfile((prevState) => ({
-                ...prevState,
-                name: e.target.value
-            })) }}
+              value={profile.name}
+              onChange={(e) => {
+                setProfile((prevState) => ({
+                  ...prevState,
+                  name: e.target.value
+                }))
+              }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -142,11 +155,13 @@ const Register = () => {
               type="username"
               autoComplete="username"
               required
-              value={profile.username} 
-              onChange={(e) => { setProfile((prevState) => ({
-                ...prevState,
-                username: e.target.value
-            })) }}
+              value={profile.username}
+              onChange={(e) => {
+                setProfile((prevState) => ({
+                  ...prevState,
+                  username: e.target.value
+                }))
+              }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -156,11 +171,13 @@ const Register = () => {
               type="contact"
               autoComplete="contact"
               required
-              value={profile.contact} 
-              onChange={(e) => { setProfile((prevState) => ({
-                ...prevState,
-                contact: e.target.value
-            })) }}
+              value={profile.contact}
+              onChange={(e) => {
+                setProfile((prevState) => ({
+                  ...prevState,
+                  contact: e.target.value
+                }))
+              }}
               fullWidth
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
@@ -170,7 +187,7 @@ const Register = () => {
               type="password"
               autoComplete='new-password'
               required
-              value={password} 
+              value={password}
               onChange={(e) => { setPassword(e.target.value) }}
               fullWidth
               variant="outlined"
@@ -181,7 +198,7 @@ const Register = () => {
               type="password"
               autoComplete='off'
               required
-              value={confirmPassword} 
+              value={confirmPassword}
               onChange={(e) => { setconfirmPassword(e.target.value) }}
               fullWidth
               variant="outlined"
@@ -190,11 +207,11 @@ const Register = () => {
 
             {/* Display the error message */}
             {errorMessage && (
-                        <Typography color="error" align="center">
-                            {errorMessage}
-                        </Typography>
-                    )}
-                    
+              <Typography color="error" align="center">
+                {errorMessage}
+              </Typography>
+            )}
+
             <Button
               type="submit"
               disabled={isRegistering}
@@ -214,11 +231,11 @@ const Register = () => {
           </form>
         </div>
       </Container>
-            
-        </>
-    )
+
+    </>
+  )
 }
-            
+
 
 export default Register
 

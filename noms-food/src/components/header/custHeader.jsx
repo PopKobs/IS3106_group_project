@@ -26,7 +26,7 @@ const CustHeader = () => {
     const { userLoggedIn } = useAuth()
 
     // Update the paths for the drawer
-    const paths1 = ['/custHome','/profilepageCust',"/searchStores", "/viewCart/:storeId", "/reportItTicketCust", "/viewItTickets"];
+    const paths1 = ['/custHome','/profilepageCust',"/searchStores", "/viewCart/:storeId", "/reportItTicketCust", "/viewItTicketsCust"];
 
     const [open, setOpen] = React.useState(false); // Open Drawer State
 
