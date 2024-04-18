@@ -1,33 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { 
-    Typography, 
-    Container, 
-    Tab, 
-    Tabs, 
-    TabPanel, 
-    ListItem, 
-    ListItemText, 
-    Box, 
-    Stack, 
-    Dialog, 
-    DialogTitle, 
-    DialogContent, 
-    DialogActions, 
-    Button, 
-    TableCell, 
-    TableRow, 
-    TableBody, 
-    TableHead, 
-    Table, 
-    Paper, 
-    TableContainer,
-    Select,
-    MenuItem,
-    TextField,
- } from '@mui/material';
+import { Typography, Divider,Container, Tab, Tabs, TabPanel, ListItem, ListItemText, Box, Stack, Dialog, DialogTitle, DialogContent, DialogActions, Button, TableCell, TableRow, TableBody, TableHead, Table, Paper, TableContainer,Select,MenuItem,TextField,} from '@mui/material';
 import { getFirestore, collection, query, getDocs, doc, getDoc, where, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
+
 
 const ViewAllOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -76,6 +52,7 @@ const ViewAllOrders = () => {
         }
     };
 
+
     const handleListItemClick = async (order) => {
         await handleOrderDetails(order);
         setSelectedOrder(order);
@@ -110,7 +87,7 @@ const ViewAllOrders = () => {
 
     const filteredOrders = orders.filter(order => {
         if (tabValue === 'active') {
-            return order.orderStatus != 'Completed';
+            return order.orderStatus !== 'Completed';
         } else if (tabValue === 'completed') {
             return order.orderStatus === 'Completed';
         }
@@ -177,16 +154,16 @@ const ViewAllOrders = () => {
 
     return (
         <Container maxWidth="sm" style={{ marginTop: '50px' }}>
-            <Typography variant="h4" gutterBottom>
-                All Orders
-            </Typography>
+            
             <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: 2, backgroundColor: 'white' }}>
+            
+                
                 <Tabs
                     value={tabValue}
                     onChange={(event, newValue) => setTabValue(newValue)}
                     variant="fullWidth"
-                    indicatorColor="secondary"
-                    textColor="secondary"
+                    indicatorColor="primary"
+                    textColor="primary"
                 >
                     <Tab value="active" label="Active Orders" />
                     <Tab value="completed" label="Completed Orders" />
@@ -237,48 +214,56 @@ const ViewAllOrders = () => {
                 </Typography>
             )}
             <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-                <DialogTitle>Order Details</DialogTitle>
-                <DialogContent>
-                    {selectedOrder && (
-                        <>
-                            <Typography><strong>Order ID:</strong> {selectedOrder.orderId.slice(-4)}</Typography>
-                            <Typography><strong>Store Name:</strong> {selectedOrder.storeName}</Typography>
-                            <Typography><strong>Status:</strong> {selectedOrder.orderStatus}</Typography>
-                            <Typography><strong>Date:</strong> {selectedOrder.date.toDate().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })}</Typography>
-                            <Typography><strong>Order Details</strong></Typography>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Item</TableCell>
-                                            <TableCell align="right">Price</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {orderDetails.map((listing) => (
-                                            <TableRow key={listing.itemId}>
-                                                <TableCell>
-                                                    <Typography variant="body1">{listing.itemTitle}</Typography>
-                                                    <Typography variant="body2">Qty: {listing.itemQuantity}</Typography>
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    <Typography variant="body1">{listing.itemTotalPrice}</Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Typography><strong>Total Price: {selectedOrder.orderPrice}</strong></Typography>
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog} sx={{ color: 'black' }}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
+    <DialogTitle style={{ fontWeight: 'bold'}}>Order Details</DialogTitle>
+    <DialogContent>
+        {selectedOrder && (
+            <div>
+                <Typography variant="subtitle1" gutterBottom>
+                    <strong>Order ID:</strong> {selectedOrder.orderId.slice(-4)}
+                </Typography>
+                <Typography variant="subtitle1" gutterBottom>
+                    <strong>Store Name:</strong> {selectedOrder.storeName}
+                </Typography>
+                <Typography variant="subtitle1" gutterBottom>
+                    <strong>Status:</strong> {selectedOrder.orderStatus}
+                </Typography>
+                <Typography variant="subtitle1" gutterBottom>
+                    <strong>Date:</strong> {selectedOrder.date.toDate().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })}
+                </Typography>
+
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Item</TableCell>
+                                <TableCell align="right">Quantity</TableCell>
+                                <TableCell align="right">Price (SGD)</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {orderDetails.map((listing) => (
+                                <TableRow key={listing.itemId}>
+                                    <TableCell>{listing.itemTitle}</TableCell>
+                                    <TableCell align="right">{listing.itemQuantity}</TableCell>
+                                    <TableCell align="right">${listing.itemTotalPrice}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Typography variant="subtitle1" gutterBottom>
+                    <strong>Total Price: $</strong> {selectedOrder.orderPrice}
+                </Typography>
+            </div>
+        )}
+    </DialogContent>
+    <DialogActions>
+        <Button onClick={handleCloseDialog} color="primary">
+            Close
+        </Button>
+    </DialogActions>
+</Dialog>
+
             <Dialog open={ratingDialogOpen} onClose={closeRatingDialog}>
                 <DialogTitle>Update Order Status</DialogTitle>
                 <DialogContent>
