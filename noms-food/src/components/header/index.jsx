@@ -62,7 +62,7 @@ const Header = () => {
         <Toolbar >
           
           {/* Icon */}
-          <a href="/">
+          <a href="/home">
           <img src={icon} alt="icon" style={{ height: '40px', margin: '0px' }} />
           </a>
 
