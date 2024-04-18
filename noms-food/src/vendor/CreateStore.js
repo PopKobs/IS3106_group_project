@@ -3,7 +3,7 @@ import { LoadScript, useLoadScript, Autocomplete, GoogleMap, Marker } from '@rea
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
 import { collection, addDoc, getFirestore, query, where, getDocs, updateDoc } from "firebase/firestore";
-import { Box, Paper, Container, Typography, TextField, Stack, Grid, Button } from "@mui/material";
+import { Box, Paper, Container, Typography, TextField, Stack, Grid, Button, MenuItem } from "@mui/material";
 import vendorPhoto from '../photo/vendor.jpeg';
 
 
@@ -16,6 +16,8 @@ function CreateStore() {
     opening: '',
     closing: '',
     location: '',
+    locationString: '',
+    category: '',
     isOpen: false,
     distance: '0',
     creatorEmail: currentUserEmail || '',
@@ -39,6 +41,7 @@ function CreateStore() {
     setStore({
       ...store,
       location: address.formatted_address,
+      locationString: address.formatted_address,
     });
     setMarker({ lat: address.geometry.location.lat(), lng: address.geometry.location.lng() });
   };
@@ -122,6 +125,24 @@ function CreateStore() {
               <TextField name="description" label="Description" variant="outlined" required onChange={handleInputChange} />
               <TextField name="opening" label="Opening Hours" variant="outlined" required onChange={handleInputChange} />
               <TextField name="closing" label="Closing Hours" variant="outlined" required onChange={handleInputChange} />
+              {/* Dropdown for categories component */}
+              {/* Dropdown for categories */}
+              <TextField
+                select
+                name="category"
+                label="Category"
+                variant="outlined"
+                value={store.category}
+                onChange={handleInputChange}
+                required
+              >
+                {['Japanese', 'Chinese', 'Western', 'Korean', 'Pastry', 'Greens', 'Halal', 'Others'].map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </TextField>
+              
               <Autocomplete onLoad={onLoad} onPlaceChanged={handlePlaceSelect}>
                 <TextField name="location" label="Store Location" variant="outlined" required onChange={handleInputChange} />
               </Autocomplete>

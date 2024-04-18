@@ -58,6 +58,8 @@ function ViewStoreListings() {
   const [storeDistance, setStoreDistance] = useState(0);
   const [storeDescription, setStoreDescription] = useState('');
   const [storeLocation, setStoreLocation] = useState(null);
+  const [storeLocationString, setStoreLocationString] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +70,7 @@ function ViewStoreListings() {
         setStoreOpening(data.store.opening);
         setStoreClosing(data.store.closing);
         setStoreLocation(data.store.location);
+        setStoreLocationString(data.store.locationString);
         setStoreDistance(data.store.distance);
         setStoreDescription(data.store.description);
       } catch (error) {
@@ -91,51 +94,45 @@ const HeaderContainer = styled(Container)(({ theme }) => ({
   justifyContent: 'space-between',
 }));
 
+// Modify the InfoHeader style to have a margin at the top, making it drop below the navbar
 const InfoHeader = styled(Paper)(({ theme }) => ({
+  marginTop: theme.spacing(3), // Adjust the margin as per your navbar height
   padding: theme.spacing(2),
   display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: theme.spacing(3),
+  flexDirection: 'column', // Stack items vertically
+  alignItems: 'flex-start', // Align items to the left
+  gap: theme.spacing(1), // Add gap between items for better spacing
 }));
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
+// Modify the StoreInfoHeader function to display information in a better layout
 const StoreInfoHeader = () => {
   return (
     <InfoHeader>
-      <Grid container>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6" gutterBottom>
-            {storeName}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <StyledIconButton aria-label="store location">
-              <LocationOnIcon color="secondary" />
-            </StyledIconButton>
-            Store Location which is empty for now
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <StyledIconButton aria-label="store description">
-              <InfoIcon color="action" />
-            </StyledIconButton>
-            {storeDescription}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {storeDistance}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-            <AccessTimeIcon sx={{ mr: 0.5 }} /> Opening: {storeOpening}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-            <AccessTimeIcon sx={{ mr: 0.5 }} /> Closing: {storeClosing}
-          </Typography>
-        </Grid>
-      </Grid>
+      <Typography variant="h5" component="h1" gutterBottom>
+        {storeName}
+      </Typography>
+      <Box display="flex" alignItems="center" gap={1}>
+        <AccessTimeIcon color="action" />
+        <Typography variant="subtitle1">
+          {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <LocationOnIcon color="action" />
+        <Typography variant="subtitle1">
+          {storeLocationString || 'Location not specified'}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <InfoIcon color="action" />
+        <Typography variant="subtitle1">
+          {storeDescription || 'No description available'}
+        </Typography>
+      </Box>
     </InfoHeader>
   );
 };
@@ -209,7 +206,7 @@ const StoreInfoHeader = () => {
     
   return (
     <div>
-      <StoreInfoHeader/>
+      <StoreInfoHeader />
       <Container maxWidth="md" sx={{ marginTop: '20px' }}>
         {storeListing && (
           <>
