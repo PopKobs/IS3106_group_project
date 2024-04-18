@@ -2,9 +2,69 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 function CreateListing() {
   const auth = getAuth();
+
+  const storage = getStorage();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [imageRef, setImageRef] = useState("");
+
+  // useEffect(() => {
+  //   const imageReference = ref(storage, `users/listing/${imageRef}`);
+  //   getDownloadURL(imageReference)
+  //     .then((url) => {
+  //       // Set the image URL once it's fetched
+  //       setImageUrl(url);
+  //     })
+  //     .catch((error) => {
+  //       // Handle any errors
+  //       console.error('Error fetching image URL:', error);
+  //     });
+  // }, [imageRef]);
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const uploadPhoto = async (imageRef) => {
+    if (!selectedFile) {
+      console.error('No file selected');
+      return;
+    }
+
+    try {
+
+      // Check if a photo already exists for the user
+      const storageRef = ref(storage, `users/listing/${imageRef}`)
+
+      // Delete the file
+      deleteObject(storageRef).then(() => {
+        console.log("Successful deletion")
+      }).catch((error) => {
+      });
+      uploadBytes(storageRef, selectedFile).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+        // After uploading the photo, update the image URL state to reflect the immediate change
+        getDownloadURL(storageRef)
+          .then((url) => {
+            setImageUrl(url);
+          })
+          .catch((error) => {
+            // Handle any errors
+            console.error('Error fetching image URL:', error);
+          });
+      });
+
+      console.log("Image was added successfully to the db")
+
+    } catch (error) {
+      // Handle error
+      console.log('Error:', error);
+    }
+  };
 
   useEffect(() => {
     const userIden = auth.currentUser?.uid;
@@ -50,7 +110,9 @@ function CreateListing() {
     const db = getFirestore();
     try {
       const listingWithStoreId = { ...listing, userId: auth.currentUser.uid }; // Assuming the storeId is the userId for simplicity
-      await addDoc(collection(db, 'Listing'), listingWithStoreId);
+      const documentRef = await addDoc(collection(db, 'Listing'), listingWithStoreId);
+      setImageRef(documentRef.id)
+      await uploadPhoto(documentRef.id)
       setShowSuccess(true);
       setListing({ title: '', description: '', price: '', stock: '' });
       setTimeout(() => setShowSuccess(false), 3000);
@@ -74,6 +136,21 @@ function CreateListing() {
         >
           Create Listing
         </Typography>
+
+        <Box>
+            <Typography variant="h6" gutterBottom>
+              Set Listing Image:
+            </Typography>
+            {/* <div>
+              {imageUrl ? (
+                <img src={imageUrl} alt="Stars" />
+              ) : (
+                <p>Store Image has not been set...</p>
+              )}
+            </div> */}
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+            {/* <Button style={{ backgroundColor: '#00897b', color: 'white' }} onClick={uploadPhoto}>Upload Photo</Button> */}
+          </Box>
 
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField

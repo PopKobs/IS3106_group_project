@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/system';
 import burgerPicture from '../photo/burgerpicture.jpg';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -53,6 +54,7 @@ function ViewOwnListings() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentListing, setCurrentListing] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -105,6 +107,79 @@ function ViewOwnListings() {
     tabValue === 0 ? listing.stock > 0 : listing.stock === 0
   );
 
+  // Inside your component function
+  const [listingImages, setListingImages] = useState({});
+  const storage = getStorage();
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    // Function to fetch image URLs for all listings
+    if (Object.keys(listingImages).length === 0) {
+      // const timer = setTimeout(() => {
+        const fetchListingImages = async () => {
+          const images = {};
+
+          // Iterate through each listing and fetch image URL
+          for (const listing of filteredListings) {
+            const imageRef = ref(storage, `users/listing/${listing.id}`);
+            try {
+              const url = await getDownloadURL(imageRef);
+              images[listing.id] = url;
+            } catch (error) {
+              // Handle error, e.g., image not found
+              console.error(`Error fetching image for listing ${listing.id}:`, error);
+            }
+          }
+
+          // Update state with fetched image URLs
+          setListingImages(images);
+        };
+
+        fetchListingImages();
+      // }, 1000);
+      // return () => clearTimeout(timer);
+    }
+
+  }, [filteredListings]); // Trigger fetch when filteredListings change
+
+  // useEffect(() => {
+  //   console.log("filteredListings HAS CHANGED")
+  // }, [filteredListings]); // Trigger fetch when filteredListings change
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const uploadPhoto = async (imageRef) => {
+    if (!selectedFile) {
+      console.error('No file selected');
+      return;
+    }
+
+    try {
+
+      // Check if a photo already exists for the user
+      const storageRef = ref(storage, `users/listing/${imageRef}`)
+
+      // Delete the file
+      deleteObject(storageRef).then(() => {
+        console.log("Successful deletion")
+      }).catch((error) => {
+      });
+      uploadBytes(storageRef, selectedFile).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+
+      });
+
+      console.log("Image was added successfully to the db")
+
+    } catch (error) {
+      // Handle error
+      console.log('Error:', error);
+    }
+  };
+
+
   const handleUpdateListing = async () => {
     if (currentListing) {
       const db = getFirestore();
@@ -116,6 +191,19 @@ function ViewOwnListings() {
           price: currentListing.price,
           stock: currentListing.stock
         });
+        if (selectedFile) {
+          const images = listingImages;
+          await uploadPhoto(currentListing.id)
+          const imageRef = ref(storage, `users/listing/${currentListing.id}`);
+            try {
+              const url = await getDownloadURL(imageRef);
+              images[currentListing.id] = url;
+              setListingImages(images);
+            } catch (error) {
+              // Handle error, e.g., image not found
+              console.error(`Error fetching image for listing ${currentListing.id}:`, error);
+            }
+        }
         // Update local state
         setListings(listings.map(listing => listing.id === currentListing.id ? currentListing : listing));
         handleCloseEditDialog();
@@ -130,6 +218,13 @@ function ViewOwnListings() {
     const db = getFirestore();
     try {
       await deleteDoc(doc(db, 'Listing', listingToDelete));
+      const storageRef = ref(storage, `users/listing/${listingToDelete}`)
+
+      // Delete the file
+      await deleteObject(storageRef).then(() => {
+        console.log("Successful deletion")
+      }).catch((error) => {
+      });
       setListings(prevListings => prevListings.filter(listing => listing.id !== listingToDelete));
       handleCloseConfirmation();
     } catch (error) {
@@ -182,7 +277,7 @@ function ViewOwnListings() {
                 <MediaSection>
                   <CardMedia
                     component="img"
-                    image={burgerPicture}
+                    image={listingImages[listing.id] || burgerPicture}
                     alt="Burger"
                     sx={{ width: '100px', height: '100px' }}
                   />
@@ -210,6 +305,13 @@ function ViewOwnListings() {
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Edit Listing</DialogTitle>
         <DialogContent>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Replace Listing Image:
+            </Typography>
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+            {/* <Button style={{ backgroundColor: '#00897b', color: 'white' }} onClick={uploadPhoto}>Upload Photo</Button> */}
+          </Box>
           <TextField
             margin="normal"
             fullWidth
