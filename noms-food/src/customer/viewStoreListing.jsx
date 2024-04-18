@@ -12,7 +12,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import icon from '../photo/niceFood.jpg';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import FavoriteIcon from '@mui/icons-material/Favorite';import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import AccessTimeIcon
+import FavoriteIcon from '@mui/icons-material/Favorite'; import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import AccessTimeIcon
 import { red } from '@mui/material/colors';
 import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
@@ -84,63 +84,63 @@ function ViewStoreListings() {
   }, [storeId]);
 
   // <-----------------------------------------Store Info Header---------------------------------------------->
-  
-const HeaderContainer = styled(Container)(({ theme }) => ({
-  padding: theme.spacing(3),
-  backgroundColor: '#fff', // Adjust the background color as per your theme
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[1],
-  marginBottom: theme.spacing(3),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-}));
 
-// Modify the InfoHeader style to have a margin at the top, making it drop below the navbar
-const InfoHeader = styled(Paper)(({ theme }) => ({
-  marginTop: theme.spacing(3), // Adjust the margin as per your navbar height
-  padding: theme.spacing(2),
-  display: 'flex',
-  flexDirection: 'column', // Stack items vertically
-  alignItems: 'flex-start', // Align items to the left
-  gap: theme.spacing(1), // Add gap between items for better spacing
-}));
+  const HeaderContainer = styled(Container)(({ theme }) => ({
+    padding: theme.spacing(3),
+    backgroundColor: '#fff', // Adjust the background color as per your theme
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[1],
+    marginBottom: theme.spacing(3),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }));
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  marginRight: theme.spacing(1),
-}));
+  // Modify the InfoHeader style to have a margin at the top, making it drop below the navbar
+  const InfoHeader = styled(Paper)(({ theme }) => ({
+    marginTop: theme.spacing(3), // Adjust the margin as per your navbar height
+    padding: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column', // Stack items vertically
+    alignItems: 'flex-start', // Align items to the left
+    gap: theme.spacing(1), // Add gap between items for better spacing
+  }));
 
-// Modify the StoreInfoHeader function to display information in a better layout
-const StoreInfoHeader = () => {
-  return (
-    <InfoHeader>
-      <Typography variant="h5" component="h1" gutterBottom>
-        {storeName}
-      </Typography>
-      <Box display="flex" alignItems="center" gap={1}>
-        <AccessTimeIcon style={{ color: 'green' }} />
-        <Typography variant="subtitle1">
-          {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    marginRight: theme.spacing(1),
+  }));
+
+  // Modify the StoreInfoHeader function to display information in a better layout
+  const StoreInfoHeader = () => {
+    return (
+      <InfoHeader>
+        <Typography variant="h5" component="h1" gutterBottom>
+          {storeName}
         </Typography>
-      </Box>
-      <Box display="flex" alignItems="center" gap={1}>
-        <LocationOnIcon style={{ color: 'green' }} />
-        <Typography variant="subtitle1">
-          {storeLocationString || 'Location not specified'}
-        </Typography>
-      </Box>
-      <Box display="flex" alignItems="center" gap={1}>
-        <InfoIcon style={{ color: 'green' }} />
-        <Typography variant="subtitle1">
-          {storeDescription || 'No description available'}
-        </Typography>
-      </Box>
-    </InfoHeader>
-  );
-};
-  
+        <Box display="flex" alignItems="center" gap={1}>
+          <AccessTimeIcon style={{ color: 'green' }} />
+          <Typography variant="subtitle1">
+            {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <LocationOnIcon style={{ color: 'green' }} />
+          <Typography variant="subtitle1">
+            {storeLocationString || 'Location not specified'}
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <InfoIcon style={{ color: 'green' }} />
+          <Typography variant="subtitle1">
+            {storeDescription || 'No description available'}
+          </Typography>
+        </Box>
+      </InfoHeader>
+    );
+  };
 
-// <---------------------------------------------------End--------------------------------------->
+
+  // <---------------------------------------------------End--------------------------------------->
 
   useEffect(() => {
     const cartItemsKey = `cartItems_${storeId}`;
@@ -163,7 +163,7 @@ const StoreInfoHeader = () => {
   };
 
   const handleIncreaseQuantity = () => {
-    if (quantity < parseInt(selectedListing.stock, 10)){
+    if (quantity < parseInt(selectedListing.stock, 10)) {
       setQuantity(quantity + 1);
     } else {
       alert("Max Quantity Avaliable");
@@ -205,7 +205,7 @@ const StoreInfoHeader = () => {
       alert('Failed to add listing to cart!');
     }
   };
-    
+
   return (
     <div>
       <StoreInfoHeader />
@@ -225,7 +225,7 @@ const StoreInfoHeader = () => {
             </Stack>
           </>
         )}
-        
+
 
         <Modal open={showModal} onClose={handleCloseModal}>
           <Box
@@ -265,36 +265,37 @@ const StoreInfoHeader = () => {
         {cartItems.length > 0 && (
           <Button
             variant="contained"
-            color="primary"
             component={Link}
             to={`/viewCart/${storeId}`}
-            sx={{ marginTop: '20px', bgcolor: 'white' }}
+            sx={{ marginTop: '20px', color: 'white', bgcolor: 'darkcyan' }} // Set text color to white and button background color to darkcyan
           >
             <ShoppingCartIcon sx={{ mr: 1 }} />
             Proceed to Cart
           </Button>
+
+
         )}
       </Container>
     </div>
   );
 }
-  
+
 const storage = getStorage();
 
 function StoreListingCard({ listing, handleOpenModal, cartItems }) {
   const isInCart = cartItems.some(item => item.id === listing.id);
-  const [imageLink, setImageLink] = useState(icon); 
-  
+  const [imageLink, setImageLink] = useState(icon);
+
   const imageRef = ref(storage, `users/listing/${listing.id}`);
   /*console.log(`users/store/${store.id}`)*/
-    getDownloadURL(imageRef)
-      .then((url) => {
-        // Set the image URL once it's fetched
-        setImageLink(url)
-      })
-      .catch((error) => {
-      
-      });
+  getDownloadURL(imageRef)
+    .then((url) => {
+      // Set the image URL once it's fetched
+      setImageLink(url)
+    })
+    .catch((error) => {
+
+    });
 
   return (
     <Paper elevation={3} sx={{ borderRadius: 1, width: 700 }}>
@@ -312,27 +313,27 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
           <Typography variant="body2" color="text.secondary" style={{ fontSize: '15px' }}>
             {listing.description}
           </Typography>
-          <Typography variant="body2" color="text.primary"  style={{ fontSize: '15px' }}>
+          <Typography variant="body2" color="text.primary" style={{ fontSize: '15px' }}>
             Price: ${listing.price}
           </Typography>
           <CardActions>
             {!isInCart ? (
               <Button variant="contained" color="primary" onClick={() => handleOpenModal(listing)}
-              sx={{
-                marginTop: '10px', 
-                float: 'right',
-                bgcolor: 'teal',
-                color: 'white',
-                '&:hover':{
-                  bgcolor: 'darkcyan',
-                },
-              }}
+                sx={{
+                  marginTop: '10px',
+                  float: 'right',
+                  bgcolor: 'teal',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'darkcyan',
+                  },
+                }}
               >
-               
+
                 Add to Cart
               </Button>
             ) : (
-              <Typography variant="body2" color="secondary" style={{ fontSize: '15px', fontWeight: 'bold', marginTop: '10px' }} >
+              <Typography variant="body2" color="primary" style={{ fontSize: '15px', fontWeight: 'bold', marginTop: '10px' }} >
                 Item added to cart
               </Typography>
             )}

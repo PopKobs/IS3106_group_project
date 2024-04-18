@@ -65,57 +65,61 @@ const CartView = () => {
       maxWidth="md"
       sx={{
         padding: '20px',
-        height: '100vh',
-        marginTop: '20px'
-      }}>
-      <div>
-        <Typography variant="h5" gutterBottom>
+        marginTop: '40px' // Increased top margin to shift contents slightly lower
+      }}
+    >
+      <Container sx={{ marginBottom: '20px' }}> {/* Container for the header */}
+        <Typography variant="h4" style={{ fontWeight: 'bold' }}>
           Your Cart
         </Typography>
-        <Paper>
-          <List>
-            {cartItems.map((item) => (
-              <ListItem key={item.id}>
-                <ListItemText
-                  primary={`${item.title}`}
-                  secondary={`Item Description: ${item.description}`}
-                />
-                <ListItemText
-                  primary={`Price: $${item.price}`}
-                  secondary={`Quantity: ${item.quantity}`}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="remove" onClick={() => decreaseQuantity(item.id)}>
-                    <RemoveIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="add" onClick={() => increaseQuantity(item.id)}>
-                    <AddIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => removeItem(item.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
-          </List>
+
+      </Container>
+      <Paper>
+        <List>
+          {cartItems.map((item) => (
+            <ListItem key={item.id}>
+              <ListItemText
+                primary={`${item.title}`}
+                secondary={`Item Description: ${item.description}`}
+              />
+              <ListItemText
+                primary={`Price: $${item.price}`}
+                secondary={`Quantity: ${item.quantity}`}
+              />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="remove" onClick={() => decreaseQuantity(item.id)}>
+                  <RemoveIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="add" onClick={() => increaseQuantity(item.id)}>
+                  <AddIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => removeItem(item.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+      <div style={{ textAlign: 'right', marginTop: '20px' }}> {/* Increased top margin */}
+        <Paper elevation={3} style={{ backgroundColor: 'white', padding: '10px' }}>
+          <Typography variant="h6">
+            Total Cost: ${totalCost}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginTop: '10px' }}
+            disabled={cartItems.length === 0}
+            onClick={handleCheckout}
+          >
+            Checkout
+          </Button>
         </Paper>
-        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-          <Paper elevation={3} style={{ backgroundColor: 'white', border: '1px solid black', padding: '10px' }}>
-            <Typography variant="h6">
-              Total Cost: ${totalCost}
-            </Typography>
-            <Button variant="contained"
-              color="primary"
-              style={{ marginTop: '10px' }}
-              disabled={cartItems.length === 0}
-              onClick={handleCheckout}>
-                Checkout
-            </Button>
-          </Paper>
-        </div>
       </div>
     </Container>
   );
+
 };
 
 
