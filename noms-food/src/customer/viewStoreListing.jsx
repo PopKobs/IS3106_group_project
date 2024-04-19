@@ -274,7 +274,7 @@ const StoreInfoHeader = () => {
           <>
 
             <Stack spacing={2}>
-              {storeListing.listings.map(itemListing => (
+              {storeListing.listings.filter(itemListing => itemListing.stock != "0").map(itemListing => (
                 <StoreListingCard
                   key={itemListing.id}
                   listing={itemListing}
