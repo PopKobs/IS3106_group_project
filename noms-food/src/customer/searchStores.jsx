@@ -277,9 +277,10 @@ function StoreCard({ store }) {
         <Card raised sx={{ borderRadius: '6%', width: '100%', display: 'flex', flexDirection: 'column', minHeight: '330px' }}>
           <CardMedia
             component="img"
-            minHeight="140"
+            minHeight="170"
             image={imageLink}
             alt={store.name}
+            sx={{ height: 170}}
           />
           <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -288,19 +289,19 @@ function StoreCard({ store }) {
                 {store.name}
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <LocationOnIcon fontSize="small" />
+                <LocationOnIcon fontSize="small" style={{ color: 'green' }} />
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {store.locationString.split(',')[0]}
                 </Typography>
               </div>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                <InfoIcon fontSize="small" />
+                <InfoIcon fontSize="small" style={{ color: 'green' }} />
                 {store.description.split(',')[0]}
               </Typography>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant="body2" color="text.secondary">
-                <RunningIcon fontSize="small" />
+                <RunningIcon fontSize="small" style={{ color: 'green' }} />
                 Distance: <b>{formattedDistance}</b>
               </Typography>
               {store.openingTime && (
