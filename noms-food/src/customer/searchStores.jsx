@@ -277,9 +277,10 @@ function StoreCard({ store }) {
         <Card raised sx={{ borderRadius: '6%', width: '100%', display: 'flex', flexDirection: 'column', minHeight: '330px' }}>
           <CardMedia
             component="img"
-            minHeight="140"
+            minHeight="170"
             image={imageLink}
             alt={store.name}
+            sx={{ height: 170}}
           />
           {!disabled ? (
                 <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
