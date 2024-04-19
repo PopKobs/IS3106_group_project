@@ -87,6 +87,7 @@ function TicketForm() {
         closingDate,
         reportedUser
       });
+      setTicketData({title: "", description:""})
         
       alert("Ticket reported Successfully."); // Display success message
     } catch (error) {

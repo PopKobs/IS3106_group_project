@@ -163,8 +163,8 @@ const ViewVendorOrders = () => {
                     value={tabValue}
                     onChange={(event, newValue) => setTabValue(newValue)}
                     variant="fullWidth"
-                    indicatorColor="secondary"
-                    textColor="secondary"
+                    indicatorColor="primary"
+                    textColor="primary"
                 >
                     <Tab value="active" label="View Active Orders" />
                     <Tab value="completed" label="View Completed Orders" />
