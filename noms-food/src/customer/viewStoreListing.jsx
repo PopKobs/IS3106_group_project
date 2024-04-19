@@ -5,7 +5,8 @@ import { getAuth } from 'firebase/auth';
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import {
   Container, Modal, Box, IconButton, Stack, Card, CardMedia,
-  CardContent, CardActions, Typography, Button, Grid, Paper
+  CardContent, CardActions, Typography, Button, Grid, Paper,
+  Dialog, DialogTitle, DialogContent
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -19,6 +20,9 @@ import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 
 
 const fetchStoreAndListings = async (storeId) => {
@@ -139,13 +143,18 @@ const StoreInfoHeader = () => {
           {storeDescription || 'No description available'}
         </Typography>
         
+        
         <IconButton onClick={navigateToSearchStores} sx={{ marginLeft: '900px', fontSize: '20px'}}>
         Return <ArrowBackIcon />
       </IconButton>
       </Box>
+      <Button onClick={handleOpenReviewDialog} variant="contained" color="primary">
+                View Reviews
+      </Button>
       {/* Add IconButton for back navigation */}
-      
     </InfoHeader>
+
+    
   );
 };
   
@@ -217,6 +226,46 @@ const StoreInfoHeader = () => {
     }
   };
 
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+
+  const handleOpenReviewDialog = async () => {
+    try {
+      const reviews = await fetchReviews();
+      setReviews(reviews);
+  
+      if (reviews.length === 0) {
+        setAverageRating(0);
+      } else {
+        const totalRating = reviews.reduce((accumulator, review) => accumulator + review.rating, 0);
+        const avgRating = totalRating / reviews.length;
+        setAverageRating(avgRating);
+      }
+  
+      setReviewDialogOpen(true);
+    } catch (error) {
+      console.error('Error handling open review dialog:', error);
+    }
+    
+  };
+
+  const fetchReviews = async () => {
+    const reviewsRef = collection(db, 'Review');
+    const q = query(reviewsRef, where('storeId', '==', storeId));
+    const querySnapshot = await getDocs(q);
+
+    const reviewsData = [];
+    querySnapshot.forEach((doc) => {
+      reviewsData.push({ id: doc.id, ...doc.data() });
+    });
+    return reviewsData;
+  }
+
+  const handleCloseReviewDialog = () => {
+    setReviewDialogOpen(false);
+  };
+
   return (
     <div>
       <StoreInfoHeader />
@@ -286,6 +335,63 @@ const StoreInfoHeader = () => {
 
 
         )}
+
+        <div>
+            <Dialog open={reviewDialogOpen} onClose={handleCloseReviewDialog} fullWidth maxWidth="md">
+                <DialogTitle>Reviews for this Shop</DialogTitle>
+                <DialogContent>
+                    {reviews.length > 0 ? (
+                        <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                <Typography variant="h6" sx={{ marginRight: '10px' }}>
+                                    Average Rating:
+                                </Typography>
+                                {Array.from({ length: Math.floor(averageRating) }, (_, index) => (
+                                    <StarIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                ))}
+                                {averageRating % 1 !== 0 && (
+                                    <StarHalfIcon sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                )}
+                                {Array.from({ length: Math.floor(5 - averageRating) }, (_, index) => (
+                                    <StarBorderIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                ))}
+                                <Typography variant="h6" sx={{ marginLeft: '10px' }}>
+                                    ({averageRating.toFixed(1)} / 5)
+                                </Typography>
+                            </Box>
+                            <Typography variant="subtitle1" gutterBottom>
+                                Number of Ratings: {reviews.length}
+                            </Typography>
+                            {reviews.map(review => (
+                                <Card key={review.id} style={{ marginBottom: '20px' }}>
+                                    <CardContent>
+                                        <Typography variant="h6">
+                                            Rating:
+                                        </Typography>
+                                        {Array.from({ length: Math.floor(review.rating) }, (_, index) => (
+                                            <StarIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                        ))}
+                                        {Array.from({ length: Math.max(5 - Math.ceil(review.rating), 0) }, (_, index) => (
+                                            <StarBorderIcon key={index} sx={{ color: '#FFD700', fontSize: '20px' }} />
+                                        ))}
+                                        <Typography variant="body1">
+                                            Comment: {review.comment}
+                                        </Typography>
+                                        <Typography variant="subtitle2">
+                                            By: {review.userName}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </Box>
+                    ) : (
+                        <Typography variant="body1">
+                            No reviews found for this shop.
+                        </Typography>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </div>
       </Container>
     </div>
   );
@@ -357,6 +463,7 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
         </CardContent>
       </Card>
     </Paper>
+    
   );
 }
 

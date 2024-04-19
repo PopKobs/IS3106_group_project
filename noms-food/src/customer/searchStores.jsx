@@ -281,38 +281,60 @@ function StoreCard({ store }) {
             image={imageLink}
             alt={store.name}
           />
-          <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div>
-              <Typography gutterBottom variant="h5" component="div">
-                {store.name}
-              </Typography>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <LocationOnIcon fontSize="small" />
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {store.locationString.split(',')[0]}
-                </Typography>
-              </div>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                <InfoIcon fontSize="small" />
-                {store.description.split(',')[0]}
-              </Typography>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="body2" color="text.secondary">
-                <RunningIcon fontSize="small" />
-                Distance: <b>{formattedDistance}</b>
-              </Typography>
-              {store.openingTime && (
-                <Typography variant="body2" color="text.secondary">
-                  <AccessTimeIcon sx={{ color: '#477368', fontSize: 'small' }} />
-                  {' Opened ' + store.openingTime}
-                </Typography>
-              )}
-            </div>
-          </CardContent>
-
-          </Link>
+          {!disabled ? (
+                <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
+                    <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                            <Typography gutterBottom variant="h5" component="div">
+                                {store.name}
+                            </Typography>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <LocationOnIcon fontSize="small" />
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    {store.locationString.split(',')[0]}
+                                </Typography>
+                            </div>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                <InfoIcon fontSize="small" />
+                                {store.description.split(',')[0]}
+                            </Typography>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Typography variant="body2" color="text.secondary">
+                                <RunningIcon fontSize="small" />
+                                Distance: <b>{formattedDistance}</b>
+                            </Typography>
+                            {store.openingTime && (
+                                <Typography variant="body2" color="text.secondary">
+                                    <AccessTimeIcon sx={{ color: '#477368', fontSize: 'small' }} />
+                                    {' Opened ' + store.openingTime}
+                                </Typography>
+                            )}
+                        </div>
+                    </CardContent>
+                </Link>
+            ) : (
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                            <Typography gutterBottom variant="h5" component="div">
+                                {store.name}
+                            </Typography>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <LocationOnIcon fontSize="small" />
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    {store.locationString.split(',')[0]}
+                                </Typography>
+                            </div>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                <InfoIcon fontSize="small" />
+                                {store.description.split(',')[0]}
+                            </Typography>
+                        </div>
+                    <Typography variant="body2" color="text.secondary">
+                        Store is currently not open.
+                    </Typography>
+                </CardContent>
+            )}
         </Card>
       </Box>
     </Grid>
