@@ -17,6 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Drawer from '@mui/material/Drawer';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Header = () => {
     const navigate = useNavigate()
@@ -73,7 +74,7 @@ const Header = () => {
                         <IconButton
                             size="large"
                             edge="start"
-                            color="teal"
+                            color="green"
                             aria-label="menu"
                             sx={{ mr: 2 }}
                             onClick={toggleDrawer(true)}
@@ -83,6 +84,12 @@ const Header = () => {
                         <Drawer open={open} onClose={toggleDrawer(false)}>
                         {DrawerList}
                         </Drawer>
+                        <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
+                         
+                          {/* Profile Icon */}
+                          <IconButton color="green" onClick={() => navigate('/profilepageCust')}>
+                              <AccountCircleIcon />
+                          </IconButton>  
                     </>
                     :
                     <>

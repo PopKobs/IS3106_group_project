@@ -87,9 +87,9 @@ const CustHeader = () => {
                         </Drawer>
                         <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
                           {/* Cart Icon */}
-                          <IconButton color="green" onClick={() => navigate('/viewCart')}>
+                          {/* <IconButton color="green" onClick={() => navigate('/viewCart')}>
                               <ShoppingCartIcon />
-                          </IconButton>
+                          </IconButton> */}
                           {/* Profile Icon */}
                           <IconButton color="green" onClick={() => navigate('/profilepageCust')}>
                               <AccountCircleIcon />

@@ -3,12 +3,16 @@ import { Container, Typography, List, ListItem, ListItemText, ListItemSecondaryA
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { useTheme } from '@mui/material/styles';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 const CartView = () => {
   const [cartItems, setCartItems] = useState([]);
   const { storeId } = useParams();
   const cartItemsKey = `cartItems_${storeId}`;
+
+  // Inside your component
+  const theme = useTheme();
 
   useEffect(() => {
     const storedCartItems = sessionStorage.getItem(cartItemsKey);
@@ -65,20 +69,20 @@ const CartView = () => {
       maxWidth="md"
       sx={{
         padding: '20px',
-        marginTop: '40px' // Increased top margin to shift contents slightly lower
-      }}
-    >
-      <Container sx={{ marginBottom: '20px' }}> {/* Container for the header */}
-        <Typography variant="h4" style={{ fontWeight: 'bold' }}>
+        height: '100vh',
+        marginTop: '20px'
+      }}>
+      <div>
+        <Typography color='primary' sx={{ fontWeight: 'bold' }} variant="h5" gutterBottom>
           Your Cart
         </Typography>
-
-      </Container>
+      </div>
       <Paper>
         <List>
           {cartItems.map((item) => (
             <ListItem key={item.id}>
               <ListItemText
+                sx={{ width: '400px' }}
                 primary={`${item.title}`}
                 secondary={`Item Description: ${item.description}`}
               />
@@ -101,8 +105,9 @@ const CartView = () => {
           ))}
         </List>
       </Paper>
-      <div style={{ textAlign: 'right', marginTop: '20px' }}> {/* Increased top margin */}
-        <Paper elevation={3} style={{ backgroundColor: 'white', padding: '10px' }}>
+      
+      <div style={{ textAlign: 'right', marginTop: '10px' }}>
+        <Paper elevation={3} style={{ backgroundColor: 'white', border: `1px solid ${theme.palette.primary.main}`, padding: '10px' }}>
           <Typography variant="h6">
             Total Cost: ${totalCost}
           </Typography>
@@ -118,6 +123,7 @@ const CartView = () => {
         </Paper>
       </div>
     </Container>
+
   );
 
 };

@@ -87,7 +87,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-teal-50 flex flex-col justify-center items-center">
+    <div className="min-h-screen flex flex-col justify-center items-center">
       {userData ? (
         <div className='max-w-md w-full space-y-4 bg-white shadow-lg rounded-lg p-6 border border-teal-200'>
           <h2 className="text-2xl font-semibold text-teal-800">User Profile</h2>
