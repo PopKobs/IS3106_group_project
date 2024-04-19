@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
@@ -18,6 +18,8 @@ import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/Info';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 
 const fetchStoreAndListings = async (storeId) => {
   const auth = getAuth();
@@ -106,38 +108,47 @@ function ViewStoreListings() {
     gap: theme.spacing(1), // Add gap between items for better spacing
   }));
 
-  const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    marginRight: theme.spacing(1),
-  }));
-
-  // Modify the StoreInfoHeader function to display information in a better layout
-  const StoreInfoHeader = () => {
-    return (
-      <InfoHeader>
-        <Typography variant="h5" component="h1" gutterBottom>
-          {storeName}
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          <AccessTimeIcon style={{ color: 'green' }} />
-          <Typography variant="subtitle1">
-            {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
-          </Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <LocationOnIcon style={{ color: 'green' }} />
-          <Typography variant="subtitle1">
-            {storeLocationString || 'Location not specified'}
-          </Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <InfoIcon style={{ color: 'green' }} />
-          <Typography variant="subtitle1">
-            {storeDescription || 'No description available'}
-          </Typography>
-        </Box>
-      </InfoHeader>
-    );
+// Modify the StoreInfoHeader function to display information in a better layout
+const StoreInfoHeader = () => {
+  const navigate = useNavigate();
+  const navigateToSearchStores = () => {
+    // Navigate to '/searchStores' when the back icon is clicked
+    navigate('/searchStores');
   };
+
+  return (
+    <InfoHeader>
+      <Typography variant="h5" component="h1" gutterBottom>
+        {storeName}
+      </Typography>
+      <Box display="flex" alignItems="center" gap={1}>
+        <AccessTimeIcon style={{ color: 'green' }} />
+        <Typography variant="subtitle1">
+          {`Opening: ${storeOpening} - Closing: ${storeClosing}`}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <LocationOnIcon style={{ color: 'green' }} />
+        <Typography variant="subtitle1">
+          {storeLocationString || 'Location not specified'}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <InfoIcon style={{ color: 'green' }} />
+        <Typography variant="subtitle1">
+          {storeDescription || 'No description available'}
+        </Typography>
+        
+        <IconButton onClick={navigateToSearchStores} sx={{ marginLeft: '900px', fontSize: '20px'}}>
+        Return <ArrowBackIcon />
+      </IconButton>
+      </Box>
+      {/* Add IconButton for back navigation */}
+      
+    </InfoHeader>
+  );
+};
+  
 
 
   // <---------------------------------------------------End--------------------------------------->
@@ -209,7 +220,7 @@ function ViewStoreListings() {
   return (
     <div>
       <StoreInfoHeader />
-      <Container maxWidth="md" sx={{ marginTop: '20px' }}>
+      <Container justifyContent='centre' maxWidth="md" sx={{ marginTop: '20px' }}>
         {storeListing && (
           <>
 
@@ -267,7 +278,7 @@ function ViewStoreListings() {
             variant="contained"
             component={Link}
             to={`/viewCart/${storeId}`}
-            sx={{ marginTop: '20px', color: 'white', bgcolor: 'darkcyan' }} // Set text color to white and button background color to darkcyan
+            sx={{ marginTop: '20px', marginBottom: '20px'}}
           >
             <ShoppingCartIcon sx={{ mr: 1 }} />
             Proceed to Cart
@@ -299,12 +310,12 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
 
   return (
     <Paper elevation={3} sx={{ borderRadius: 1, width: 700 }}>
-      <Card sx={{ display: 'flex', flexDirection: 'row', width: 700, height: 160, }}>
+      <Card sx={{ display: 'flex', flexDirection: 'row', width: 700, height: 170, }}>
         <CardMedia
           component="img"
           image={imageLink}
           alt={listing.title}
-          sx={{ width: 160, height: 160, objectFit: 'cover' }}
+          sx={{ width: 170, height: 170, objectFit: 'cover' }}
         />
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography gutterBottom variant="h5" component="div">
@@ -316,28 +327,33 @@ function StoreListingCard({ listing, handleOpenModal, cartItems }) {
           <Typography variant="body2" color="text.primary" style={{ fontSize: '15px' }}>
             Price: ${listing.price}
           </Typography>
-          <CardActions>
-            {!isInCart ? (
-              <Button variant="contained" color="primary" onClick={() => handleOpenModal(listing)}
-                sx={{
-                  marginTop: '10px',
-                  float: 'right',
-                  bgcolor: 'teal',
-                  color: 'white',
-                  '&:hover': {
-                    bgcolor: 'darkcyan',
-                  },
-                }}
-              >
+          <Typography variant="body2" color="text.primary"  style={{ fontSize: '15px' }}>
+            Stock: {listing.stock}
+          </Typography>
+          <CardActions style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {!isInCart ? (
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => handleOpenModal(listing)}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                },
+              }}
+            >
+              Add to Cart
+            </Button>
+          ) : (
+            <Typography 
+              variant="body2" 
+              style={{ color: 'darkred', fontSize: '15px', fontWeight: 'bold' }} 
+            >
+              Item added to cart
+            </Typography>
+          )}
+        </CardActions>
 
-                Add to Cart
-              </Button>
-            ) : (
-              <Typography variant="body2" color="primary" style={{ fontSize: '15px', fontWeight: 'bold', marginTop: '10px' }} >
-                Item added to cart
-              </Typography>
-            )}
-          </CardActions>
         </CardContent>
       </Card>
     </Paper>

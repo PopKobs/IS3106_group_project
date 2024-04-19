@@ -12,8 +12,18 @@ import {
 import { useAuth } from '../contexts/authContext'; // Adjust the import path as necessary
 import { LoadScript, GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'; // Correctly imported
 import { useNavigate } from 'react-router-dom';
-import './ViewStore.css';
-import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
+import {
+    Box,
+    Container,
+    Typography,
+    Grid,
+    Button,
+    Card,
+    Stack,
+    CardContent,
+    CardMedia,
+    Paper
+} from "@mui/material";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 function ViewStore() {
@@ -113,70 +123,74 @@ function ViewStore() {
     // }
 
     const containerStyle = {
-        width: '800px', // Adjust width as needed
+        width: '100%', // Adjust width as needed
         height: '400px' // Adjust height as needed
     };
 
     return (
         <Container>
-            {!store ? <div>Loading store information...</div>
-                :
-                <Box>
-                    <Box>
-                        <h2 className="ViewStore-header">View Your Store</h2>
-                        <Box>
-                            <Typography variant="h6" gutterBottom>
-                                Store Image:
-                            </Typography>
-                            <div>
-                                {imageUrl ? (
-                                    <img src={imageUrl} alt="Stars" />
-                                ) : (
-                                    <p>Store Image has not been set...</p>
-                                )}
-                            </div>
-
-                        </Box>
-                        <div className="ViewStore-details">
-                            <p><b>Store Name:</b> {store.name}</p>
-                            <p><b>Description:</b> {store.description}</p>
-                            <p><b>Opening Hours:</b> {store.opening}</p>
-                            <p><b>Closing Hours:</b> {store.closing}</p>
-                            <p><b>Store Location:</b> {address}</p>
-                        </div>
-                    </Box>
-                    {
-                        isLoaded ?
-                            <div className="ViewStore-container">
-                                <div className="ViewStore-mapContainer">
-                                    <GoogleMap
-                                        mapContainerStyle={containerStyle}
-                                        center={store.location}
-                                        zoom={15}
-                                    >
-                                        <Marker position={store.location} />
-                                    </GoogleMap>
-                                </div>
-
-                            </div>
-                            :
-                            // <LoadScript
-                            //     googleMapsApiKey="AIzaSyAPomcsuwYqpr_xLpQPAfZOFI3AxxuldJs"
-                            //     onLoad={() => setIsMapsApiLoaded(true)}
-                            // >
-                            <Box>
-                                <Typography>Loading...</Typography>
-                            </Box>
-                        // </LoadScript>
-
-                    }
-
-                </Box>
-            }
-            <Box>
-                <button className="ViewStore-button" onClick={navigateReview}>View All Reviews</button> <br /><br />
-                <button className="ViewStore-button" onClick={handleEditStore}>Edit Store</button> <br /><br />
-            </Box>
+            <Typography sx={{ fontWeight: 'bold', paddingTop:'20px' }} color="primary" variant="h4" gutterBottom>
+                           View Your Store
+                    </Typography>
+            {!store ? (
+                <Typography>Loading store information...</Typography>
+            ) : (
+                <Grid container spacing={3} sx={{ paddingTop: '0px' }}>
+                    
+                    <Grid item xs={12} md={6}>
+                        <Card>
+                            <CardMedia
+                                component="img"
+                                sx={{ height: '208px', objectFit: 'contain' }}
+                                image={imageUrl || 'default-store-image.jpg'} // Replace with a default image if imageUrl is not available
+                                alt="Store"
+                            />
+                            <CardContent>
+                                <Typography variant="h5" gutterBottom>
+                                    {store.name}
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    {store.description}
+                                </Typography>
+                                <Typography variant="body1" gutterBottom>
+                                    <strong>Opening Hours:</strong> {store.opening}
+                                </Typography>
+                                <Typography variant="body1" gutterBottom>
+                                    <strong>Closing Hours:</strong> {store.closing}
+                                </Typography>
+                                <Typography variant="body1" gutterBottom>
+                                    <strong>Store Location:</strong> {address}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Paper elevation={5} sx={{ height: containerStyle.height }}>
+                            {isLoaded ? (
+                                <GoogleMap
+                                    mapContainerStyle={containerStyle}
+                                    center={store.location}
+                                    zoom={15}
+                                >
+                                    <Marker position={store.location} />
+                                </GoogleMap>
+                            ) : (
+                                <Typography>Loading map...</Typography>
+                            )}
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} sx={{ paddingBottom: '20px'}}>
+                        <Stack direction="row" spacing={2} justifyContent="left">
+                            <Button variant="contained" onClick={navigateReview}>
+                                View All Reviews
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={handleEditStore}>
+                                Edit Store
+                            </Button>
+                        </Stack>
+                    </Grid>
+                </Grid>
+            )}
         </Container>
     );
 }
