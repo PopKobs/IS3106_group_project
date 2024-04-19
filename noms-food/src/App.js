@@ -25,7 +25,7 @@ import EditProfile from './editprofile';
 import ProfilePageCust from './profilepageCust';
 import AccountType from "./components/auth/register/type";
 import SearchStores from "./customer/searchStores"
-import StoreListings from "./customer/viewStoreListing"
+//import StoreListings from "./customer/viewStoreListing"
 import CartView from "./customer/cart";
 import AdminUsersPage from './admin/viewUser';
 import CheckoutPage from "./customer/checkout";
@@ -42,7 +42,7 @@ function App() {
   const location = useLocation(); // Get current location
   const custHeaderPages = ["/custHome", "/profilepageCust","/searchStores", "/store", "/viewCart", "/checkout/:storeId", "/orderConfirmed", "/reportItTicketCust", "/viewItTicketsCust", "/editprofileCust", "/viewCart/:storeId", "/orderConfirmed/:storeId/:orderId", "/store/:storeId", "/viewOrders"]; // Pages for customers (using customer header)
   const isCustHeaderPage = custHeaderPages.some(path => location.pathname.startsWith(path)); // Check if current page is a customer page
-  const adminHeaderPages = ["/adminHome", "/adminviewuser"]; // Pages for admin
+  const adminHeaderPages = ["/adminHome", "/adminviewuser", "/reportItTicketAdmin", "/viewItTicketsAdmin", "/adminTicketView"]; // Pages for admin
   const isAdminPage = adminHeaderPages.includes(location.pathname); // Check if current page is admin page
 
   const routes = useRoutes([
@@ -61,8 +61,10 @@ function App() {
     { path: "/adminHome", element: <AdminHome /> }, //Admin
     { path: "/reportItTicket", element: <TicketForm /> }, //Vendor
     { path: "/reportItTicketCust", element: <TicketFormCust /> }, //Customer
+    { path: "/reportItTicketAdmin", element: <TicketForm /> }, //Admin
     { path: "/viewItTickets", element: <ViewITTickets />}, //Vendor
     { path: "/viewItTicketsCust", element: <ViewITTicketsCust />}, //Customer
+    { path: "/viewItTicketsAdmin", element: <ViewITTicketsCust />}, //Customer
     { path: "/profilepage", element: <ProfilePage /> },
     { path: "/searchStores", element: <SearchStores /> }, //Customer
     //{ path: "/store/:storeId", element: <StoreListings /> },

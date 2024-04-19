@@ -20,10 +20,8 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BlockIcon from "@mui/icons-material/Block";
-import SearchIcon from "@mui/icons-material/Search";
 import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
@@ -123,9 +121,9 @@ const AdminUsersPage = () => {
                 </TableCell>
                 <TableCell>
                   {user.type === "Admin" ? (
-                    <IconButton>
-                      <VisibilityIcon />
-                    </IconButton>
+                    <IconButton disabled>
+                      <VisibilityIcon sx={{ color: 'gray' }} />
+                  </IconButton>
                   ) : (
                     <div>
                       {user.status === "Banned" ? (
@@ -137,7 +135,7 @@ const AdminUsersPage = () => {
                         </IconButton>
                       ) : (
                         <IconButton
-                          color="secondary"
+                          sx={{ color: 'red' }}
                           onClick={() => disableUserAccount(user.id)}
                         >
                           <BlockIcon />

@@ -24,7 +24,7 @@ const CustHeader = () => {
     const { userLoggedIn } = useAuth()
 
     // Update the paths for the drawer
-    const paths1 = ['/adminHome','/adminviewuser', '/adminTicketView'];
+    const paths1 = ['/adminHome','/adminviewuser', '/adminTicketView', '/reportItTicketAdmin', '/viewItTicketsAdmin'];
 
     const [open, setOpen] = React.useState(false); // Open Drawer State
 
@@ -35,7 +35,7 @@ const CustHeader = () => {
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
           <List>
-            {['Homepage', 'View Users', 'View IT Tickets'].map((text, index) => (
+            {['Homepage', 'View Users', 'Manage IT Tickets', 'Report IT Tickets', 'View IT Tickets'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton onClick={() => navigate(paths1[index])}>
                   <ListItemText primary={text} />
