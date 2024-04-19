@@ -88,6 +88,7 @@ function TicketFormCust() {
         reportedUser
       });
         
+      setTicketData({title: "", description:""})
       alert("Ticket reported Successfully."); // Display success message
     } catch (error) {
       console.error("Error in creating Ticket:", error);
