@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/authContext'
 import { doCreateUserWithEmailAndPassword } from '../../../firebase/auth'
 import { collection, addDoc, getFirestore } from "firebase/firestore"
 import { getAuth } from 'firebase/auth';
-import { Button, Container, Typography, TextField } from '@mui/material';
+import { Button, Container, Typography, TextField, Box } from '@mui/material';
 
 // TO Do: Error handle weak password and others
 // To do: fix ui
@@ -108,13 +108,15 @@ const Register = () => {
     }
   }
 
+  // , height: '100vh'
+
   return (
     <>
       {userLoggedIn && accType == "Vendor" && !isRegistering && (<Navigate to={'/createstore'} replace={true} />)}
       {userLoggedIn && accType == "Customer" && !isRegistering && (<Navigate to={'/custHome'} replace={true} />)}
-      <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div>
-          <Typography variant="h5" sx={{ textAlign: 'center', marginBottom: '1rem' }}>
+      <Container maxWidth="sm" sx={{ backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop:3 }}>
+        <Box sx={{marginBottom:5}}>
+          <Typography variant="h5" sx={{ textAlign: 'center', marginBottom: '1rem', marginTop:1 }}>
             Create a New Account
           </Typography>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -229,7 +231,7 @@ const Register = () => {
               </Link>
             </Typography>
           </form>
-        </div>
+        </Box>
       </Container>
 
     </>
