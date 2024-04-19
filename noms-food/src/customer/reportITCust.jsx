@@ -108,7 +108,7 @@ function TicketFormCust() {
           padding: '20px', 
           borderRadius: '10px',
           marginTop: '55px' }}>
-          <Typography variant="h3">Report a New IT Ticket</Typography>
+          <Typography variant="h4" sx = {{marginBottom: 2}}>Report a New IT Ticket</Typography>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
