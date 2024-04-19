@@ -4,7 +4,7 @@ import { Autocomplete, GoogleMap, Marker, useLoadScript } from '@react-google-ma
 import './CreateStore.css'; // Assuming CSS styles are appropriate for EditStore as well
 import { useAuth } from '../contexts/authContext';
 import { doc, getDoc, getFirestore, query, collection, where, getDocs, updateDoc } from "firebase/firestore";
-import { Box, Container, Typography, TextField, Stack, Button } from "@mui/material";
+import { Box, Container, Typography, TextField, Stack, Button, CardMedia } from "@mui/material";
 //import { GeoPoint } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
@@ -19,6 +19,7 @@ function EditStore() {
     opening: '',
     closing: '',
     location: { lat: null, lng: null },
+    locationString: '',
     isOpen: false,
   });
   const [autocomplete, setAutocomplete] = useState(null);
@@ -128,6 +129,7 @@ function EditStore() {
     setStore({
       ...store,
       location: address.formatted_address,
+      locationString: address.formatted_address,
     });
     setMarker({ lat: address.geometry.location.lat(), lng: address.geometry.location.lng() });
   };
@@ -142,6 +144,7 @@ function EditStore() {
       const storeRef = doc(db, "Store", store.id);
       await updateDoc(storeRef, {
         location: marker,
+        locationString: store.locationString,
       });
 
       console.log("Store updated successfully");
@@ -175,22 +178,32 @@ function EditStore() {
       {!store && !isLoaded ? <div>Loading store information...</div>
         :
         <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-          <Typography variant='h3'>Sign your store up with NOMs!</Typography>
+          <Typography sx={{paddingTop: '20px', fontWeight: 'bold', paddingBottom: '20px' }} color='primary'variant='h4'>Edit Store: {store.name} </Typography>
           <Box>
             <Typography variant="h6" gutterBottom>
               Store Image:
             </Typography>
             <div>
               {imageUrl ? (
-                <img src={imageUrl} alt="Stars" />
+                <CardMedia
+                component="img"
+                sx={{
+                  width: 'auto', // Use 'auto' or '100%' depending on your desired layout
+                  maxHeight: '240px', // Change this value to adjust the maximum height
+                  objectFit: 'contain' // This will ensure the image is fully visible and contained within the element
+                }}
+                image={imageUrl || 'default-store-image.jpg'}
+                alt="Store"
+              />
               ) : (
                 <p>Store Image has not been set...</p>
               )}
             </div>
+            
             <input type="file" id="fileInput" onChange={handleFileChange} />
             <Button style={{ backgroundColor: '#00897b', color: 'white' }} onClick={uploadPhoto}>Upload Photo</Button>
           </Box>
-          <Box sx={{ mt: 2, width: '100%', maxWidth: 400 }}>
+          <Box sx={{ mt: 3, width: '100%', maxWidth: 400 }}>
             <Stack spacing={2} direction="column">
               {/* TextField components */}
               <TextField

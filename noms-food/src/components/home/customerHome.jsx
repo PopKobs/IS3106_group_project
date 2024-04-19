@@ -59,10 +59,10 @@ const CustHome = () => {
           }}
         >
           {[
-            { image: categoryImage1, label: "Healthy Greens", link: "/greens" },
-            { image: categoryImage2, label: "Savoury Chinese Food", link: "/chinese" },
-            { image: categoryImage3, label: "Savoury Japanese Food", link: "/japanese" },
-            { image: categoryImage4, label: "Delicious Pastries", link: "/pastries" }
+            { image: categoryImage1, label: "Healthy Greens", link: "/searchStores" },
+            { image: categoryImage2, label: "Savoury Chinese Food", link: "/searchStores" },
+            { image: categoryImage3, label: "Savoury Japanese Food", link: "/searchStores" },
+            { image: categoryImage4, label: "Delicious Pastries", link: "/searchStores" }
           ].map((category, index) => (
             <Box key={index} sx={{ width: '22%', margin: '1%', position: 'relative', textAlign: 'center' }}>
               <img

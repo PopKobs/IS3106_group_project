@@ -16,9 +16,12 @@ import {
 } from '@mui/material';
 import { green } from '@mui/material/colors';
 import { Link } from 'react-router-dom';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Autocomplete, useLoadScript } from '@react-google-maps/api';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import InfoIcon from '@mui/icons-material/Info';
+import RunningIcon from '@mui/icons-material/DirectionsRun';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const libraries = ["places"];
 
@@ -274,30 +277,41 @@ function StoreCard({ store }) {
         <Card raised sx={{ borderRadius: '6%', width: '100%', display: 'flex', flexDirection: 'column', minHeight: '330px' }}>
           <CardMedia
             component="img"
-            height="140"
+            minHeight="140"
             image={imageLink}
             alt={store.name}
           />
           <Link to={`/store/${store.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
               <Typography gutterBottom variant="h5" component="div">
                 {store.name}
               </Typography>
-              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <LocationOnIcon fontSize="small" />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {store.locationString.split(',')[0]}
+                </Typography>
+              </div>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                <InfoIcon fontSize="small" />
                 {store.description.split(',')[0]}
               </Typography>
-              {/* Include the distance here */}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant="body2" color="text.secondary">
+                <RunningIcon fontSize="small" />
                 Distance: <b>{formattedDistance}</b>
               </Typography>
-              {/* Conditional rendering for the opening time */}
               {store.openingTime && (
                 <Typography variant="body2" color="text.secondary">
-                  <AccessTimeIcon fontSize="small" />
+                  <AccessTimeIcon sx={{ color: '#477368', fontSize: 'small' }} />
                   {' Opened ' + store.openingTime}
                 </Typography>
               )}
-            </CardContent>
+            </div>
+          </CardContent>
+
           </Link>
         </Card>
       </Box>

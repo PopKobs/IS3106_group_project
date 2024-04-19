@@ -3,12 +3,16 @@ import { Container, Typography, List, ListItem, ListItemText, ListItemSecondaryA
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { useTheme } from '@mui/material/styles';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 const CartView = () => {
   const [cartItems, setCartItems] = useState([]);
   const { storeId } = useParams();
   const cartItemsKey = `cartItems_${storeId}`;
+  
+  // Inside your component
+  const theme = useTheme();
 
   useEffect(() => {
     const storedCartItems = sessionStorage.getItem(cartItemsKey);
@@ -69,7 +73,7 @@ const CartView = () => {
         marginTop: '20px'
       }}>
       <div>
-        <Typography variant="h5" gutterBottom>
+        <Typography color='primary' sx={{ fontWeight: 'bold' }} variant="h5" gutterBottom>
           Your Cart
         </Typography>
         <Paper>
@@ -100,7 +104,7 @@ const CartView = () => {
           </List>
         </Paper>
         <div style={{ textAlign: 'right', marginTop: '10px' }}>
-          <Paper elevation={3} style={{ backgroundColor: 'white', border: '1px solid black', padding: '10px' }}>
+          <Paper elevation={3} style={{ backgroundColor: 'white', border: `1px solid ${theme.palette.primary.main}`, padding: '10px' }}>
             <Typography variant="h6">
               Total Cost: ${totalCost}
             </Typography>
