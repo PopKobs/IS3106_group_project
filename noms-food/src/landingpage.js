@@ -65,7 +65,7 @@ const LandingPage = () => {
           {[
             { image: categoryImage1, label: "Healthy Greens", link: "/greens" },
             { image: categoryImage2, label: "Savoury Chinese Food", link: "/chinese" },
-            { image: categoryImage3, label: "Savoury Japanese Food", link: "/japanese" },
+            { image: categoryImage3, label: "Exotic Japanese Food", link: "/japanese" },
             { image: categoryImage4, label: "Delicious Pastries", link: "/pastries" }
           ].map((category, index) => (
             <Box key={index} sx={{ width: '22%', margin: '1%', position: 'relative', textAlign: 'center' }}>
@@ -81,9 +81,9 @@ const LandingPage = () => {
               <Typography variant="subtitle1" sx={{ position: 'absolute', top: '10%', right: '0px', width: '100%', fontSize: '130%', fontFamily: 'cursive', color: 'white', textShadow: '1px 1px 2px rgba(0, 0, 0, 0.6)' }}>
                 {category.label}
               </Typography>
-              <Button variant="contained" sx={{ position: 'absolute', bottom: '5%', left: '30%', transform: 'translateX(-50%)', backgroundColor: 'rgba(128, 128, 128, 0.4)', color: 'white', }} onClick={() => navigate(category.link)}>
+              {/* <Button variant="contained" sx={{ position: 'absolute', bottom: '5%', left: '30%', transform: 'translateX(-50%)', backgroundColor: 'rgba(128, 128, 128, 0.4)', color: 'white', }} onClick={() => navigate(category.link)}>
                 Learn More
-              </Button>
+              </Button> */}
             </Box>
           ))}
         </Box>

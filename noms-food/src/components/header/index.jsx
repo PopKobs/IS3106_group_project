@@ -20,22 +20,22 @@ import Drawer from '@mui/material/Drawer';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Header = () => {
-    const navigate = useNavigate()
-    const { userLoggedIn } = useAuth()
+  const navigate = useNavigate()
+  const { userLoggedIn } = useAuth()
 
-    // Update the paths for the drawer
-    const paths1 = ['/home','/profilepage', '/viewstore', '/createlisting', '/viewownlistings', "/reportItTicket", "/viewItTickets"];
+  // Update the paths for the drawer
+  const paths1 = ['/home', '/profilepage', '/viewstore', '/createlisting', '/viewownlistings', "/reportItTicket", "/viewItTickets"];
 
-    const [open, setOpen] = React.useState(false); // Open Drawer State
+  const [open, setOpen] = React.useState(false); // Open Drawer State
 
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
-    };
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
 
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
-        {['Homepage','Profile', 'View Store', 'Create Listing', 'View Listings', 'Report IT Ticket', 'View IT Tickets'].map((text, index) => (
+        {['Homepage', 'Profile', 'View Store', 'Create Listing', 'View Listings', 'Report IT Ticket', 'View IT Tickets'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(paths1[index])}>
               <ListItemText primary={text} />
@@ -56,53 +56,58 @@ const Header = () => {
     </Box>
   );
 
-    
-    return (
-        <Box sx={{ flexGrow: 1}} >
-        <AppBar position="static" sx={{ backgroundColor:'white' }}>
+
+  return (
+    <Box sx={{ flexGrow: 1 }} >
+      <AppBar position="static" sx={{ backgroundColor: 'white' }}>
         <Toolbar >
-          
-          {/* Icon */}
-          <a href="/home">
-          <img src={icon} alt="icon" style={{ height: '40px', margin: '0px' }} />
-          </a>
+
+
 
           {
-                userLoggedIn
-                    ?
-                    <>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="green"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                            onClick={toggleDrawer(true)}
-                        >
-                        <MenuIcon />
-                        </IconButton>
-                        <Drawer open={open} onClose={toggleDrawer(false)}>
-                        {DrawerList}
-                        </Drawer>
-                        <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
-                         
-                          {/* Profile Icon */}
-                          <IconButton color="green" onClick={() => navigate('/profilepageCust')}>
-                              <AccountCircleIcon />
-                          </IconButton>  
-                    </>
-                    :
-                    <>
-                        <Button style={{ color: 'teal' }} onClick={() => navigate('/login')}> Login </Button>
-                        <Button style={{ color: 'teal' }} onClick={() => navigate('/type')}> Register </Button>
-                    </>
-            }
+            userLoggedIn
+              ?
+              <>
+                {/* Icon */}
+                <a href="/home">
+                  <img src={icon} alt="icon" style={{ height: '40px', margin: '0px' }} />
+                </a>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="green"
+                  aria-label="menu"
+                  sx={{ mr: 2 }}
+                  onClick={toggleDrawer(true)}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Drawer open={open} onClose={toggleDrawer(false)}>
+                  {DrawerList}
+                </Drawer>
+                <Box sx={{ flexGrow: 1 }} /> {/* This Box pushes the icons to the right */}
+
+                {/* Profile Icon */}
+                <IconButton color="green" onClick={() => navigate('/profilepage')}>
+                  <AccountCircleIcon />
+                </IconButton>
+              </>
+              :
+              <>
+                {/* Icon */}
+                <a href="/">
+                  <img src={icon} alt="icon" style={{ height: '40px', margin: '0px' }} />
+                </a>
+                <Button style={{ color: 'teal' }} onClick={() => navigate('/login')}> Login </Button>
+                <Button style={{ color: 'teal' }} onClick={() => navigate('/type')}> Register </Button>
+              </>
+          }
 
         </Toolbar>
-        </AppBar>
-        </Box>
+      </AppBar>
+    </Box>
 
-    )
+  )
 }
 
 export default Header
