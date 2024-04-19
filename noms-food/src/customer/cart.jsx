@@ -82,6 +82,7 @@ const CartView = () => {
           {cartItems.map((item) => (
             <ListItem key={item.id}>
               <ListItemText
+                sx={{ width: '400px' }}
                 primary={`${item.title}`}
                 secondary={`Item Description: ${item.description}`}
               />
@@ -104,22 +105,7 @@ const CartView = () => {
           ))}
         </List>
       </Paper>
-      <div style={{ textAlign: 'right', marginTop: '20px' }}> {/* Increased top margin */}
-        <Paper elevation={3} style={{ backgroundColor: 'white', padding: '10px' }}>
-          <Typography variant="h6">
-            Total Cost: ${totalCost}
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginTop: '10px' }}
-            disabled={cartItems.length === 0}
-            onClick={handleCheckout}
-          >
-            Checkout
-          </Button>
-        </Paper>
-      </div>
+      
       <div style={{ textAlign: 'right', marginTop: '10px' }}>
         <Paper elevation={3} style={{ backgroundColor: 'white', border: `1px solid ${theme.palette.primary.main}`, padding: '10px' }}>
           <Typography variant="h6">
